@@ -10,4 +10,7 @@ import { DocumentList } from '../../components/document-list/document-list';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {}
+export class Dashboard {
+  year = new Date().getFullYear();
+
+}

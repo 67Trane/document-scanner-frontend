@@ -24,7 +24,7 @@ export class CustomerService {
   private http = inject(HttpClient);
 
   // später kannst du das in eine Config auslagern
-  private baseUrl = `${AppConfig.apiBaseUrl}/customers/`;
+  private baseUrl = `${AppConfig.apiBaseUrl}api/customers/`;
 
   getCustomers(): Observable<Customer[]> {
     return this.http.get<Customer[]>(this.baseUrl);
