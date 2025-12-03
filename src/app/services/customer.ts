@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AppConfig } from '../config';
 
 // Type passend zu deinem Django-Customer-Model
 export interface Customer {
@@ -23,7 +24,7 @@ export class CustomerService {
   private http = inject(HttpClient);
 
   // später kannst du das in eine Config auslagern
-  private baseUrl = 'http://127.0.0.1:8000/api/customers/';
+  private baseUrl = `${AppConfig.apiBaseUrl}/customers/`;
 
   getCustomers(): Observable<Customer[]> {
     return this.http.get<Customer[]>(this.baseUrl);

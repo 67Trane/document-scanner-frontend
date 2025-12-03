@@ -1,16 +1,16 @@
-@if (loading) {
+@if (loading()) {
   <div class="text-sm text-slate-500 py-2">
     Loading customers...
   </div>
 }
 
-@if (error) {
+@if (error()) {
   <div class="text-sm text-red-600 py-2">
-    {{ error }}
+    {{ error() }}
   </div>
 }
 
-@if (!loading && !error) {
+@if (!loading() && !error()) {
   <table class="w-full text-sm">
     <thead class="text-left border-b text-slate-500">
       <tr>
@@ -19,7 +19,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (customer of customers; track customer.id) {
+      @for (customer of customers(); track customer.id) {
         <tr class="border-b hover:bg-slate-50 cursor-pointer">
           <td class="py-2">
             {{ customer.last_name }}, {{ customer.first_name }}
