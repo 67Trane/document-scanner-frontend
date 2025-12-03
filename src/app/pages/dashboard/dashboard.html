@@ -1,0 +1,29 @@
+<div class="min-h-screen bg-slate-100">
+  <header class="border-b bg-white px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-semibold">
+      Document Scanner – Dashboard
+    </h1>
+    <span class="text-sm text-slate-500">
+      Logged in as: Demo User
+    </span>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <section class="mb-6">
+      <!-- Suchfeld -->
+      <app-customer-search />
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-xl shadow p-4">
+        <h2 class="font-semibold mb-3">Customers</h2>
+        <app-customer-list />
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-4">
+        <h2 class="font-semibold mb-3">Documents</h2>
+        <app-document-list />
+      </div>
+    </section>
+  </main>
+</div>

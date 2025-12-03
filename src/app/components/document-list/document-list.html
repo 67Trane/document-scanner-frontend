@@ -1,0 +1,19 @@
+<table class="w-full text-sm">
+  <thead class="text-left border-b text-slate-500">
+    <tr>
+      <th class="py-2">Title</th>
+      <th class="py-2">Type</th>
+      <th class="py-2">Customer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      *ngFor="let doc of documents"
+      class="border-b hover:bg-slate-50 cursor-pointer"
+    >
+      <td class="py-2">{{ doc.title }}</td>
+      <td class="py-2 capitalize">{{ doc.document_type }}</td>
+      <td class="py-2">{{ doc.customer_name }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,21 @@
+<table class="w-full text-sm">
+  <thead class="text-left border-b text-slate-500">
+    <tr>
+      <th class="py-2">Name</th>
+      <th class="py-2">City</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      *ngFor="let customer of customers"
+      class="border-b hover:bg-slate-50 cursor-pointer"
+    >
+      <td class="py-2">
+        {{ customer.last_name }}, {{ customer.first_name }}
+      </td>
+      <td class="py-2">
+        {{ customer.city }}
+      </td>
+    </tr>
+  </tbody>
+</table>
