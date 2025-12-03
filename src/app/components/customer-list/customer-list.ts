@@ -1,12 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Customer {
-  id: number;
-  first_name: string;
-  last_name: string;
-  city: string;
-}
+import { CustomerService, Customer } from '../../services/customer';
 
 @Component({
   selector: 'app-customer-list',
@@ -15,10 +9,24 @@ interface Customer {
   templateUrl: './customer-list.html',
   styleUrl: './customer-list.css',
 })
-export class CustomerList {
-  customers: Customer[] = [
-    { id: 1, first_name: 'Peter', last_name: 'Müller', city: 'Berlin' },
-    { id: 2, first_name: 'Anna', last_name: 'Schmidt', city: 'Hamburg' },
-    { id: 3, first_name: 'Mehmet', last_name: 'Yilmaz', city: 'München' },
-  ];
+export class CustomerList implements OnInit {
+  private customerService = inject(CustomerService);
+
+  customers: Customer[] = [];
+  loading = false;
+  error: string | null = null;
+
+  ngOnInit(): void {
+    this.loading = true;
+    this.customerService.getCustomers().subscribe({
+      next: (data) => {
+        this.customers = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Fehler beim Laden der Kunden';
+        this.loading = false;
+      },
+    });
+  }
 }
