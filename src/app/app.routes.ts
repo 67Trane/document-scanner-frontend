@@ -5,6 +5,8 @@ import { DocumentDetail } from './pages/document-detail/document-detail';
 
 export const routes: Routes = [
   { path: '', component: Dashboard },
-  { path: 'customers/:id', component: CustomerDetail },
+   { path: '**', component: CustomerDetail },
+  // { path: 'customers/:id', component: CustomerDetail },
   { path: 'documents/:id', component: DocumentDetail },
+ 
 ];
