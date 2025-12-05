@@ -1,3 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+
+body {
+  /* Setzt den Standard-Hintergrund für die gesamte Anwendung auf Dunkelgrau */
+  background-color: #0f172a; /* slate-900 */
+  color: #f1f5f9; /* slate-100 */
+}

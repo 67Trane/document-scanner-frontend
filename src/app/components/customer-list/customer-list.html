@@ -1,30 +1,30 @@
 @if (loading()) {
-  <div class="text-sm text-slate-500 py-2">
+  <div class="text-sm text-slate-500 dark:text-slate-400 py-2">
     Loading customers...
   </div>
 }
 
 @if (error()) {
-  <div class="text-sm text-red-600 py-2">
+  <div class="text-sm text-red-600 dark:text-red-400 py-2">
     {{ error() }}
   </div>
 }
 
 @if (!loading() && !error()) {
-  <table class="w-full text-sm">
-    <thead class="text-left border-b text-slate-500">
+  <table class="w-full text-sm text-left">
+    <thead class="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
       <tr>
-        <th class="py-2">Name</th>
-        <th class="py-2">City</th>
+        <th class="py-2 font-medium">Name</th>
+        <th class="py-2 font-medium">City</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="text-slate-700 dark:text-slate-300">
       @for (customer of customers(); track customer.id) {
-        <tr class="border-b hover:bg-slate-50 cursor-pointer">
-          <td class="py-2">
+        <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors">
+          <td class="py-2 font-medium text-slate-900 dark:text-slate-200">
             {{ customer.last_name }}, {{ customer.first_name }}
           </td>
-          <td class="py-2">
+          <td class="py-2 text-slate-500 dark:text-slate-400">
             {{ customer.city }}
           </td>
         </tr>

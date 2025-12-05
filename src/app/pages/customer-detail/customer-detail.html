@@ -1,32 +1,30 @@
 <div class="space-y-6">
-    <!-- Kopfbereich Kunde -->
-    <section
-        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <section class="rounded-2xl shadow-sm p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4
+               bg-slate-800 border border-slate-700">
         <div class="flex items-center gap-4">
             <div
                 class="w-14 h-14 rounded-2xl bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-semibold shadow-md">
                 {{ selectedCustomer.initials || 'KD' }}
             </div>
             <div>
-                <h2 class="text-xl font-semibold text-slate-900">
+                <h2 class="text-xl font-semibold text-white">
                     @if (customer()) {
                     <h2>{{ customer()?.first_name }} {{ customer()?.last_name }}</h2>
                     } @else {
-                    <p>Lade Kunde...</p>
+                    <p class="text-slate-400">Lade Kunde...</p>
                     }
-
                 </h2>
-                <p class="text-sm text-slate-500">
+                <p class="text-sm text-slate-400">
                     Kundennummer: <span class="font-mono">{{ selectedCustomer.customerNumber || '2025-000123' }}</span>
                 </p>
                 <div class="mt-2 flex flex-wrap gap-2">
-                    <span
-                        class="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-1 text-xs font-medium border border-emerald-100">
+                    <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border
+                               bg-emerald-900/40 text-emerald-300 border-emerald-900">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         Aktiver Kunde
                     </span>
-                    <span
-                        class="inline-flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 px-2.5 py-1 text-xs font-medium border border-blue-100">
+                    <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border
+                               bg-blue-900/40 text-blue-300 border-blue-900">
                         Multiversicherungen
                     </span>
                 </div>
@@ -34,9 +32,8 @@
         </div>
 
         <div class="flex flex-wrap gap-3">
-            <button
-                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition-colors"
-                type="button">
+            <button class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                       border border-slate-700 bg-slate-700 hover:bg-slate-600 text-slate-200" type="button">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -44,9 +41,8 @@
                 Notiz hinzufügen
             </button>
 
-            <button
-                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
-                type="button">
+            <button class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm
+                       bg-blue-600 text-white hover:bg-blue-500" type="button">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 12H8m8 0l-3-3m3 3l-3 3M5 8V6a2 2 0 012-2h10a2 2 0 012 2v2" />
@@ -56,14 +52,13 @@
         </div>
     </section>
 
-    <!-- Grid: Kundendaten + Dokumente -->
     <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <!-- Kundendaten (links) -->
         <div class="xl:col-span-1 space-y-6">
-            <!-- Kontakt -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h3 class="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-6 rounded-2xl shadow-sm 
+                        bg-slate-800 border border-slate-700">
+                <h3 class="text-sm font-semibold mb-4 flex items-center gap-2
+                           text-white">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v6m-8-6v6M4 8v.01M20 8v.01M4 16v.01M20 16v.01" />
                     </svg>
@@ -72,74 +67,61 @@
 
                 <dl class="space-y-3 text-sm">
                     <div class="flex justify-between gap-4">
-                        <dt class="text-slate-500">Kennzeichen</dt>
-                        <dd class="text-slate-900 font-medium text-right">
+                        <dt class="text-slate-400">Kennzeichen</dt>
+                        <dd class="font-medium text-right text-white">
                             @if (customer()?.license_plates?.length) {
                             <div class="flex flex-wrap gap-1">
                                 @for (plate of customer()!.license_plates; track plate) {
-                                <span
-                                    class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium">
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium
+                                            bg-emerald-900/40 text-emerald-300">
                                     {{ plate }}
                                 </span>
                                 }
                             </div>
                             } @else {
-                            <p class="text-xs text-slate-500">Keine Kennzeichen hinterlegt</p>
+                            <p class="text-xs text-slate-400">Keine Kennzeichen hinterlegt</p>
                             }
                         </dd>
                     </div>
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-slate-500">E-Mail</dt>
-                        <dd class="text-slate-900 font-medium text-right">
-                            @if (customer()?.email) {
-                            <h2>{{ customer()?.email}}</h2>
-                            } @else {
-                            <p> - </p>
-                            }
 
-                        </dd>
-                    </div>
+                    @for (item of [
+                    { label: 'E-Mail', value: customer()?.email },
+                    { label: 'Versicherungsschein-Nummer', value: customer()?.policy_number },
+                    { label: 'Telefon', value: customer()?.phone }
+                    ]; track item.label) {
                     <div class="flex justify-between gap-4">
-                        <dt class="text-slate-500">Versicherungsschein-Nummer</dt>
-                        <dd class="text-slate-900 font-medium text-right">
-                            @if (customer()) {
-                            <h2>{{ customer()?.policy_number}}</h2>
-                            } @else {
-                            <p>Lade Kunde...</p>
-                            }
-                        </dd>
-                    </div>
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-slate-500">Telefon</dt>
-                        <dd class="text-slate-900 font-medium text-right">
-                            @if (customer()?.phone) {
-                            <h2>{{ customer()?.phone}}</h2>
+                        <dt class="text-slate-400">{{ item.label }}</dt>
+                        <dd class="font-medium text-right text-white">
+                            @if (item.value) {
+                            <span>{{ item.value }}</span>
                             } @else {
                             <p> - </p>
                             }
                         </dd>
                     </div>
+                    }
+
                     <div class="flex justify-between gap-4">
-                        <dt class="text-slate-500">Adresse</dt>
-                        <dd class="text-slate-900 text-right">
+                        <dt class="text-slate-400">Adresse</dt>
+                        <dd class="text-right text-white">
                             @if (customer()) {
                             <div class="space-y-1 leading-tight">
                                 <p>{{ customer()?.street }}</p>
                                 <p>{{ customer()?.zip_code }} {{ customer()?.city }}</p>
                             </div>
                             } @else {
-                            <p>Lade Kunde...</p>
-                            }<br />
-
+                            <p class="text-slate-400">Lade Kunde...</p>
+                            }
                         </dd>
                     </div>
                 </dl>
             </div>
 
-            <!-- Vertragsübersicht -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h3 class="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-6 rounded-2xl shadow-sm 
+                        bg-slate-800 border border-slate-700">
+                <h3 class="text-sm font-semibold mb-4 flex items-center gap-2
+                           text-white">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6M7 7h10M6 3h12a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" />
                     </svg>
@@ -149,31 +131,31 @@
                 <ul class="space-y-3 text-sm">
                     <li class="flex items-center justify-between gap-3">
                         <div>
-                            <p class="font-medium text-slate-900">Haftpflicht</p>
-                            <p class="text-xs text-slate-500">Läuft seit 01.03.2020 · Beitrag 12,90 € / Monat</p>
+                            <p class="font-medium text-white">Haftpflicht</p>
+                            <p class="text-xs text-slate-400">Läuft seit 01.03.2020 · Beitrag 12,90 € / Monat</p>
                         </div>
-                        <span
-                            class="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-1 text-[11px] font-medium border border-emerald-100">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
+                                   bg-emerald-900/40 text-emerald-300 border-emerald-900">
                             aktiv
                         </span>
                     </li>
                     <li class="flex items-center justify-between gap-3">
                         <div>
-                            <p class="font-medium text-slate-900">Hausrat</p>
-                            <p class="text-xs text-slate-500">Läuft seit 15.09.2022 · Beitrag 24,50 € / Monat</p>
+                            <p class="font-medium text-white">Hausrat</p>
+                            <p class="text-xs text-slate-400">Läuft seit 15.09.2022 · Beitrag 24,50 € / Monat</p>
                         </div>
-                        <span
-                            class="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-1 text-[11px] font-medium border border-emerald-100">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
+                                   bg-emerald-900/40 text-emerald-300 border-emerald-900">
                             aktiv
                         </span>
                     </li>
                     <li class="flex items-center justify-between gap-3">
                         <div>
-                            <p class="font-medium text-slate-900">KFZ</p>
-                            <p class="text-xs text-slate-500">ruhend seit 01.01.2024</p>
+                            <p class="font-medium text-white">KFZ</p>
+                            <p class="text-xs text-slate-400">ruhend seit 01.01.2024</p>
                         </div>
-                        <span
-                            class="inline-flex items-center rounded-full bg-slate-50 text-slate-600 px-2.5 py-1 text-[11px] font-medium border border-slate-200">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
+                                   bg-slate-700 text-slate-300 border-slate-600">
                             ruhend
                         </span>
                     </li>
@@ -181,50 +163,41 @@
             </div>
         </div>
 
-        <!-- Dokumente (rechts, 2 Spalten) -->
         <div class="xl:col-span-2">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 h-full flex flex-col">
+            <div class="p-6 h-full flex flex-col rounded-2xl shadow-sm
+                        bg-slate-800 border border-slate-700">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
                         <div>
-                            <h3 class="text-sm font-semibold text-slate-900">Versicherungsdokumente</h3>
-                            <p class="text-xs text-slate-500">
+                            <h3 class="text-sm font-semibold text-white">Versicherungsdokumente</h3>
+                            <p class="text-xs text-slate-400">
                                 Digitalisierte Policen, Bedingungen und Nachträge
                             </p>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <button
-                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition-colors"
+                        @for (button of ['Herunterladen', 'Im Original öffnen']; track button) {
+                        <button class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors
+                                       border border-slate-700 text-slate-200 bg-slate-700 hover:bg-slate-600"
                             type="button">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 10l4.553-4.553A1 1 0 0018.553 4H14M9 14l-4.553 4.553A1 1 0 005.447 20H10" />
                             </svg>
-                            Herunterladen
+                            {{ button }}
                         </button>
-                        <button
-                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition-colors"
-                            type="button">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 10l4.553-4.553A1 1 0 0018.553 4H14M9 14l-4.553 4.553A1 1 0 005.447 20H10" />
-                            </svg>
-                            Im Original öffnen
-                        </button>
+                        }
                     </div>
                 </div>
 
-                <!-- Bildbereich -->
                 <div class="flex-1 grid grid-rows-[minmax(0,1fr)_auto] gap-4">
-                    <!-- Großes Dokumentbild -->
-                    <div
-                        class="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center">
+                    <div class="relative overflow-hidden rounded-xl flex items-center justify-center
+                               border border-slate-700 bg-slate-900/50">
                         <img [src]="selectedDocument?.imageUrl || 'https://placehold.co/900x1200?text=Versicherungsdokument'"
                             [alt]="selectedDocument?.title || 'Versicherungsdokument'"
                             class="max-h-[480px] w-auto object-contain">
@@ -238,28 +211,19 @@
                             </span>
                         </div>
 
-                        <!-- Zoom-Buttons -->
                         <div class="absolute top-3 right-3 flex flex-col gap-2">
-                            <button
-                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-900/70 text-white hover:bg-slate-900 transition-colors"
-                                type="button">
+                            @for (iconPath of ['M12 4v16m8-8H4', 'M20 12H4']; track iconPath) {
+                            <button class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white transition-colors
+                                           bg-slate-900/70 hover:bg-slate-900" type="button">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
+                                        [attr.d]="iconPath" />
                                 </svg>
                             </button>
-                            <button
-                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-900/70 text-white hover:bg-slate-900 transition-colors"
-                                type="button">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M20 12H4" />
-                                </svg>
-                            </button>
+                            }
                         </div>
                     </div>
 
-                    <!-- Thumbnails / Seitenübersicht -->
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex items-center gap-2 overflow-x-auto pb-1">
                             <button *ngFor="let doc of customerDocuments; let i = index" type="button"
@@ -267,13 +231,13 @@
                                 class="relative shrink-0 w-20 h-28 rounded-lg border overflow-hidden group transition-all"
                                 [class.border-blue-500]="doc.id === selectedDocument?.id"
                                 [class.shadow-md]="doc.id === selectedDocument?.id"
-                                [class.border-slate-200]="doc.id !== selectedDocument?.id">
+                                [class.border-slate-700]="doc.id !== selectedDocument?.id">
                                 <img [src]="doc.thumbUrl"
                                     class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
                                     [alt]="doc.title">
 
                                 <div
-                                    class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors">
+                                    class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors">
                                 </div>
 
                                 <span
@@ -283,15 +247,14 @@
                             </button>
                         </div>
 
-                        <div class="flex flex-col items-end text-xs text-slate-500">
+                        <div class="flex flex-col items-end text-xs text-slate-400">
                             <span>{{ customerDocuments.length || 0 }} Dokumente</span>
                             <span>Zuletzt aktualisiert:
-                                <strong class="text-slate-700">12.11.2025</strong>
+                                <strong class="text-slate-300">12.11.2025</strong>
                             </span>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
