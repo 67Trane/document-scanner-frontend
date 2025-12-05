@@ -3,6 +3,7 @@ import { Component, inject, signal, effect, OnInit } from '@angular/core';
 import { CustomerService, Customer } from '../../services/customer';
 import { catchError, of } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 
 interface CustomerDocument {
   id: number;
@@ -20,30 +21,27 @@ interface CustomerDocument {
   templateUrl: './customer-detail.html',
   styleUrl: './customer-detail.css',
 })
-export class CustomerDetail implements OnInit{
+export class CustomerDetail implements OnInit {
   customer = signal<Customer | null>(null);
 
   private customerService = inject(CustomerService);
 
   ngOnInit(): void {
-    const testId = 5; // Hardcoded
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.customerService.getCustomer(testId).subscribe({
+    if (!id) {
+      console.error('Keine gültige ID in der URL gefunden.');
+      return;
+    }
+
+    this.customerService.getCustomer(id).subscribe({
       next: (data) => this.customer.set(data),
       error: (err) => console.error(err),
     });
   }
 
-  selectedCustomer = {
-    initials: 'MM',
-    name: 'Max Mustermann',
-    customerNumber: '2025-000123',
-    email: 'max.mustermann@example.com',
-    phone: '+49 151 23456789',
-    street: 'Musterstraße 12',
-    zip: '12345',
-    city: 'Musterstadt',
-  };
+  private route = inject(ActivatedRoute);
+
 
   customerDocuments: CustomerDocument[] = [
     {

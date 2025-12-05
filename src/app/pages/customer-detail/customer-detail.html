@@ -4,18 +4,18 @@
         <div class="flex items-center gap-4">
             <div
                 class="w-14 h-14 rounded-2xl bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-semibold shadow-md">
-                {{ selectedCustomer.initials || 'KD' }}
+                AD
             </div>
             <div>
                 <h2 class="text-xl font-semibold text-white">
                     @if (customer()) {
-                    <h2>{{ customer()?.first_name }} {{ customer()?.last_name }}</h2>
+                    <h2>{{ customer()?.first_name }} {{ customer()?.last_name }} {{ customer()?.id }} </h2>
                     } @else {
                     <p class="text-slate-400">Lade Kunde...</p>
                     }
                 </h2>
                 <p class="text-sm text-slate-400">
-                    Kundennummer: <span class="font-mono">{{ selectedCustomer.customerNumber || '2025-000123' }}</span>
+                    Kundennummer: <span class="font-mono">KND-2025-000123</span>
                 </p>
                 <div class="mt-2 flex flex-wrap gap-2">
                     <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border

@@ -18,7 +18,7 @@ export class Dashboard {
   private router = inject(Router);
 
   constructor() {
-    console.log('Router config: ', this.router.config);
+
   }
   year = new Date().getFullYear();
   activeSection = signal<SidebarSection>('overview');

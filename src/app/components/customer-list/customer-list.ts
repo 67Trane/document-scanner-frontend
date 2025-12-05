@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CustomerService, Customer } from '../../services/customer';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-customer-list',
@@ -35,5 +36,13 @@ export class CustomerList {
       this.customers.set(data);
       this.loading.set(false);
     });
+  }
+
+  private router = inject(Router);
+
+  // loading, error, customers() etc. hast du ja schon
+
+  goToCustomer(id: number) {
+    this.router.navigate(['/customer', id]);
   }
 }
