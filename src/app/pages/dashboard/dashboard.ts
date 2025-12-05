@@ -10,7 +10,7 @@ type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CustomerSearch, RouterLink],
+  imports: [CustomerSearch, RouterLink, CustomerList],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
