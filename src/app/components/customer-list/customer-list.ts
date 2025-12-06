@@ -1,8 +1,8 @@
-import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { CustomerService, Customer } from '../../services/customer';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, of } from 'rxjs';
+import { catchError, interval, of, switchMap, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
 @Component({
@@ -12,37 +12,45 @@ import { Router } from '@angular/router';
   templateUrl: './customer-list.html',
   styleUrl: './customer-list.css',
 })
-export class CustomerList {
+export class CustomerList implements OnInit {
   private customerService = inject(CustomerService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+  private reloadTimer: number = 10000;
+
 
   loading = signal(true);
   error = signal<string | null>(null);
   customers = signal<Customer[]>([]);
 
-  constructor() {
-    const customers$ = this.customerService.getCustomers().pipe(
-      catchError((err) => {
-        console.error(err);
-        this.error.set('Fehler beim Laden der Kunden.');
-        return of([] as Customer[]);
-      }),
-    );
+  ngOnInit(): void {
+    // Polling alle 10 Sekunden
+    interval(this.reloadTimer) // 10000ms = 10s, kannst du anpassen
+      .pipe(
+        // direkt beim Start einmal ausführen
+        startWith(0),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => {
+          this.loading.set(true);
+          this.error.set(null);
 
-    const customersSignal = toSignal(customers$, { initialValue: [] });
-
-    // Reagiert, sobald Daten da sind
-    effect(() => {
-      const data = customersSignal();
-      this.customers.set(data);
-      this.loading.set(false);
-    });
+          return this.customerService.getCustomers().pipe(
+            catchError((err) => {
+              console.error(err);
+              this.error.set('Fehler beim Laden der Kunden.');
+              // leere Liste zurückgeben, damit subscribe weiterläuft
+              return of([] as Customer[]);
+            }),
+          );
+        }),
+      )
+      .subscribe((data) => {
+        this.customers.set(data);
+        this.loading.set(false);
+      });
   }
 
-  private router = inject(Router);
-
-  // loading, error, customers() etc. hast du ja schon
-
-  goToCustomer(id: number) {
+  goToCustomer(id: number): void {
     this.router.navigate(['/customer', id]);
   }
 }
