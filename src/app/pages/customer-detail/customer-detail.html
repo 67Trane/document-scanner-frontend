@@ -4,12 +4,12 @@
         <div class="flex items-center gap-4">
             <div
                 class="w-14 h-14 rounded-2xl bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-semibold shadow-md">
-                AD
+                {{ customer()?.first_name?.[0]?.toUpperCase() }} {{ customer()?.last_name?.[0]?.toUpperCase() }}
             </div>
             <div>
                 <h2 class="text-xl font-semibold text-white">
                     @if (customer()) {
-                    <h2>{{ customer()?.first_name }} {{ customer()?.last_name }} {{ customer()?.id }} </h2>
+                    <h2>{{ customer()?.first_name }} {{ customer()?.last_name }} </h2>
                     } @else {
                     <p class="text-slate-400">Lade Kunde...</p>
                     }
@@ -71,12 +71,12 @@
                         <dd class="font-medium text-right text-white">
                             @if (customer()) {
                             <div class="flex flex-wrap gap-1">
-                                <!-- @for (plate of customer()!.license_plates; track plate) {
+                                @for (plate of document()!.license_plates; track plate) {
                                 <span class="px-2 py-0.5 rounded-full text-xs font-medium
                                             bg-emerald-900/40 text-emerald-300">
                                     {{ plate }}
                                 </span>
-                                } -->
+                                }
                             </div>
                             } @else {
                             <p class="text-xs text-slate-400">Keine Kennzeichen hinterlegt</p>
@@ -86,7 +86,7 @@
 
                     @for (item of [
                     { label: 'E-Mail', value: customer()?.email },
-                    { label: 'Versicherungsschein-Nummer', value: "test"},
+                    { label: 'Versicherungsschein-Nummer', value: document()?.policy_number},
                     { label: 'Telefon', value: customer()?.phone }
                     ]; track item.label) {
                     <div class="flex justify-between gap-4">
@@ -130,21 +130,21 @@
                 </h3>
 
                 <ul class="space-y-3 text-sm">
-                    @for (contract of contracts; track contract.id) {
+                    @for (contract of alldocuments(); track contract.id) {
                     <li>
                         <button type="button" (click)="openContract(contract)" class="w-full flex items-center justify-between gap-3 rounded-xl px-3 py-2
                border transition-colors text-left
                bg-slate-800 border-slate-700 hover:border-emerald-500/70 hover:bg-slate-700/80">
                             <div>
                                 <p class="font-medium text-white">
-                                    {{ contract.title }}
+                                    {{ contract.contract_typ }}
                                 </p>
                                 <p class="text-xs text-slate-400">
-                                    {{ contract.subtitle }}
+                                    {{ contract.created_at | date:'dd.MM.yyyy, HH:mm' }} Uhr
                                 </p>
                             </div>
 
-                            @if (contract.status === 'aktiv') {
+                            @if (contract?.contract_status == 'aktiv') {
                             <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
                    bg-emerald-900/40 text-emerald-300 border-emerald-900">
                                 aktiv

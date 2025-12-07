@@ -1,5 +1,17 @@
 import { Customer } from './customer.model';
 
+export type DocumentStatus = 'aktiv' | 'ruhend';
+
+export type ContractType =
+  | 'Kfz-Versicherung'
+  | 'haftpflicht'
+  | 'hausrat'
+  | 'rechtschutz'
+  | 'wohngebaeude'
+  | 'unfall'
+  | 'berufsunfaehigkeit'
+  | 'krankenversicherung';
+
 export interface CustomerDocument {
   id: number;
   file_path: string;
@@ -7,6 +19,10 @@ export interface CustomerDocument {
   raw_text: string;
   policy_number: string | null;
   license_plates: string[];
-  customer: Customer;
-  created_at: string; // ISO datetime
+  customer: Customer | null;
+
+  contract_status: DocumentStatus;     
+  contract_typ: ContractType;  
+
+  created_at: string;
 }
