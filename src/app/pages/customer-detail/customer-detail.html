@@ -69,14 +69,14 @@
                     <div class="flex justify-between gap-4">
                         <dt class="text-slate-400">Kennzeichen</dt>
                         <dd class="font-medium text-right text-white">
-                            @if (customer()?.license_plates?.length) {
+                            @if (customer()) {
                             <div class="flex flex-wrap gap-1">
-                                @for (plate of customer()!.license_plates; track plate) {
+                                <!-- @for (plate of customer()!.license_plates; track plate) {
                                 <span class="px-2 py-0.5 rounded-full text-xs font-medium
                                             bg-emerald-900/40 text-emerald-300">
                                     {{ plate }}
                                 </span>
-                                }
+                                } -->
                             </div>
                             } @else {
                             <p class="text-xs text-slate-400">Keine Kennzeichen hinterlegt</p>
@@ -86,7 +86,7 @@
 
                     @for (item of [
                     { label: 'E-Mail', value: customer()?.email },
-                    { label: 'Versicherungsschein-Nummer', value: customer()?.policy_number },
+                    { label: 'Versicherungsschein-Nummer', value: "test"},
                     { label: 'Telefon', value: customer()?.phone }
                     ]; track item.label) {
                     <div class="flex justify-between gap-4">
@@ -117,6 +117,7 @@
                 </dl>
             </div>
 
+
             <div class="p-6 rounded-2xl shadow-sm 
                         bg-slate-800 border border-slate-700">
                 <h3 class="text-sm font-semibold mb-4 flex items-center gap-2
@@ -129,41 +130,40 @@
                 </h3>
 
                 <ul class="space-y-3 text-sm">
-                    <li class="flex items-center justify-between gap-3">
-                        <div>
-                            <p class="font-medium text-white">Haftpflicht</p>
-                            <p class="text-xs text-slate-400">Läuft seit 01.03.2020 · Beitrag 12,90 € / Monat</p>
-                        </div>
-                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
-                                   bg-emerald-900/40 text-emerald-300 border-emerald-900">
-                            aktiv
-                        </span>
+                    @for (contract of contracts; track contract.id) {
+                    <li>
+                        <button type="button" (click)="openContract(contract)" class="w-full flex items-center justify-between gap-3 rounded-xl px-3 py-2
+               border transition-colors text-left
+               bg-slate-800 border-slate-700 hover:border-emerald-500/70 hover:bg-slate-700/80">
+                            <div>
+                                <p class="font-medium text-white">
+                                    {{ contract.title }}
+                                </p>
+                                <p class="text-xs text-slate-400">
+                                    {{ contract.subtitle }}
+                                </p>
+                            </div>
+
+                            @if (contract.status === 'aktiv') {
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
+                   bg-emerald-900/40 text-emerald-300 border-emerald-900">
+                                aktiv
+                            </span>
+                            } @else {
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
+                   bg-slate-700 text-slate-300 border-slate-600">
+                                ruhend
+                            </span>
+                            }
+                        </button>
                     </li>
-                    <li class="flex items-center justify-between gap-3">
-                        <div>
-                            <p class="font-medium text-white">Hausrat</p>
-                            <p class="text-xs text-slate-400">Läuft seit 15.09.2022 · Beitrag 24,50 € / Monat</p>
-                        </div>
-                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
-                                   bg-emerald-900/40 text-emerald-300 border-emerald-900">
-                            aktiv
-                        </span>
-                    </li>
-                    <li class="flex items-center justify-between gap-3">
-                        <div>
-                            <p class="font-medium text-white">KFZ</p>
-                            <p class="text-xs text-slate-400">ruhend seit 01.01.2024</p>
-                        </div>
-                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
-                                   bg-slate-700 text-slate-300 border-slate-600">
-                            ruhend
-                        </span>
-                    </li>
+                    }
                 </ul>
+
             </div>
         </div>
 
-        <div class="xl:col-span-2">
+        <!-- <div class="xl:col-span-2">
             <div class="p-6 h-full flex flex-col rounded-2xl shadow-sm
                         bg-slate-800 border border-slate-700">
                 <div class="flex items-center justify-between mb-4">
@@ -194,20 +194,49 @@
                         }
                     </div>
                 </div>
-
+                
                 <div class="flex-1 grid grid-rows-[minmax(0,1fr)_auto] gap-4">
                     <div class="relative overflow-hidden rounded-xl flex items-center justify-center
                                border border-slate-700 bg-slate-900/50">
-                        <img [src]="selectedDocument?.imageUrl || 'https://placehold.co/900x1200?text=Versicherungsdokument'"
-                            [alt]="selectedDocument?.title || 'Versicherungsdokument'"
-                            class="max-h-[480px] w-auto object-contain">
+                        <div class="border rounded-lg overflow-hidden">
+
+                            <div class="border rounded-lg overflow-hidden">
+
+                                @if (document()) {
+                                <ngx-extended-pdf-viewer [src]="document()!.file_url" useBrowserLocale="true"
+                                    height="480px" [showSidebarButton]="true"></ngx-extended-pdf-viewer>
+                                }
+                                @else {
+
+                                <div class="w-full h-[480px] flex items-center justify-center">
+                                    <span class="text-slate-400 text-sm">Kein Dokument verfügbar</span>
+                                </div>
+
+                                }
+
+                            </div>
+
+
+                            @if (document()?.file_url) {
+                            <iframe [src]="(document()!.file_url + '#page=1') | safeUrl"
+                                class="w-full h-[480px]"></iframe>
+                            } @else {
+                            <div class="w-full h-[480px] flex items-center justify-center">
+                                <span class="text-slate-400 text-sm">
+                                    Kein Dokument verfügbar
+                                </span>
+                            </div>
+                            } 
+
+                        </div>
+
                         <div
                             class="absolute bottom-3 left-3 rounded-lg bg-slate-900/70 text-white px-3 py-1.5 text-xs flex items-center gap-2">
                             <span class="font-medium">
-                                {{ selectedDocument?.title || 'Haftpflicht – Versicherungsschein' }}
+                                {{ document()?.id || 'Haftpflicht – Versicherungsschein' }}
                             </span>
                             <span class="text-slate-300">
-                                · Seite {{ selectedDocument?.page || 1 }} / {{ selectedDocument?.totalPages || 6 }}
+                                · Seite {{ document()?.id || 1 }} / {{ document()?.id || 6 }}
                             </span>
                         </div>
 
@@ -226,12 +255,12 @@
 
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                            <button *ngFor="let doc of customerDocuments; let i = index" type="button"
+                            <button *ngFor="let doc of document(); let i = index" type="button"
                                 (click)="selectDocument(doc)"
                                 class="relative shrink-0 w-20 h-28 rounded-lg border overflow-hidden group transition-all"
-                                [class.border-blue-500]="doc.id === selectedDocument?.id"
-                                [class.shadow-md]="doc.id === selectedDocument?.id"
-                                [class.border-slate-700]="doc.id !== selectedDocument?.id">
+                                [class.border-blue-500]="doc.id === document()?.id"
+                                [class.shadow-md]="doc.id === document()?.id"
+                                [class.border-slate-700]="doc.id !== document()?.id">
                                 <img [src]="doc.thumbUrl"
                                     class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
                                     [alt]="doc.title">
@@ -244,11 +273,11 @@
                                     class="absolute bottom-1 left-1 rounded bg-slate-900/80 text-[10px] text-white px-1.5 py-0.5">
                                     {{ doc.pageLabel }}
                                 </span>
-                            </button>
+                            </button> 
                         </div>
 
                         <div class="flex flex-col items-end text-xs text-slate-400">
-                            <span>{{ customerDocuments.length || 0 }} Dokumente</span>
+                            <span>{{ document()?.id || 0 }} Dokumente</span>
                             <span>Zuletzt aktualisiert:
                                 <strong class="text-slate-300">12.11.2025</strong>
                             </span>
@@ -256,6 +285,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </section>
 </div>

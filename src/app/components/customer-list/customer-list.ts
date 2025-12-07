@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
-import { CustomerService, Customer } from '../../services/customer';
+import { CustomerService } from '../../services/customer.service';
+import { Customer } from '../../models/customer.model';
 import { catchError, interval, of, switchMap, startWith } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';

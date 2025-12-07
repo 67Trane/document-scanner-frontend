@@ -1,38 +1,71 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, effect, OnInit } from '@angular/core';
-import { CustomerService, Customer } from '../../services/customer';
-import { catchError, of } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CustomerService } from '../../services/customer.service';
+import { DocumentService } from '../../services/document.service';
+import { Customer } from '../../models/customer.model';
+import { CustomerDocument } from '../../models/document.model';
 
-interface CustomerDocument {
-  id: number;
+type ContractType = 'haftpflicht' | 'hausrat' | 'kfz';
+
+interface UiContract {
+  id: ContractType;
   title: string;
-  page: number;
-  totalPages: number;
-  imageUrl: string;
-  thumbUrl: string;
-  pageLabel: string;
+  subtitle: string;
+  status: 'aktiv' | 'ruhend';
 }
+
 
 @Component({
   selector: 'app-customer-detail',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './customer-detail.html',
   styleUrl: './customer-detail.css',
 })
 export class CustomerDetail implements OnInit {
+
+  contracts: UiContract[] = [
+    {
+      id: 'haftpflicht',
+      title: 'Haftpflicht',
+      subtitle: 'Läuft seit 01.03.2020 · Beitrag 12,90 € / Monat',
+      status: 'aktiv',
+    },
+    {
+      id: 'hausrat',
+      title: 'Hausrat',
+      subtitle: 'Läuft seit 15.09.2022 · Beitrag 24,50 € / Monat',
+      status: 'aktiv',
+    },
+    {
+      id: 'kfz',
+      title: 'KFZ',
+      subtitle: 'ruhend seit 01.01.2024',
+      status: 'ruhend',
+    },
+  ];
+
+  private route = inject(ActivatedRoute);
   customer = signal<Customer | null>(null);
+  document = signal<CustomerDocument | null>(null)
 
   private customerService = inject(CustomerService);
+  private documentService = inject(DocumentService);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    const documentid = 1
 
     if (!id) {
       console.error('Keine gültige ID in der URL gefunden.');
       return;
     }
+
+    this.documentService.getDocument(documentid).subscribe({
+      next: (data) => this.document.set(data),
+      error: (err) => console.error(err),
+    })
 
     this.customerService.getCustomer(id).subscribe({
       next: (data) => this.customer.set(data),
@@ -40,46 +73,23 @@ export class CustomerDetail implements OnInit {
     });
   }
 
-  private route = inject(ActivatedRoute);
-
-
-  customerDocuments: CustomerDocument[] = [
-    {
-      id: 1,
-      title: 'Haftpflicht – Versicherungsschein',
-      page: 1,
-      totalPages: 6,
-      imageUrl: 'https://placehold.co/900x1200?text=Haftpflicht+Schein+Seite+1',
-      thumbUrl: 'https://placehold.co/200x300?text=S1',
-      pageLabel: 'S.1',
-    },
-    {
-      id: 2,
-      title: 'Haftpflicht – Bedingungen',
-      page: 2,
-      totalPages: 6,
-      imageUrl: 'https://placehold.co/900x1200?text=Haftpflicht+Seite+2',
-      thumbUrl: 'https://placehold.co/200x300?text=S2',
-      pageLabel: 'S.2',
-    },
-    {
-      id: 3,
-      title: 'Haftpflicht – Nachtrag',
-      page: 3,
-      totalPages: 6,
-      imageUrl: 'https://placehold.co/900x1200?text=Nachtrag',
-      thumbUrl: 'https://placehold.co/200x300?text=N',
-      pageLabel: 'Nachtrag',
-    },
-  ];
-
-  selectedDocument: CustomerDocument | null = this.customerDocuments[0];
-
-
-
-  // Select another document to show in main image
-  selectDocument(doc: CustomerDocument): void {
-    this.selectedDocument = doc;
+  openPdf(): void {
+    const url = this.document()?.file_url;
+    if (!url) {
+      console.warn('No file_url available for document');
+      return;
+    }
+    window.open(url, '_blank');
   }
 
+  openContract(contract: UiContract): void {
+    // later you can switch by contract.id and open different documents
+    this.openPdf();
+  }
+
+
+  selectDocument(test: string) {
+
+    console.log(test)
+  }
 }
