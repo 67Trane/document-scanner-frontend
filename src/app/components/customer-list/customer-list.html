@@ -1,41 +1,39 @@
 @if (loading()) {
-  <div class="text-sm text-slate-500 py-2">
-    Loading customers...
-  </div>
+<div class="text-sm text-slate-500 py-2">
+  Loading customers...
+</div>
 }
 
 @if (error()) {
-  <div class="text-sm text-red-600 py-2">
-    {{ error() }}
-  </div>
+<div class="text-sm text-red-600 py-2">
+  {{ error() }}
+</div>
 }
 
 @if (!loading() && !error()) {
-  <table class="w-full text-sm text-left">
-    <thead class="text-slate-500 border-b border-slate-700">
-      <tr>
-        <th class="py-2 font-medium">ID</th>
-        <th class="py-2 font-medium">Name</th>
-        <th class="py-2 font-medium">Kundennummer</th>
-      </tr>
-    </thead>
-    <tbody class="text-slate-300">
-      @for (customer of customers(); track customer.id) {
-        <tr
-          class="border-b border-slate-700/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
-          (click)="goToCustomer(customer.id)"
-        >
-          <td class="py-2 font-medium text-slate-200">
-            {{ customer.id }}
-          </td>
-          <td class="py-2 font-medium text-slate-200">
-            {{ customer.first_name }}, {{ customer.last_name }}
-          </td>
-          <td class="py-2 text-slate-400">
-            {{ customer.customer_number }}
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+<table class="w-full text-sm text-left">
+  <thead class="text-slate-500 border-b border-slate-700">
+    <tr>
+      <th class="py-2 font-medium">ID</th>
+      <th class="py-2 font-medium">Name</th>
+      <th class="py-2 font-medium">Kundennummer</th>
+    </tr>
+  </thead>
+  <tbody class="text-slate-300">
+    @for (customer of customers(); track customer.id) {
+    <tr class="border-b border-slate-700/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
+      (click)="goToCustomer(customer.id)">
+      <td class="py-2 font-medium text-slate-200">
+        {{ customer.id }}
+      </td>
+      <td class="py-2 font-medium text-slate-200">
+        {{ customer.first_name | titlecase}} {{ customer.last_name | titlecase}}
+      </td>
+      <td class="py-2 text-slate-400">
+        {{ customer.customer_number }}
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
 }
