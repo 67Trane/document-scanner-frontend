@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef, input } from '@angular/core';
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../models/customer.model';
 import { catchError, interval, of, switchMap, startWith } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-customer-list',
@@ -17,29 +19,34 @@ export class CustomerList implements OnInit {
   private customerService = inject(CustomerService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
-  private reloadTimer: number = 10000;
+  private reloadTimer = 10000; // 10 seconds
 
+
+  searchTerm = input<string>('');
 
   loading = signal(true);
   error = signal<string | null>(null);
   customers = signal<Customer[]>([]);
 
   ngOnInit(): void {
-    // Polling alle 10 Sekunden
-    interval(this.reloadTimer) // 10000ms = 10s, kannst du anpassen
+    interval(this.reloadTimer)
       .pipe(
-        // direkt beim Start einmal ausführen
         startWith(0),
         takeUntilDestroyed(this.destroyRef),
         switchMap(() => {
           this.loading.set(true);
           this.error.set(null);
 
-          return this.customerService.getCustomers().pipe(
+          const term = this.searchTerm().trim();
+
+          const source$ = term
+            ? this.customerService.searchCustomers(term)
+            : this.customerService.getCustomers();
+
+          return source$.pipe(
             catchError((err) => {
               console.error(err);
               this.error.set('Fehler beim Laden der Kunden.');
-              // leere Liste zurückgeben, damit subscribe weiterläuft
               return of([] as Customer[]);
             }),
           );

@@ -9,8 +9,10 @@
            placeholder-slate-400 dark:placeholder-slate-500
            focus:ring-sky-200 dark:focus:ring-sky-900 
            focus:border-sky-500 dark:focus:border-sky-500"
+    (input)="onInput($event)"
   />
   <button
+    (click)="onSubmit()"
     class="rounded-lg border border-transparent px-4 py-2 text-sm font-medium text-white transition-colors
            bg-sky-600 hover:bg-sky-700 
            dark:bg-sky-600 dark:hover:bg-sky-500"

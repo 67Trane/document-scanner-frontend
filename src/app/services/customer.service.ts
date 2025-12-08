@@ -20,6 +20,12 @@ export class CustomerService {
     return this.http.get<Customer>(`${this.baseUrl}${id}/`);
   }
 
+  searchCustomers(term: string): Observable<Customer[]> {
+    return this.http.get<Customer[]>(this.baseUrl, {
+      params: { q: term },
+    });
+  }
+
   createCustomer(data: Partial<Customer>): Observable<Customer> {
     return this.http.post<Customer>(this.baseUrl, data);
   }

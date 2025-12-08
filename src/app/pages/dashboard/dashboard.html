@@ -150,7 +150,7 @@
             </svg>
             <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Suche</h2>
           </div>
-          <app-customer-search />
+          <app-customer-search (search)="onSearch($event)"></app-customer-search>
         </div>
       </section>
 
@@ -172,7 +172,7 @@
           </div>
         </div>
         <div class="p-6">
-          <app-customer-list />
+          <app-customer-list [searchTerm]="searchTerm()"></app-customer-list>
         </div>
       </div>
 

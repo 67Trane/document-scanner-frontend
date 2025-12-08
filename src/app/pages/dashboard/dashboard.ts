@@ -16,15 +16,17 @@ type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 })
 export class Dashboard {
   private router = inject(Router);
+  searchTerm = signal<string>('');
 
-  constructor() {
-
-  }
+  constructor() { }
   year = new Date().getFullYear();
   activeSection = signal<SidebarSection>('overview');
 
   setActive(section: SidebarSection) {
     this.activeSection.set(section);
-    
+  }
+
+  onSearch(term: string) {
+    this.searchTerm.set(term);
   }
 }
