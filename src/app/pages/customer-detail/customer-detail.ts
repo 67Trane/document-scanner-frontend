@@ -23,12 +23,29 @@ export class CustomerDetail implements OnInit {
   document = signal<CustomerDocument | null>(null)
   alldocuments = signal<CustomerDocument[]>([]);
 
+
+
+  // basic customer info
+  email = computed(() => this.customer()?.email?.trim() || null);
+  
   fullName = computed(() => {
     const c = this.customer();
     return c ? `${c.first_name} ${c.last_name}` : '';
   });
 
+  phone = computed(() => this.customer()?.phone?.trim() || null);
 
+  addressLine1 = computed(() => this.customer()?.street || '');
+
+  addressLine2 = computed(() => {
+    const c = this.customer();
+    if (!c) {
+      return '';
+    }
+    return `${c.zip_code} ${c.city}`.trim();
+  });
+
+  // Kennzeichen bleiben wie gehabt
   licensePlates = computed(() => {
     const docs = this.alldocuments();
     const allPlates = docs.flatMap((doc) => doc.license_plates ?? []);
@@ -37,22 +54,9 @@ export class CustomerDetail implements OnInit {
     return unique;
   });
 
-  contactItems = computed(() => {
-    const c = this.customer();
+  hasLicensePlates = computed(() => this.licensePlates().length > 0);
 
-    return [
-      {
-        label: 'E-Mail',
-        value: c?.email?.trim() || null,
-      },
-      {
-        label: 'Telefon',
-        value: c?.phone?.trim() || null,
-      },
-    ];
-  });
-
-
+  // Policen hast du schon ähnlich, passt gut:
   policyNumbers = computed(() => {
     const docs = this.alldocuments() ?? [];
 
@@ -64,26 +68,6 @@ export class CustomerDetail implements OnInit {
   });
 
   hasPolicyNumbers = computed(() => this.policyNumbers().length > 0);
-
-
-
-
-  // nice string for the template
-  licensePlatesLabel = computed(() => {
-    console.log(this.alldocuments())
-    const plates = this.licensePlates();
-    return plates.length > 0 ? plates.join(', ') : '-';
-  });
-
-  hasLicensePlates = computed(() => this.licensePlates().length > 0);
-
-
-
-
-  address = computed(() => {
-    const c = this.customer();
-    return c ? `${c.street}, ${c.zip_code} ${c.city}` : '';
-  });
 
 
 

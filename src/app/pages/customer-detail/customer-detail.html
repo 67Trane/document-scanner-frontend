@@ -80,7 +80,7 @@
                 <dl class="space-y-3 text-sm">
                     <!-- Kennzeichen -->
                     <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">KFZ-Kennzeichen</dt>
+                        <dt class="text-slate-400">Kennzeichen</dt>
                         <dd class="font-medium text-right text-white">
                             @if (hasLicensePlates()) {
                             <div class="flex flex-wrap gap-1 justify-end">
@@ -97,7 +97,7 @@
                         </dd>
                     </div>
 
-                    <!-- Versicherungsschein-Nummer (Policen) -->
+                    <!-- Versicherungsschein-Nummer -->
                     <div class="flex justify-between gap-4">
                         <dt class="text-slate-400">Versicherungsschein-Nummer</dt>
                         <dd class="font-medium text-right text-white">
@@ -116,19 +116,29 @@
                         </dd>
                     </div>
 
-                    <!-- E-Mail & Telefon aus contactItems -->
-                    @for (item of contactItems(); track item.label) {
+                    <!-- E-Mail -->
                     <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">{{ item.label }}</dt>
+                        <dt class="text-slate-400">E-Mail</dt>
                         <dd class="font-medium text-right text-white">
-                            @if (item.value) {
-                            <span>{{ item.value }}</span>
+                            @if (email()) {
+                            <span>{{ email() }}</span>
                             } @else {
                             <p class="text-xs text-slate-400">-</p>
                             }
                         </dd>
                     </div>
-                    }
+
+                    <!-- Telefon -->
+                    <div class="flex justify-between gap-4">
+                        <dt class="text-slate-400">Telefon</dt>
+                        <dd class="font-medium text-right text-white">
+                            @if (phone()) {
+                            <span>{{ phone() }}</span>
+                            } @else {
+                            <p class="text-xs text-slate-400">-</p>
+                            }
+                        </dd>
+                    </div>
 
                     <!-- Adresse -->
                     <div class="flex justify-between gap-4">
@@ -136,11 +146,8 @@
                         <dd class="text-right text-white">
                             @if (customer()) {
                             <div class="space-y-1 leading-tight">
-                                <p>{{ customer()?.street }}</p>
-                                <p>
-                                    {{ customer()?.zip_code }}
-                                    {{ customer()?.city }}
-                                </p>
+                                <p>{{ addressLine1() }}</p>
+                                <p>{{ addressLine2() }}</p>
                             </div>
                             } @else {
                             <p class="text-xs text-slate-400">Lade Kunde...</p>
@@ -149,6 +156,7 @@
                     </div>
                 </dl>
             </div>
+
 
 
 
