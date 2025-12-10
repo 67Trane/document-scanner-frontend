@@ -5,11 +5,12 @@ import { CustomerService } from '../../services/customer.service';
 import { DocumentService } from '../../services/document.service';
 import { Customer } from '../../models/customer.model';
 import { CustomerDocument } from '../../models/document.model';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'app-customer-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgxExtendedPdfViewerModule],
   templateUrl: './customer-detail.html',
   styleUrl: './customer-detail.css',
 })
