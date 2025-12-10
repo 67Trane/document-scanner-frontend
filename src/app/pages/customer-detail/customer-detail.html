@@ -15,7 +15,7 @@
                     }
                 </h2>
                 <p class="text-sm text-slate-400">
-                    Kundennummer: <span class="font-mono">KND-2025-000123</span>
+                    Kundennummer: <span class="font-mono">{{customer()?.customer_number}}</span>
                 </p>
                 <div class="mt-2 flex flex-wrap gap-2">
 
@@ -83,7 +83,7 @@
                         <dd class="font-medium text-right text-white">
                             @if (customer()) {
                             <div class="flex flex-wrap gap-1">
-                                @for (plate of document()!.license_plates; track plate) {
+                                @for (plate of document()?.license_plates; track plate) {
                                 <span class="px-2 py-0.5 rounded-full text-xs font-medium
                                             bg-emerald-900/40 text-emerald-300">
                                     {{ plate }}

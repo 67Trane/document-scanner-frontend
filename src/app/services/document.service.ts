@@ -10,19 +10,26 @@ import { CustomerDocument } from '../models/document.model';
 export class DocumentService {
   private http = inject(HttpClient);
 
-  private baseUrl = `${AppConfig.apiBaseUrl}api/documents/`;
+  private baseUrl = `${AppConfig.apiBaseUrl}`;
 
   getDocuments(): Observable<CustomerDocument[]> {
-    return this.http.get<CustomerDocument[]>(this.baseUrl);
+    return this.http.get<CustomerDocument[]>(`${this.baseUrl}api/documents/`);
   }
 
   getDocument(id: number): Observable<CustomerDocument> {
-    return this.http.get<CustomerDocument>(`${this.baseUrl}${id}/`);
+    return this.http.get<CustomerDocument>(`${this.baseUrl}api/documents/${id}`);
   }
 
   importFromPdf(pdfPath: string): Observable<any> {
-    return this.http.post(`${AppConfig.apiBaseUrl}api/import-document-from-pdf/`, {
+    return this.http.post(`${this.baseUrl}api/import-document-from-pdf/`, {
       pdf_path: pdfPath,
+    });
+  }
+
+  getDocumentsByCustomer(customerId: number): Observable<CustomerDocument[]> {
+    console.log(customerId)
+    return this.http.get<CustomerDocument[]>(`${this.baseUrl}api/documents/`, {
+      params: { customer: customerId.toString() },
     });
   }
 }

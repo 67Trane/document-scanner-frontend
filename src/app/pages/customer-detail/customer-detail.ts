@@ -28,10 +28,10 @@ export class CustomerDetail implements OnInit {
   private documentService = inject(DocumentService);
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const customerid = Number(this.route.snapshot.paramMap.get('id'));
     const documentid = 1
 
-    if (!id) {
+    if (!customerid) {
       console.error('Keine gültige ID in der URL gefunden.');
       return;
     }
@@ -41,19 +41,26 @@ export class CustomerDetail implements OnInit {
       error: (err) => console.error(err),
     })
 
-    this.documentService.getDocuments().subscribe({
-      next: (data) => this.alldocuments.set(data),
-      error: (err) => console.error(err),
-    })
+    // this.documentService.getDocuments().subscribe({
+    //   next: (data) => this.alldocuments.set(data),
+    //   error: (err) => console.error(err),
+    // })
 
-    this.customerService.getCustomer(id).subscribe({
+    this.documentService.getDocumentsByCustomer(customerid).subscribe((docs) => {
+      this.alldocuments.set(docs);
+    });
+
+    this.customerService.getCustomer(customerid).subscribe({
       next: (data) => this.customer.set(data),
       error: (err) => console.error(err),
     });
 
+    
   }
 
+
   openPdf(): void {
+
     const url = this.document()?.file_url;
     if (!url) {
       console.warn('No file_url available for document');
@@ -63,6 +70,7 @@ export class CustomerDetail implements OnInit {
   }
 
   openContract(contract: CustomerDocument): void {
+    
     // later you can switch by contract.id and open different documents
     this.openPdf();
   }
