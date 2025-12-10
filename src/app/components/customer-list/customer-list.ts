@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, OnInit, DestroyRef, input } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef, input, ChangeDetectionStrategy } from '@angular/core';
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../models/customer.model';
 import { catchError, interval, of, switchMap, startWith } from 'rxjs';
@@ -14,12 +14,13 @@ import { Router } from '@angular/router';
   imports: [CommonModule],
   templateUrl: './customer-list.html',
   styleUrl: './customer-list.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomerList implements OnInit {
   private customerService = inject(CustomerService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
-  private reloadTimer = 10000; // 10 seconds
+  private reloadTimer = 50000; // 10000 = 10 seconds
 
 
   searchTerm = input<string>('');

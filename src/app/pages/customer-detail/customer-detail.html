@@ -18,16 +18,28 @@
                     Kundennummer: <span class="font-mono">KND-2025-000123</span>
                 </p>
                 <div class="mt-2 flex flex-wrap gap-2">
+
+                    @if (customer()?.active_status === 'aktiv') {
                     <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border
-                               bg-emerald-900/40 text-emerald-300 border-emerald-900">
+                 bg-emerald-900/40 text-emerald-300 border-emerald-900">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        Aktiver Kunde
+                        Aktiv
                     </span>
+                    } @else {
                     <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border
-                               bg-blue-900/40 text-blue-300 border-blue-900">
+                 bg-red-900/40 text-red-300 border-red-900">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                        Ruhend
+                    </span>
+                    }
+
+                    <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border
+               bg-blue-900/40 text-blue-300 border-blue-900">
                         Multiversicherungen
                     </span>
+
                 </div>
+
             </div>
         </div>
 

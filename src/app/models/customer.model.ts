@@ -17,4 +17,5 @@ export interface Customer {
   country: string;
   created_at: string;
   updated_at: string;
+  active_status: string;
 }

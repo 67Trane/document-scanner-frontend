@@ -4,12 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CustomerService } from '../../services/customer.service';
 import { DocumentService } from '../../services/document.service';
 import { Customer } from '../../models/customer.model';
-
 import { CustomerDocument } from '../../models/document.model';
-
-
-type ContractType = 'haftpflicht' | 'hausrat' | 'kfz';
-
 
 @Component({
   selector: 'app-customer-detail',
@@ -68,7 +63,6 @@ export class CustomerDetail implements OnInit {
   }
 
   openContract(contract: CustomerDocument): void {
-    console.log(contract)
     // later you can switch by contract.id and open different documents
     this.openPdf();
   }
