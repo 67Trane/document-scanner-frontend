@@ -27,7 +27,6 @@ export class DocumentService {
   }
 
   getDocumentsByCustomer(customerId: number): Observable<CustomerDocument[]> {
-    console.log(customerId)
     return this.http.get<CustomerDocument[]>(`${this.baseUrl}api/documents/`, {
       params: { customer: customerId.toString() },
     });

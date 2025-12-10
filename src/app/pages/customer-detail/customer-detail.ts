@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CustomerService } from '../../services/customer.service';
 import { DocumentService } from '../../services/document.service';
@@ -21,7 +21,71 @@ export class CustomerDetail implements OnInit {
   private route = inject(ActivatedRoute);
   customer = signal<Customer | null>(null);
   document = signal<CustomerDocument | null>(null)
-  alldocuments = signal<CustomerDocument[] | null>(null);
+  alldocuments = signal<CustomerDocument[]>([]);
+
+  fullName = computed(() => {
+    const c = this.customer();
+    return c ? `${c.first_name} ${c.last_name}` : '';
+  });
+
+
+  licensePlates = computed(() => {
+    const docs = this.alldocuments();
+    const allPlates = docs.flatMap((doc) => doc.license_plates ?? []);
+    const filtered = allPlates.filter((plate) => plate && plate.trim().length > 0);
+    const unique = Array.from(new Set(filtered));
+    return unique;
+  });
+
+  contactItems = computed(() => {
+    const c = this.customer();
+
+    return [
+      {
+        label: 'E-Mail',
+        value: c?.email?.trim() || null,
+      },
+      {
+        label: 'Telefon',
+        value: c?.phone?.trim() || null,
+      },
+    ];
+  });
+
+
+  policyNumbers = computed(() => {
+    const docs = this.alldocuments() ?? [];
+
+    const numbers = docs
+      .map((doc) => doc.policy_number ?? '')
+      .filter((num) => num && num.trim().length > 0);
+
+    return Array.from(new Set(numbers));
+  });
+
+  hasPolicyNumbers = computed(() => this.policyNumbers().length > 0);
+
+
+
+
+  // nice string for the template
+  licensePlatesLabel = computed(() => {
+    console.log(this.alldocuments())
+    const plates = this.licensePlates();
+    return plates.length > 0 ? plates.join(', ') : '-';
+  });
+
+  hasLicensePlates = computed(() => this.licensePlates().length > 0);
+
+
+
+
+  address = computed(() => {
+    const c = this.customer();
+    return c ? `${c.street}, ${c.zip_code} ${c.city}` : '';
+  });
+
+
 
 
   private customerService = inject(CustomerService);
@@ -55,7 +119,7 @@ export class CustomerDetail implements OnInit {
       error: (err) => console.error(err),
     });
 
-    
+
   }
 
 
@@ -70,8 +134,6 @@ export class CustomerDetail implements OnInit {
   }
 
   openContract(contract: CustomerDocument): void {
-    
-    // later you can switch by contract.id and open different documents
     this.openPdf();
   }
 

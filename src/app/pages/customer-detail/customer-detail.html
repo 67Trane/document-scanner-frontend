@@ -9,7 +9,7 @@
             <div>
                 <h2 class="text-xl font-semibold text-white">
                     @if (customer()) {
-                    <h2>{{ customer()?.first_name }} {{ customer()?.last_name }} </h2>
+                    <h2>{{ customer()?.first_name | titlecase}} {{ customer()?.last_name | titlecase}} </h2>
                     } @else {
                     <p class="text-slate-400">Lade Kunde...</p>
                     }
@@ -67,9 +67,9 @@
     <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div class="xl:col-span-1 space-y-6">
             <div class="p-6 rounded-2xl shadow-sm 
-                        bg-slate-800 border border-slate-700">
+         bg-slate-800 border border-slate-700">
                 <h3 class="text-sm font-semibold mb-4 flex items-center gap-2
-                           text-white">
+           text-white">
                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v6m-8-6v6M4 8v.01M20 8v.01M4 16v.01M20 16v.01" />
@@ -78,56 +78,78 @@
                 </h3>
 
                 <dl class="space-y-3 text-sm">
+                    <!-- Kennzeichen -->
                     <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">Kennzeichen</dt>
+                        <dt class="text-slate-400">KFZ-Kennzeichen</dt>
                         <dd class="font-medium text-right text-white">
-                            @if (customer()) {
-                            <div class="flex flex-wrap gap-1">
-                                @for (plate of document()?.license_plates; track plate) {
+                            @if (hasLicensePlates()) {
+                            <div class="flex flex-wrap gap-1 justify-end">
+                                @for (plate of licensePlates(); track plate) {
                                 <span class="px-2 py-0.5 rounded-full text-xs font-medium
-                                            bg-emerald-900/40 text-emerald-300">
+                       bg-emerald-900/40 text-emerald-300">
                                     {{ plate }}
                                 </span>
                                 }
                             </div>
                             } @else {
-                            <p class="text-xs text-slate-400">Keine Kennzeichen hinterlegt</p>
+                            <p class="text-xs text-slate-400">-</p>
                             }
                         </dd>
                     </div>
 
-                    @for (item of [
-                    { label: 'E-Mail', value: customer()?.email },
-                    { label: 'Versicherungsschein-Nummer', value: document()?.policy_number},
-                    { label: 'Telefon', value: customer()?.phone }
-                    ]; track item.label) {
+                    <!-- Versicherungsschein-Nummer (Policen) -->
+                    <div class="flex justify-between gap-4">
+                        <dt class="text-slate-400">Versicherungsschein-Nummer</dt>
+                        <dd class="font-medium text-right text-white">
+                            @if (hasPolicyNumbers()) {
+                            <div class="flex flex-wrap gap-1 justify-end">
+                                @for (num of policyNumbers(); track num) {
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium
+                       bg-indigo-900/40 text-indigo-300">
+                                    {{ num }}
+                                </span>
+                                }
+                            </div>
+                            } @else {
+                            <p class="text-xs text-slate-400">-</p>
+                            }
+                        </dd>
+                    </div>
+
+                    <!-- E-Mail & Telefon aus contactItems -->
+                    @for (item of contactItems(); track item.label) {
                     <div class="flex justify-between gap-4">
                         <dt class="text-slate-400">{{ item.label }}</dt>
                         <dd class="font-medium text-right text-white">
                             @if (item.value) {
                             <span>{{ item.value }}</span>
                             } @else {
-                            <p> - </p>
+                            <p class="text-xs text-slate-400">-</p>
                             }
                         </dd>
                     </div>
                     }
 
+                    <!-- Adresse -->
                     <div class="flex justify-between gap-4">
                         <dt class="text-slate-400">Adresse</dt>
                         <dd class="text-right text-white">
                             @if (customer()) {
                             <div class="space-y-1 leading-tight">
                                 <p>{{ customer()?.street }}</p>
-                                <p>{{ customer()?.zip_code }} {{ customer()?.city }}</p>
+                                <p>
+                                    {{ customer()?.zip_code }}
+                                    {{ customer()?.city }}
+                                </p>
                             </div>
                             } @else {
-                            <p class="text-slate-400">Lade Kunde...</p>
+                            <p class="text-xs text-slate-400">Lade Kunde...</p>
                             }
                         </dd>
                     </div>
                 </dl>
             </div>
+
 
 
             <div class="p-6 rounded-2xl shadow-sm 
