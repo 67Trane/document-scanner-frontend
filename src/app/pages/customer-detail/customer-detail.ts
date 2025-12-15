@@ -24,11 +24,15 @@ export class CustomerDetail implements OnInit {
   document = signal<CustomerDocument | null>(null)
   alldocuments = signal<CustomerDocument[]>([]);
 
-
+  viewerSrc = computed(() => {
+    console.log("hier",this.document())
+    const url = this.document()?.file_url;
+    return url ? new URL(url, window.location.origin).toString() : null;
+  });
 
   // basic customer info
   email = computed(() => this.customer()?.email?.trim() || null);
-  
+
   fullName = computed(() => {
     const c = this.customer();
     return c ? `${c.first_name} ${c.last_name}` : '';
@@ -104,11 +108,12 @@ export class CustomerDetail implements OnInit {
       error: (err) => console.error(err),
     });
 
-
+    console.log(this.viewerSrc())
   }
 
 
   openPdf(): void {
+    console.log(this.document()?.file_url)
 
     const url = this.document()?.file_url;
     if (!url) {
@@ -119,11 +124,14 @@ export class CustomerDetail implements OnInit {
   }
 
   openContract(contract: CustomerDocument): void {
-    this.openPdf();
+    if (!contract.file_url) return;
+    const url = new URL(contract.file_url, window.location.origin).toString();
+    window.open(url, '_blank');
   }
 
 
   test() {
-    console.log(this.alldocuments())
+    
+    console.log(this.viewerSrc())
   }
 }
