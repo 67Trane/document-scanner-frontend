@@ -5,6 +5,7 @@ import { CustomerService } from '../../services/customer.service';
 import { DocumentService } from '../../services/document.service';
 import { Customer } from '../../models/customer.model';
 import { CustomerDocument } from '../../models/document.model';
+import { AppConfig } from '../../config'
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @Component({
@@ -16,6 +17,7 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 })
 export class CustomerDetail implements OnInit {
 
+
   contracts: CustomerDocument[] = []
 
 
@@ -25,9 +27,14 @@ export class CustomerDetail implements OnInit {
   alldocuments = signal<CustomerDocument[]>([]);
 
   viewerSrc = computed(() => {
-    console.log("hier",this.document())
     const url = this.document()?.file_url;
-    return url ? new URL(url, window.location.origin).toString() : null;
+    if (!url) return null;
+
+    if (url.startsWith('/')) {
+      return `${AppConfig.apiBaseUrl}${url}`;
+    }
+
+    return url;
   });
 
   // basic customer info
@@ -125,13 +132,17 @@ export class CustomerDetail implements OnInit {
 
   openContract(contract: CustomerDocument): void {
     if (!contract.file_url) return;
-    const url = new URL(contract.file_url, window.location.origin).toString();
+
+    const url = contract.file_url.startsWith('/')
+      ? `${AppConfig.apiBaseUrl}${contract.file_url}`
+      : contract.file_url;
+
     window.open(url, '_blank');
   }
 
 
   test() {
-    
+
     console.log(this.viewerSrc())
   }
 }
