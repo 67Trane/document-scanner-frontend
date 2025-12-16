@@ -16,10 +16,7 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
   styleUrl: './customer-detail.css',
 })
 export class CustomerDetail implements OnInit {
-
-
   contracts: CustomerDocument[] = []
-
 
   private route = inject(ActivatedRoute);
   customer = signal<Customer | null>(null);
@@ -81,9 +78,6 @@ export class CustomerDetail implements OnInit {
 
   hasPolicyNumbers = computed(() => this.policyNumbers().length > 0);
 
-
-
-
   private customerService = inject(CustomerService);
   private documentService = inject(DocumentService);
 
@@ -115,19 +109,7 @@ export class CustomerDetail implements OnInit {
       error: (err) => console.error(err),
     });
 
-    console.log(this.viewerSrc())
-  }
 
-
-  openPdf(): void {
-    console.log(this.document()?.file_url)
-
-    const url = this.document()?.file_url;
-    if (!url) {
-      console.warn('No file_url available for document');
-      return;
-    }
-    window.open(url, '_blank');
   }
 
   openContract(contract: CustomerDocument): void {
@@ -142,7 +124,6 @@ export class CustomerDetail implements OnInit {
 
 
   test() {
-
     console.log(this.viewerSrc())
   }
 }
