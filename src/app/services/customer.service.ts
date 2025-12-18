@@ -10,7 +10,7 @@ import { Customer } from '../models/customer.model';
 export class CustomerService {
   private http = inject(HttpClient);
 
-  private baseUrl = `${AppConfig.apiBaseUrl}api/customers/`;
+  private baseUrl = `${AppConfig.apiBaseUrl}/api/customers/`;
 
   getCustomers(): Observable<Customer[]> {
     return this.http.get<Customer[]>(this.baseUrl);
