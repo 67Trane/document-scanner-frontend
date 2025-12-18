@@ -1,39 +1,79 @@
 @if (loading()) {
-<div class="text-sm text-slate-500 py-2">
-  Loading customers...
-</div>
+  <div class="text-sm text-slate-500 py-2">
+    Loading customers...
+  </div>
 }
 
 @if (error()) {
-<div class="text-sm text-red-600 py-2">
-  {{ error() }}
-</div>
+  <div class="text-sm text-red-600 py-2">
+    {{ error() }}
+  </div>
 }
 
 @if (!loading() && !error()) {
-<table class="w-full text-sm text-left">
-  <thead class="text-slate-500 border-b border-slate-700">
-    <tr>
-      <th class="py-2 font-medium">ID</th>
-      <th class="py-2 font-medium">Name</th>
-      <th class="py-2 font-medium">Kundennummer</th>
-    </tr>
-  </thead>
-  <tbody class="text-slate-300">
-    @for (customer of customers(); track customer.id) {
-    <tr class="border-b border-slate-700/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
-      (click)="goToCustomer(customer.id)">
-      <td class="py-2 font-medium text-slate-200">
-        {{ customer.id }}
-      </td>
-      <td class="py-2 font-medium text-slate-200">
-        {{ customer.first_name | titlecase}} {{ customer.last_name | titlecase}}
-      </td>
-      <td class="py-2 text-slate-400">
-        {{ customer.customer_number }}
-      </td>
-    </tr>
-    }
-  </tbody>
-</table>
+
+  @if (customers().length === 0) {
+    <div class="text-sm text-slate-400 py-4">
+      Keine Kunden gefunden.
+    </div>
+  } @else {
+
+    <table class="w-full text-sm text-left">
+      <thead class="text-slate-500 border-b border-slate-700">
+        <tr>
+          <th class="py-2 font-medium">ID</th>
+          <th class="py-2 font-medium">Name</th>
+          <th class="py-2 font-medium">Kundennummer</th>
+        </tr>
+      </thead>
+
+      <tbody class="text-slate-300">
+        @for (customer of customers(); track customer.id) {
+          <tr
+            class="border-b border-slate-700/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
+            (click)="goToCustomer(customer.id)"
+          >
+            <td class="py-2 font-medium text-slate-200">
+              {{ customer.id }}
+            </td>
+            <td class="py-2 font-medium text-slate-200">
+              {{ customer.first_name | titlecase }} {{ customer.last_name | titlecase }}
+            </td>
+            <td class="py-2 text-slate-400">
+              {{ customer.customer_number }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- Pagination Footer -->
+    <div class="mt-4 flex items-center justify-between text-sm">
+      <div class="text-slate-400">
+        Gesamt: <span class="text-slate-200 font-medium">{{ count() }}</span>
+        • Seite: <span class="text-slate-200 font-medium">{{ page() }}</span>
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+          (click)="goPrev()"
+          [disabled]="!previous()"
+        >
+          Zurück
+        </button>
+
+        <button
+          type="button"
+          class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+          (click)="goNext()"
+          [disabled]="!next()"
+        >
+          Weiter
+        </button>
+      </div>
+    </div>
+
+  }
 }
