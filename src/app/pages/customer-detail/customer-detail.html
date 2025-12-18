@@ -47,10 +47,8 @@
     <!-- =========================
      Notes Panel
      ========================= -->
-    <app-customer-notes-panel [notes]="notes()" [noteDraft]="noteDraft()" [canSave]="noteDraft().trim().length > 0"
+    <app-customer-notes-panel [notes]="notes()" [noteDraft]="noteDraft()" [canSave]="canSaveNote()"
       (noteDraftChange)="noteDraft.set($event)" (add)="addNote()"
       (delete)="deleteNote($event)"></app-customer-notes-panel>
-
-
   </div>
 </div>
