@@ -1,335 +1,388 @@
-<div class="space-y-4 lg:space-y-6 box-border p-3">
-    <!-- Hauptbereich -->
-    <section class="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
-        <!-- Linke Spalte: Kontaktdaten + Verträge -->
-        <div class="xl:col-span-1 space-y-4 lg:space-y-6">
-            <!-- Kontaktdaten -->
-            <div class="p-5 rounded-2xl shadow-sm 
-             bg-slate-800 border border-slate-700
-             flex flex-col gap-4">
-                <!-- Kunde / Avatar / Status -->
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-blue-600
-                 flex items-center justify-center text-white text-lg font-semibold shadow-md">
-                        {{ customer()?.first_name?.[0]?.toUpperCase() }}
-                        {{ customer()?.last_name?.[0]?.toUpperCase() }}
-                    </div>
+<!-- Header mit Breadcrumb -->
+<header class="border-b border-slate-800/50 backdrop-blur-xl bg-slate-900/30 sticky top-0 z-50 -mx-3 -mt-3 px-6 py-4 mb-6">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <button class="p-2 hover:bg-slate-800/50 rounded-lg transition-colors">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <nav class="flex items-center gap-2 text-sm">
+        <a routerLink="/customers" class="text-slate-400 hover:text-white transition-colors">Kunden</a>
+        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        <span class="text-white font-medium">{{ fullName() || 'Lade...' }}</span>
+      </nav>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <button class="p-2 hover:bg-slate-800/50 rounded-lg transition-colors relative">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
 
-                    <div class="space-y-0.5">
-                        @if (customer()) {
-                        <p class="text-sm font-semibold text-white">
-                            {{ customer()?.first_name | titlecase }}
-                            {{ customer()?.last_name | titlecase }}
-                        </p>
-                        <p class="text-xs text-slate-400">
-                            Kundennummer:
-                            <span class="font-mono text-slate-200">
-                                {{ customer()?.customer_number }}
-                            </span>
-                        </p>
-                        } @else {
-                        <p class="text-slate-400 text-sm">Lade Kunde...</p>
-                        }
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+  
+  <!-- Linke Sidebar - Kundeninfo -->
+  <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
+    
+    <!-- Kundenprofil -->
+    <div class="gradient-border rounded-2xl p-6 space-y-6">
+      <div class="flex items-start gap-4">
+        <div class="relative">
+          <div class="w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/20">
+            @if (customer()) {
+              {{ customer()?.first_name?.[0]?.toUpperCase() }}{{ customer()?.last_name?.[0]?.toUpperCase() }}
+            } @else {
+              <div class="skeleton w-8 h-8 rounded"></div>
+            }
+          </div>
+          @if (customer()?.active_status === 'aktiv') {
+            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-slate-900 pulse-dot"></div>
+          }
+        </div>
+        
+        <div class="flex-1 min-w-0">
+          @if (customer()) {
+            <h1 class="text-xl font-bold text-white mb-1">
+              {{ customer()?.first_name | titlecase }} {{ customer()?.last_name | titlecase }}
+            </h1>
+            <p class="text-sm text-slate-400 font-mono">#{{ customer()?.customer_number }}</p>
+          } @else {
+            <div class="skeleton h-6 w-32 rounded mb-2"></div>
+            <div class="skeleton h-4 w-24 rounded"></div>
+          }
+          
+          <div class="flex flex-wrap gap-2 mt-3">
+            @if (customer()?.active_status === 'aktiv') {
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+                Aktiv
+              </span>
+            } @else {
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                Ruhend
+              </span>
+            }
+            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              Premium
+            </span>
+          </div>
+        </div>
+      </div>
 
-                        <div class="flex flex-wrap items-center gap-2 pt-1">
-                            @if (customer()?.active_status === 'aktiv') {
-                            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border
-                       bg-emerald-900/40 text-emerald-300 border-emerald-900">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                Aktiv
-                            </span>
-                            } @else {
-                            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border
-                       bg-red-900/40 text-red-300 border-red-900">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                                Ruhend
-                            </span>
-                            }
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-3 gap-3 pt-4 border-t border-slate-700/50">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{{ alldocuments().length }}</div>
+          <div class="text-xs text-slate-400 mt-1">Verträge</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{{ licensePlates().length }}</div>
+          <div class="text-xs text-slate-400 mt-1">Fahrzeuge</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-emerald-400">{{ policyNumbers().length }}</div>
+          <div class="text-xs text-slate-400 mt-1">Policen</div>
+        </div>
+      </div>
+    </div>
 
-                            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border
-                     bg-blue-900/40 text-blue-300 border-blue-900">
-                                Multiversicherungen
-                            </span>
-                        </div>
-                    </div>
-                </div>
+    <!-- Kontaktdaten -->
+    <div class="glass-card rounded-2xl p-6 space-y-4">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+          <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-sm font-semibold text-white">Kontaktdaten</h3>
+      </div>
 
-                <!-- Kontaktdaten -->
-                <div class="flex items-center gap-2 pt-1">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v6m-8-6v6M4 8v.01M20 8v.01M4 16v.01M20 16v.01" />
-                    </svg>
-                    <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                        Kontaktdaten
-                    </h3>
-                </div>
-
-                <dl class="space-y-3 text-sm">
-                    <!-- Kennzeichen -->
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">Kennzeichen</dt>
-                        <dd class="font-medium text-right text-white">
-                            @if (hasLicensePlates()) {
-                            <div class="flex flex-wrap gap-1 justify-end">
-                                @for (plate of licensePlates(); track plate) {
-                                <span class="px-2 py-0.5 rounded-full text-xs font-medium
-                           bg-emerald-900/40 text-emerald-300">
-                                    {{ plate }}
-                                </span>
-                                }
-                            </div>
-                            } @else {
-                            <p class="text-xs text-slate-400">-</p>
-                            }
-                        </dd>
-                    </div>
-
-                    <!-- Versicherungsschein-Nummer -->
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">Versicherungsschein-Nummer</dt>
-                        <dd class="font-medium text-right text-white">
-                            @if (hasPolicyNumbers()) {
-                            <div class="flex flex-wrap gap-1 justify-end">
-                                @for (num of policyNumbers(); track num) {
-                                <span class="px-2 py-0.5 rounded-full text-xs font-medium
-                           bg-indigo-900/40 text-indigo-300">
-                                    {{ num }}
-                                </span>
-                                }
-                            </div>
-                            } @else {
-                            <p class="text-xs text-slate-400">-</p>
-                            }
-                        </dd>
-                    </div>
-
-                    <!-- E-Mail -->
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">E-Mail</dt>
-                        <dd class="font-medium text-right text-white">
-                            @if (email()) {
-                            <span>{{ email() }}</span>
-                            } @else {
-                            <p class="text-xs text-slate-400">-</p>
-                            }
-                        </dd>
-                    </div>
-
-                    <!-- Telefon -->
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">Telefon</dt>
-                        <dd class="font-medium text-right text-white">
-                            @if (phone()) {
-                            <span>{{ phone() }}</span>
-                            } @else {
-                            <p class="text-xs text-slate-400">-</p>
-                            }
-                        </dd>
-                    </div>
-
-                    <!-- Adresse -->
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-slate-400">Adresse</dt>
-                        <dd class="text-right text-white">
-                            @if (customer()) {
-                            <div class="space-y-1 leading-tight">
-                                <p>{{ addressLine1() }}</p>
-                                <p>{{ addressLine2() }}</p>
-                            </div>
-                            } @else {
-                            <p class="text-xs text-slate-400">Lade Kunde...</p>
-                            }
-                        </dd>
-                    </div>
-                </dl>
-            </div>
-
-            <!-- Verträge -->
-            <div class="p-5 rounded-2xl shadow-sm 
-             bg-slate-800 border border-slate-700
-             flex flex-col gap-4">
-                <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6M7 7h10M6 3h12a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" />
-                        </svg>
-                        <h3 class="text-sm font-semibold text-white">Verträge</h3>
-                    </div>
-
-                    <span class="text-xs text-slate-400">
-                        {{ alldocuments().length }} Dokumente
-                    </span>
-                </div>
-
-                <ul class="space-y-3 text-sm">
-                    @for (contract of alldocuments(); track contract.id) {
-                    <li>
-                        <button type="button" (click)="openContract(contract)" class="w-full flex items-center justify-between gap-3 rounded-xl px-3 py-2
-                     border transition-colors text-left
-                     bg-slate-800 border-slate-700 hover:border-emerald-500/70 hover:bg-slate-700/80">
-                            <div>
-                                <p class="font-medium text-white">
-                                    {{ contract.contract_typ }}
-                                </p>
-                                <p class="text-xs text-slate-400">
-                                    {{ contract.created_at | date:'dd.MM.yyyy, HH:mm' }} Uhr
-                                </p>
-                            </div>
-
-                            @if (contract?.contract_status == 'aktiv') {
-                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
-                         bg-emerald-900/40 text-emerald-300 border-emerald-900">
-                                aktiv
-                            </span>
-                            } @else {
-                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium border
-                         bg-slate-700 text-slate-300 border-slate-600">
-                                ruhend
-                            </span>
-                            }
-                        </button>
-                    </li>
-                    }
-                </ul>
-
-                <!-- Aktionen -->
-                <div class="pt-3 flex flex-wrap gap-2 border-t border-slate-700/60 mt-1">
-                    <button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
-                 border border-slate-700 bg-slate-700 hover:bg-slate-600 text-slate-200" type="button">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Notiz hinzufügen
-                    </button>
-
-                    <button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-sm
-                 bg-blue-600 text-white hover:bg-blue-500" type="button">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 12H8m8 0l-3-3m3 3l-3 3M5 8V6a2 2 0 012-2h10a2 2 0 012 2v2" />
-                        </svg>
-                        Dokument hochladen
-                    </button>
-                </div>
-            </div>
+      <div class="space-y-4">
+        <!-- E-Mail -->
+        <div class="group">
+          <div class="text-xs text-slate-500 mb-1">E-Mail</div>
+          @if (email()) {
+            <a [href]="'mailto:' + email()" class="text-sm text-slate-300 hover:text-blue-400 transition-colors flex items-center gap-2">
+              {{ email() }}
+              <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </a>
+          } @else {
+            <p class="text-sm text-slate-500">-</p>
+          }
         </div>
 
-
-        <!-- Rechte Spalte: Dokument-Viewer -->
-        <div class="xl:col-span-2">
-            <div class="p-5 h-[calc(100vh-1.5rem)] lg:p-6 rounded-2xl shadow-sm bg-slate-800 border border-slate-700
-               flex flex-col gap-4">
-                <!-- Kompakter Header -->
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-linear-to-br from-emerald-500 to-emerald-600
-                     flex items-center justify-center shadow-md">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-semibold text-white">
-                                Versicherungsdokumente
-                            </h3>
-                            <p class="text-xs text-slate-400">
-                                Digitalisierte Policen, Bedingungen und Nachträge
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <button class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all
-                     border border-slate-700 text-slate-200 bg-slate-700 hover:bg-slate-600" type="button">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Herunterladen
-                        </button>
-                        <button (click)="test()" class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all shadow-sm
-                     bg-emerald-600 text-white hover:bg-emerald-500" type="button">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            Im Original öffnen
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Viewer + Footer -->
-                <div class="flex-1 flex flex-col gap-4">
-                    <!-- PDF Viewer -->
-                    <div class="relative flex-1 min-h-80 rounded-xl border-2 border-slate-700/60
-                   bg-slate-900/50 overflow-hidden shadow-inner">
-                        @if (viewerSrc()) {
-                        <ngx-extended-pdf-viewer [src]="viewerSrc()!" [height]="'100%'" [zoom]="'page-fit'"
-                            language="de-DE" [showSidebarButton]="true">
-                        </ngx-extended-pdf-viewer>
-
-                        <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3">
-                            <div class="rounded-lg bg-slate-900/90 backdrop-blur-sm text-white px-3 py-1.5 text-xs
-                flex items-center gap-2 border border-slate-700/60">
-                                <span class="font-medium">
-                                    {{ document()?.contract_typ || 'Haftpflicht – Versicherungsschein' }}
-                                </span>
-                                @if (document()?.created_at) {
-                                <span class="text-slate-300">
-                                    · {{ document()?.created_at | date:'dd.MM.yyyy, HH:mm' }} Uhr
-                                </span>
-                                }
-                            </div>
-                        </div>
-                        } @else {
-                        <div class="w-full h-full flex flex-col items-center justify-center gap-3 p-8">
-                            <div
-                                class="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center">
-                                <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-slate-400 text-sm font-medium">
-                                    Kein Dokument ausgewählt
-                                </p>
-                                <p class="text-slate-500 text-xs mt-1">
-                                    Wählen Sie ein Dokument in der Vertragsliste aus.
-                                </p>
-                            </div>
-                        </div>
-                        }
-                    </div>
-
-                    <!-- Footer -->
-                    <div
-                        class="flex items-center justify-between gap-4 pt-2 border-t border-slate-700/50 text-xs text-slate-400">
-                        <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                            <span class="whitespace-nowrap">Dokumente gesamt:</span>
-                            <span class="font-medium text-slate-200">
-                                {{ alldocuments().length }}
-                            </span>
-                        </div>
-
-                        <div class="flex items-center gap-3">
-                            <div class="flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>Aktualisiert:</span>
-                                <strong class="text-slate-300">12.11.2025</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Telefon -->
+        <div class="group">
+          <div class="text-xs text-slate-500 mb-1">Telefon</div>
+          @if (phone()) {
+            <a [href]="'tel:' + phone()" class="text-sm text-slate-300 hover:text-blue-400 transition-colors flex items-center gap-2">
+              {{ phone() }}
+              <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </a>
+          } @else {
+            <p class="text-sm text-slate-500">-</p>
+          }
         </div>
-    </section>
+
+        <!-- Adresse -->
+        <div>
+          <div class="text-xs text-slate-500 mb-1">Adresse</div>
+          @if (customer()) {
+            <div class="text-sm text-slate-300 leading-relaxed">
+              <p>{{ addressLine1() }}</p>
+              <p>{{ addressLine2() }}</p>
+            </div>
+          } @else {
+            <div class="skeleton h-4 w-full rounded mb-1"></div>
+            <div class="skeleton h-4 w-3/4 rounded"></div>
+          }
+        </div>
+
+        <!-- Kennzeichen -->
+        @if (hasLicensePlates()) {
+          <div>
+            <div class="text-xs text-slate-500 mb-2">Kennzeichen</div>
+            <div class="flex flex-wrap gap-2">
+              @for (plate of licensePlates(); track plate) {
+                <span class="px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-linear-to-r from-yellow-400 to-yellow-300 text-slate-900 border-2 border-slate-900 shadow-lg">
+                  {{ plate }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Versicherungsschein-Nummern -->
+        @if (hasPolicyNumbers()) {
+          <div>
+            <div class="text-xs text-slate-500 mb-2">Versicherungsschein-Nummern</div>
+            <div class="flex flex-wrap gap-2">
+              @for (num of policyNumbers(); track num) {
+                <span class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
+                  {{ num }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="glass-card rounded-2xl p-4 space-y-2">
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800/50 hover:bg-blue-500/20 border border-slate-700/50 hover:border-blue-500/50 transition-all group">
+        <div class="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+          <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </div>
+        <span class="text-sm font-medium text-slate-300 group-hover:text-white">Notiz hinzufügen</span>
+      </button>
+      
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all shadow-lg shadow-blue-500/20">
+        <div class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+          </svg>
+        </div>
+        <span class="text-sm font-medium text-white">Dokument hochladen</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- Hauptbereich - Verträge & Dokumente -->
+  <div class="lg:col-span-8 xl:col-span-9 space-y-6">
+    
+    <!-- Verträge Liste -->
+    <div class="glass-card rounded-2xl p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-linear-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Aktive Verträge</h2>
+            <p class="text-sm text-slate-400">{{ alldocuments().length }} Versicherungspolicen</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="p-2 hover:bg-slate-800/50 rounded-lg transition-colors">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </button>
+          <button class="p-2 hover:bg-slate-800/50 rounded-lg transition-colors">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        @for (contract of alldocuments(); track contract.id) {
+          <button 
+            type="button" 
+            (click)="openContractPreview(contract)" 
+            class="contract-item w-full flex items-center gap-4 p-4 rounded-xl border border-slate-700/50 bg-slate-800/30 text-left group hover:border-blue-500/50 transition-all">
+            
+            <div class="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0">
+              <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">
+                  {{ contract.contract_typ }}
+                </h3>
+                @if (contract?.contract_status === 'aktiv') {
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Aktiv
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700/50 text-slate-400 border border-slate-600/50">
+                    Ruhend
+                  </span>
+                }
+              </div>
+              <div class="flex items-center gap-4 text-xs text-slate-400">
+                <span class="flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  @if (contract.policy_number) {
+                    Police: {{ contract.policy_number }}
+                  }
+                </span>
+                <span>{{ contract.created_at | date:'dd.MM.yyyy' }}</span>
+              </div>
+            </div>
+            
+            <svg class="w-5 h-5 text-slate-600 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        }
+
+        @if (alldocuments().length === 0) {
+          <div class="text-center py-12">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <p class="text-slate-400 text-sm font-medium">Keine Verträge vorhanden</p>
+            <p class="text-slate-500 text-xs mt-1">Laden Sie ein Dokument hoch, um zu beginnen.</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- PDF Viewer -->
+    <div class="glass-card rounded-2xl p-6 flex flex-col" style="min-height: 600px;">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-md">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-white">Versicherungsdokumente</h3>
+            <p class="text-xs text-slate-400">Digitalisierte Policen und Nachträge</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all border border-slate-700 text-slate-200 bg-slate-700 hover:bg-slate-600" type="button">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Herunterladen
+          </button>
+          <button (click)="openContract(document()!)" [disabled]="!document()" class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all shadow-sm bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" type="button">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Im Original öffnen
+          </button>
+        </div>
+      </div>
+
+      <!-- PDF Container -->
+      <div class="relative flex-1 min-h-[500px] rounded-xl border-2 border-slate-700/60 bg-slate-900/50 overflow-hidden shadow-inner">
+        @if (viewerSrc()) {
+          <ngx-extended-pdf-viewer 
+            [src]="viewerSrc()!" 
+            [height]="'100%'" 
+            [zoom]="'page-fit'"
+            language="de-DE" 
+            [showSidebarButton]="true">
+          </ngx-extended-pdf-viewer>
+
+          <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3 pointer-events-none">
+            <div class="rounded-lg bg-slate-900/90 backdrop-blur-sm text-white px-3 py-1.5 text-xs flex items-center gap-2 border border-slate-700/60">
+              <span class="font-medium">
+                {{ document()?.contract_typ || 'Dokument' }}
+              </span>
+              @if (document()?.created_at) {
+                <span class="text-slate-300">
+                  · {{ document()?.created_at | date:'dd.MM.yyyy, HH:mm' }} Uhr
+                </span>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="w-full h-full flex flex-col items-center justify-center gap-3 p-8">
+            <div class="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center">
+              <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <div class="text-center">
+              <p class="text-slate-400 text-sm font-medium">Kein Dokument ausgewählt</p>
+              <p class="text-slate-500 text-xs mt-1">Wählen Sie ein Dokument in der Vertragsliste aus.</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="flex items-center justify-between gap-4 pt-4 mt-4 border-t border-slate-700/50 text-xs text-slate-400">
+        <div class="flex items-center gap-2">
+          <span class="whitespace-nowrap">Dokumente gesamt:</span>
+          <span class="font-medium text-slate-200">{{ alldocuments().length }}</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Aktualisiert:</span>
+            <strong class="text-slate-300">{{ today | date:'dd.MM.yyyy' }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
