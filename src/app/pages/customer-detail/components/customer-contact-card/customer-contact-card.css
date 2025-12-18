@@ -1,0 +1,8 @@
+/* =========================
+   Customer Contact Card Styles
+   ========================= */
+
+:host {
+  display: block;
+}
+

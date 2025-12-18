@@ -1,0 +1,81 @@
+<!-- =========================
+     Customer Profile Card
+     ========================= -->
+
+<div class="gradient-border rounded-2xl p-6 space-y-6">
+  <div class="flex items-start gap-4">
+    <div class="relative">
+      <div
+        class="w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/20"
+      >
+        @if (customer()) {
+          {{ customer()?.first_name?.[0]?.toUpperCase() }}{{ customer()?.last_name?.[0]?.toUpperCase() }}
+        } @else {
+          <div class="skeleton w-8 h-8 rounded"></div>
+        }
+      </div>
+
+      @if (customer()?.active_status === "aktiv") {
+        <div
+          class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-slate-900 pulse-dot"
+        ></div>
+      }
+    </div>
+
+    <div class="flex-1 min-w-0">
+      @if (customer()) {
+        <h1 class="text-xl font-bold text-white mb-1">
+          {{ customer()?.first_name | titlecase }} {{ customer()?.last_name | titlecase }}
+        </h1>
+        <p class="text-sm text-slate-400 font-mono">#{{ customer()?.customer_number }}</p>
+      } @else {
+        <div class="skeleton h-6 w-32 rounded mb-2"></div>
+        <div class="skeleton h-4 w-24 rounded"></div>
+      }
+
+      <div class="flex flex-wrap gap-2 mt-3">
+        @if (customer()?.active_status === "aktiv") {
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+            Aktiv
+          </span>
+        } @else {
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+            Ruhend
+          </span>
+        }
+
+        <span
+          class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20"
+        >
+          Premium
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       Quick Stats
+       ========================= -->
+  <div class="grid grid-cols-3 gap-3 pt-4 border-t border-slate-700/50">
+    <div class="text-center">
+      <div class="text-2xl font-bold text-white">{{ contractsCount() }}</div>
+      <div class="text-xs text-slate-400 mt-1">Verträge</div>
+    </div>
+
+    <div class="text-center">
+      <div class="text-2xl font-bold text-white">{{ vehiclesCount() }}</div>
+      <div class="text-xs text-slate-400 mt-1">Fahrzeuge</div>
+    </div>
+
+    <div class="text-center">
+      <div class="text-2xl font-bold text-emerald-400">{{ policiesCount() }}</div>
+      <div class="text-xs text-slate-400 mt-1">Policen</div>
+    </div>
+  </div>
+</div>

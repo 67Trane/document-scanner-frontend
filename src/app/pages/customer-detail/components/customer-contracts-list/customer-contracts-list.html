@@ -1,0 +1,152 @@
+<!-- =========================
+     Contracts List
+     ========================= -->
+
+<div class="glass-card rounded-2xl p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <div
+        class="w-10 h-10 rounded-xl bg-linear-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20"
+      >
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-white">Aktive Verträge</h2>
+        <p class="text-sm text-slate-400">{{ documents().length }} Versicherungspolicen</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Upload (Primary CTA) -->
+      <input #fileInput type="file" class="hidden" accept="application/pdf" />
+
+      <button
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all shadow-lg shadow-blue-500/20"
+      >
+        <div class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+            />
+          </svg>
+        </div>
+        <span class="text-sm font-medium text-white">Dokument hochladen</span>
+      </button>
+
+      <button type="button" class="p-2 hover:bg-slate-800/50 rounded-lg transition-colors">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="space-y-3">
+    @for (contract of documents(); track contract.id) {
+      <button
+        type="button"
+        (click)="onSelect(contract)"
+        class="contract-item w-full flex items-center gap-4 p-4 rounded-xl border border-slate-700/50 bg-slate-800/30 text-left group hover:border-blue-500/50 transition-all"
+      >
+        <div
+          class="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0"
+        >
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">
+              {{ contract.contract_typ }}
+            </h3>
+
+            @if (contract?.contract_status === "aktiv") {
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+              >
+                Aktiv
+              </span>
+            } @else {
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700/50 text-slate-400 border border-slate-600/50"
+              >
+                Ruhend
+              </span>
+            }
+          </div>
+
+          <div class="flex items-center gap-4 text-xs text-slate-400">
+            <span class="flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+
+              @if (contract.policy_number) {
+                Police: {{ contract.policy_number }}
+              }
+            </span>
+
+            <span>{{ contract.created_at | date: "dd.MM.yyyy" }}</span>
+          </div>
+        </div>
+
+        <svg
+          class="w-5 h-5 text-slate-600 group-hover:text-blue-400 transition-colors shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    }
+
+    @if (documents().length === 0) {
+      <div class="text-center py-12">
+        <div
+          class="w-16 h-16 mx-auto rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mb-4"
+        >
+          <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+        </div>
+
+        <p class="text-slate-400 text-sm font-medium">Keine Verträge vorhanden</p>
+        <p class="text-slate-500 text-xs mt-1">Laden Sie ein Dokument hoch, um zu beginnen.</p>
+      </div>
+    }
+  </div>
+</div>

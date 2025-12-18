@@ -1,0 +1,13 @@
+/* =========================
+   PDF Viewer Styles
+   ========================= */
+
+:host {
+  display: block;
+}
+
+/* PDF Viewer Container Adjustments */
+ngx-extended-pdf-viewer {
+  --pdf-viewer-background-color: #0f172a;
+  --pdf-viewer-text-color: #e2e8f0;
+}

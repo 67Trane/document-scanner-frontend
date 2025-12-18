@@ -1,0 +1,7 @@
+/* =========================
+   Customer Profile Card Styles
+   ========================= */
+
+:host {
+  display: block;
+}

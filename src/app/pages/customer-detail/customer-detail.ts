@@ -1,15 +1,23 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CustomerService } from '../../services/customer.service';
-import { DocumentService } from '../../services/document.service';
-import { Customer } from '../../models/customer.model';
-import { CustomerDocument } from '../../models/document.model';
-import { AppConfig } from '../../config';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { CommonModule } from "@angular/common";
+import { Component, computed, inject, signal } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 
+import { CustomerService } from "../../services/customer.service";
+import { DocumentService } from "../../services/document.service";
+import { Customer } from "../../models/customer.model";
+import { CustomerDocument } from "../../models/document.model";
+import { AppConfig } from "../../config";
 
-// -------------------- Notes Types --------------------
+import { CustomerHeader } from "./components/customer-header/customer-header";
+import { CustomerProfileCard } from "./components/customer-profile-card/customer-profile-card";
+import { CustomerContactCard } from "./components/customer-contact-card/customer-contact-card";
+import { CustomerContractsList } from "./components/customer-contracts-list/customer-contracts-list";
+import { CustomerPdfViewer } from "./components/customer-pdf-viewer/customer-pdf-viewer";
+import { CustomerNotesPanel } from "./components/customer-notes-panel/customer-notes-panel";
+
+/* =========================
+   Notes Types
+   ========================= */
 // Note: Comments in English as requested.
 type CustomerNote = {
   id: string;
@@ -18,43 +26,159 @@ type CustomerNote = {
 };
 
 @Component({
-  selector: 'app-customer-detail',
+  selector: "app-customer-detail",
   standalone: true,
-  imports: [CommonModule, NgxExtendedPdfViewerModule, RouterLink],
-  templateUrl: './customer-detail.html',
-  styleUrl: './customer-detail.css',
+  imports: [
+    CommonModule,
+    CustomerHeader,
+    CustomerProfileCard,
+    CustomerContactCard,
+    CustomerContractsList,
+    CustomerPdfViewer,
+    CustomerNotesPanel,
+  ],
+  templateUrl: "./customer-detail.html",
+  styleUrl: "./customer-detail.css",
 })
-export class CustomerDetail implements OnInit {
+export class CustomerDetail {
   private route = inject(ActivatedRoute);
   private customerService = inject(CustomerService);
   private documentService = inject(DocumentService);
 
-  // Signals
+  /* =========================
+     Core State
+     ========================= */
   customer = signal<Customer | null>(null);
   document = signal<CustomerDocument | null>(null);
   alldocuments = signal<CustomerDocument[]>([]);
 
-  // Current date for footer
+  /* =========================
+     UI Helpers
+     ========================= */
   today = new Date();
 
-  // Computed: PDF Viewer Source
-  viewerSrc = computed(() => {
+  /* =========================
+     Computed: Viewer Source
+     ========================= */
+  viewerSrc = computed<string | undefined>(() => {
     const url = this.document()?.file_url;
-    if (!url) return null;
+    if (!url) return undefined;
 
-    if (url.startsWith('/')) {
-      return `${AppConfig.apiBaseUrl}${url}`;
-    }
-
-    return url;
+    // Ensure absolute URL for HttpClient / PDF viewer
+    return url.startsWith("/") ? new URL(url, AppConfig.apiBaseUrl).toString() : url;
   });
 
-  // -------------------- Notes Signals --------------------
+  /* =========================
+     Computed: Customer Basics
+     ========================= */
+  fullName = computed(() => {
+    const c = this.customer();
+    return c ? `${c.first_name} ${c.last_name}` : "";
+  });
+
+  email = computed(() => this.customer()?.email?.trim() || null);
+  phone = computed(() => this.customer()?.phone?.trim() || null);
+
+  addressLine1 = computed(() => this.customer()?.street || "");
+  addressLine2 = computed(() => {
+    const c = this.customer();
+    return c ? `${c.zip_code} ${c.city}`.trim() : "";
+  });
+
+  /* =========================
+     Computed: Insights
+     ========================= */
+  licensePlates = computed(() => {
+    const docs = this.alldocuments();
+    const allPlates = docs.flatMap((doc) => doc.license_plates ?? []);
+    const filtered = allPlates.filter((p) => p && p.trim().length > 0);
+    return Array.from(new Set(filtered));
+  });
+
+  policyNumbers = computed(() => {
+    const docs = this.alldocuments();
+    const numbers = docs
+      .map((doc) => doc.policy_number ?? "")
+      .filter((n) => n && n.trim().length > 0);
+    return Array.from(new Set(numbers));
+  });
+
+  activeContractsCount = computed(() => {
+    return this.alldocuments().filter((doc) => doc.contract_status === "aktiv").length;
+  });
+
+  /* =========================
+     Notes State
+     ========================= */
   notes = signal<CustomerNote[]>([]);
-  noteDraft = signal<string>('');
+  noteDraft = signal("");
 
+  canSaveNote = computed(() => this.noteDraft().trim().length > 0);
 
-  // -------------------- Notes Methods --------------------
+  /* =========================
+     Lifecycle (constructor init)
+     ========================= */
+  constructor() {
+    const customerId = Number(this.route.snapshot.paramMap.get("id"));
+    if (!customerId) {
+      console.error("Keine gültige ID in der URL gefunden.");
+      return;
+    }
+
+    this.loadCustomer(customerId);
+    this.loadDocuments(customerId);
+  }
+
+  /* =========================
+     Data Loading
+     ========================= */
+  private loadCustomer(customerId: number): void {
+    this.customerService.getCustomer(customerId).subscribe({
+      next: (data) => this.customer.set(data),
+      error: (err) => console.error("Fehler beim Laden des Kunden:", err),
+    });
+  }
+
+  private loadDocuments(customerId: number): void {
+    this.documentService.getDocumentsByCustomer(customerId).subscribe({
+      next: (docs) => {
+        this.alldocuments.set(docs);
+        this.document.set(docs[0] ?? null);
+      },
+      error: (err) => console.error("Fehler beim Laden der Dokumente:", err),
+    });
+  }
+
+  /* =========================
+     Contracts
+     ========================= */
+  openContractPreview(contract: CustomerDocument): void {
+    this.document.set(contract);
+  }
+
+  openContract(contract: CustomerDocument): void {
+    const url = contract.file_url;
+    if (!url) return;
+
+    const absolute = url.startsWith("/") ? new URL(url, AppConfig.apiBaseUrl).toString() : url;
+    window.open(absolute, "_blank", "noopener");
+  }
+
+  downloadCurrentPdf(): void {
+    const url = this.viewerSrc();
+    if (!url) return;
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dokument.pdf";
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.click();
+  }
+
+  /* =========================
+     Notes
+     ========================= */
   addNote(): void {
     const text = this.noteDraft().trim();
     if (!text) return;
@@ -67,7 +191,7 @@ export class CustomerDetail implements OnInit {
 
     // Newest first
     this.notes.set([next, ...this.notes()]);
-    this.noteDraft.set('');
+    this.noteDraft.set("");
   }
 
   deleteNote(id: string): void {
@@ -76,13 +200,15 @@ export class CustomerDetail implements OnInit {
 
   onNoteKeydown(event: KeyboardEvent): void {
     // Enter saves, Shift+Enter creates a new line
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       this.addNote();
     }
   }
 
-  // -------------------- Upload Methods --------------------
+  /* =========================
+     Upload (placeholder)
+     ========================= */
   openFilePicker(input: HTMLInputElement): void {
     input.click();
   }
@@ -93,127 +219,9 @@ export class CustomerDetail implements OnInit {
     if (!file) return;
 
     // Reset input so selecting the same file again triggers change
-    input.value = '';
+    input.value = "";
 
-    // TODO: Connect to your backend upload endpoint via DocumentService
-    // For now: just log and you can wire it to an API method.
-    console.log('Selected file:', file.name, file.type, file.size);
-
-    // Example idea (only if you have such a method):
-    // this.documentService.uploadCustomerDocument(customerId, file).subscribe(...)
-  }
-
-
-  // Computed: Basic Customer Info
-  email = computed(() => this.customer()?.email?.trim() || null);
-
-  fullName = computed(() => {
-    const c = this.customer();
-    return c ? `${c.first_name} ${c.last_name}` : '';
-  });
-
-  phone = computed(() => this.customer()?.phone?.trim() || null);
-
-  addressLine1 = computed(() => this.customer()?.street || '');
-
-  addressLine2 = computed(() => {
-    const c = this.customer();
-    if (!c) {
-      return '';
-    }
-    return `${c.zip_code} ${c.city}`.trim();
-  });
-
-  // Computed: License Plates
-  licensePlates = computed(() => {
-    const docs = this.alldocuments();
-    const allPlates = docs.flatMap((doc) => doc.license_plates ?? []);
-    const filtered = allPlates.filter((plate) => plate && plate.trim().length > 0);
-    const unique = Array.from(new Set(filtered));
-    return unique;
-  });
-
-  hasLicensePlates = computed(() => this.licensePlates().length > 0);
-
-  // Computed: Policy Numbers
-  policyNumbers = computed(() => {
-    const docs = this.alldocuments() ?? [];
-    const numbers = docs
-      .map((doc) => doc.policy_number ?? '')
-      .filter((num) => num && num.trim().length > 0);
-    return Array.from(new Set(numbers));
-  });
-
-  hasPolicyNumbers = computed(() => this.policyNumbers().length > 0);
-
-  // Computed: Active Contracts Count
-  activeContractsCount = computed(() => {
-    return this.alldocuments().filter(
-      (doc) => doc.contract_status === 'aktiv'
-    ).length;
-  });
-
-  ngOnInit(): void {
-    const customerid = Number(this.route.snapshot.paramMap.get('id'));
-
-    if (!customerid) {
-      console.error('Keine gültige ID in der URL gefunden.');
-      return;
-    }
-
-    // Load customer data
-    this.customerService.getCustomer(customerid).subscribe({
-      next: (data) => this.customer.set(data),
-      error: (err) => console.error('Fehler beim Laden des Kunden:', err),
-    });
-
-    // Load customer documents
-    this.documentService.getDocumentsByCustomer(customerid).subscribe({
-      next: (docs) => {
-        this.alldocuments.set(docs);
-        // Automatically select first document if available
-        if (docs.length > 0) {
-          this.document.set(docs[0]);
-        }
-      },
-      error: (err) => console.error('Fehler beim Laden der Dokumente:', err),
-    });
-  }
-
-  /**
-   * Opens the selected contract in a new tab
-   */
-  openContract(contract: CustomerDocument): void {
-    if (!contract.file_url) return;
-
-    const url = contract.file_url.startsWith('/')
-      ? `${AppConfig.apiBaseUrl}${contract.file_url}`
-      : contract.file_url;
-
-    window.open(url, '_blank');
-  }
-
-  /**
-   * Sets the contract for preview in the PDF viewer
-   */
-  openContractPreview(contract: CustomerDocument): void {
-    this.document.set(contract);
-  }
-
-  /**
-   * Downloads the current document
-   */
-  downloadDocument(): void {
-    const doc = this.document();
-    if (!doc?.file_url) return;
-
-    const url = doc.file_url.startsWith('/')
-      ? `${AppConfig.apiBaseUrl}${doc.file_url}`
-      : doc.file_url;
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${doc.contract_typ}_${doc.policy_number || 'dokument'}.pdf`;
-    link.click();
+    // TODO: Wire to backend upload endpoint via DocumentService
+    console.log("Selected file:", file.name, file.type, file.size);
   }
 }
