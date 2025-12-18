@@ -22,12 +22,8 @@
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.3;
@@ -57,7 +53,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -67,12 +64,7 @@
 
 /* Skeleton Loading Animation */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #1e293b 25%,
-    #334155 50%,
-    #1e293b 75%
-  );
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
   border-radius: 0.375rem;
@@ -118,6 +110,17 @@ ngx-extended-pdf-viewer {
   --pdf-viewer-text-color: #e2e8f0;
 }
 
+/* Notes hover polish */
+.note-item {
+  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.note-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.08) !important;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
   .gradient-border,
@@ -139,7 +142,8 @@ a {
 
 /* Floating Action Animation (optional) */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {

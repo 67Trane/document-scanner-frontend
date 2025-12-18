@@ -8,6 +8,15 @@ import { CustomerDocument } from '../../models/document.model';
 import { AppConfig } from '../../config';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
+
+// -------------------- Notes Types --------------------
+// Note: Comments in English as requested.
+type CustomerNote = {
+  id: string;
+  text: string;
+  createdAt: Date;
+};
+
 @Component({
   selector: 'app-customer-detail',
   standalone: true,
@@ -39,6 +48,61 @@ export class CustomerDetail implements OnInit {
 
     return url;
   });
+
+  // -------------------- Notes Signals --------------------
+  notes = signal<CustomerNote[]>([]);
+  noteDraft = signal<string>('');
+
+
+  // -------------------- Notes Methods --------------------
+  addNote(): void {
+    const text = this.noteDraft().trim();
+    if (!text) return;
+
+    const next: CustomerNote = {
+      id: crypto.randomUUID(),
+      text,
+      createdAt: new Date(),
+    };
+
+    // Newest first
+    this.notes.set([next, ...this.notes()]);
+    this.noteDraft.set('');
+  }
+
+  deleteNote(id: string): void {
+    this.notes.set(this.notes().filter((n) => n.id !== id));
+  }
+
+  onNoteKeydown(event: KeyboardEvent): void {
+    // Enter saves, Shift+Enter creates a new line
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.addNote();
+    }
+  }
+
+  // -------------------- Upload Methods --------------------
+  openFilePicker(input: HTMLInputElement): void {
+    input.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    // Reset input so selecting the same file again triggers change
+    input.value = '';
+
+    // TODO: Connect to your backend upload endpoint via DocumentService
+    // For now: just log and you can wire it to an API method.
+    console.log('Selected file:', file.name, file.type, file.size);
+
+    // Example idea (only if you have such a method):
+    // this.documentService.uploadCustomerDocument(customerId, file).subscribe(...)
+  }
+
 
   // Computed: Basic Customer Info
   email = computed(() => this.customer()?.email?.trim() || null);
