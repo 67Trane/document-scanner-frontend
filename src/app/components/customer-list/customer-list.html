@@ -1,79 +1,115 @@
+<!-- =========================
+     Customer List States
+     ========================= -->
+
 @if (loading()) {
-  <div class="text-sm text-slate-500 py-2">
-    Loading customers...
-  </div>
+<!-- Loading state -->
+<div class="text-sm text-slate-500 py-2">
+  Loading customers...
+</div>
 }
 
 @if (error()) {
-  <div class="text-sm text-red-600 py-2">
-    {{ error() }}
-  </div>
+<!-- Error state -->
+<div class="text-sm text-red-600 py-2">
+  {{ error() }}
+</div>
 }
 
 @if (!loading() && !error()) {
 
-  @if (customers().length === 0) {
-    <div class="text-sm text-slate-400 py-4">
-      Keine Kunden gefunden.
-    </div>
-  } @else {
+<!-- =========================
+       Empty vs. Table View
+       ========================= -->
 
-    <table class="w-full text-sm text-left">
-      <thead class="text-slate-500 border-b border-slate-700">
-        <tr>
-          <th class="py-2 font-medium">ID</th>
-          <th class="py-2 font-medium">Name</th>
-          <th class="py-2 font-medium">Kundennummer</th>
-        </tr>
-      </thead>
+@if (customers().length === 0) {
+<!-- Empty state -->
+<div class="text-sm text-slate-400 py-4">
+  Keine Kunden gefunden.
+</div>
+} @else {
 
-      <tbody class="text-slate-300">
-        @for (customer of customers(); track customer.id) {
-          <tr
-            class="border-b border-slate-700/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
-            (click)="goToCustomer(customer.id)"
-          >
-            <td class="py-2 font-medium text-slate-200">
-              {{ customer.id }}
-            </td>
-            <td class="py-2 font-medium text-slate-200">
-              {{ customer.first_name | titlecase }} {{ customer.last_name | titlecase }}
-            </td>
-            <td class="py-2 text-slate-400">
-              {{ customer.customer_number }}
-            </td>
-          </tr>
+<!-- =========================
+         Customers Table
+         ========================= -->
+
+<table class="w-full text-sm text-left">
+  <!-- Table header -->
+  <thead class="text-slate-500 border-b border-slate-700">
+    <tr>
+      <th class="py-2 font-medium">ID</th>
+      <th class="py-2 font-medium">Name</th>
+      <th class="py-2 font-medium">Kundennummer</th>
+      <th class="py-2 font-medium">Status</th>
+    </tr>
+  </thead>
+
+  <!-- Table body -->
+  <tbody class="text-slate-300">
+    @for (customer of customers(); track customer.id) {
+
+    <!-- Single row -->
+    <tr class="border-b border-slate-700/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
+      (click)="goToCustomer(customer.id)">
+      <!-- ID -->
+      <td class="py-2 font-medium text-slate-200">
+        {{ customer.id }}
+      </td>
+
+      <!-- Name -->
+      <td class="py-2 font-medium text-slate-200">
+        {{ customer.first_name | titlecase }} {{ customer.last_name | titlecase }}
+      </td>
+
+      <!-- Customer number -->
+      <td class="py-2 text-slate-400">
+        {{ customer.customer_number }}
+      </td>
+
+      <!-- Status badge -->
+      <td class="py-2">
+        @if (customer.active_status === 'aktiv') {
+        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium
+                         border bg-emerald-900/40 text-emerald-300 border-emerald-900">
+          Aktiv
+        </span>
+        } @else {
+        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium
+                         border bg-slate-800/60 text-slate-300 border-slate-700">
+          Ruhend
+        </span>
         }
-      </tbody>
-    </table>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
 
-    <!-- Pagination Footer -->
-    <div class="mt-4 flex items-center justify-between text-sm">
-      <div class="text-slate-400">
-        Gesamt: <span class="text-slate-200 font-medium">{{ count() }}</span>
-        • Seite: <span class="text-slate-200 font-medium">{{ page() }}</span>
-      </div>
+<!-- =========================
+         Pagination Footer
+         ========================= -->
 
-      <div class="flex gap-2">
-        <button
-          type="button"
-          class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
-          (click)="goPrev()"
-          [disabled]="!previous()"
-        >
-          Zurück
-        </button>
+<div class="mt-4 flex items-center justify-between text-sm">
+  <!-- Pagination info -->
+  <div class="text-slate-400">
+    Gesamt: <span class="text-slate-200 font-medium">{{ count() }}</span>
+    • Seite: <span class="text-slate-200 font-medium">{{ page() }}</span>
+  </div>
 
-        <button
-          type="button"
-          class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
-          (click)="goNext()"
-          [disabled]="!next()"
-        >
-          Weiter
-        </button>
-      </div>
-    </div>
+  <!-- Pagination actions -->
+  <div class="flex gap-2">
+    <button type="button"
+      class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+      (click)="goPrev()" [disabled]="!previous()">
+      Zurück
+    </button>
 
-  }
+    <button type="button"
+      class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+      (click)="goNext()" [disabled]="!next()">
+      Weiter
+    </button>
+  </div>
+</div>
+}
 }

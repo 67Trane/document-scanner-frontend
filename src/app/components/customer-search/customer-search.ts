@@ -1,47 +1,33 @@
-import { Component, OnDestroy, output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { Component, effect, signal, output } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
 @Component({
-  selector: 'app-customer-search',
+  selector: "app-customer-search",
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './customer-search.html',
-  styleUrl: './customer-search.css',
+  imports: [CommonModule],
+  templateUrl: "./customer-search.html",
 })
-export class CustomerSearch implements OnDestroy {
+export class CustomerSearch {
+  // outgoing event
   search = output<string>();
 
-  currentTerm = '';
-
-  private term$ = new Subject<string>();
-  private sub: Subscription;
-
-  constructor() {
-    // Emit debounced search term
-    this.sub = this.term$
-      .pipe(
-        map((v) => v.trim()),
-        debounceTime(300),
-        distinctUntilChanged(),
-      )
-      .subscribe((term) => this.search.emit(term));
-  }
+  // internal state
+  private rawValue = signal("");
+  private debounceTimer: any = null;
 
   onInput(event: Event) {
-    const target = event.target as HTMLInputElement;
-    this.currentTerm = target.value;
-    this.term$.next(this.currentTerm);
+    const value = (event.target as HTMLInputElement).value;
+    this.rawValue.set(value);
+
+    // manual debounce (simple & predictable)
+    clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => {
+      this.search.emit(value.trim());
+    }, 300);
   }
 
   onSubmit() {
-    // Emit immediately when user clicks "Suchen"
-    this.search.emit(this.currentTerm.trim());
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    // immediate search on button click
+    this.search.emit(this.rawValue().trim());
   }
 }
