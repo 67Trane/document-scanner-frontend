@@ -54,7 +54,6 @@ export class CustomerDetail implements OnInit {
     return `${c.zip_code} ${c.city}`.trim();
   });
 
-  // Kennzeichen bleiben wie gehabt
   licensePlates = computed(() => {
     const docs = this.alldocuments();
     const allPlates = docs.flatMap((doc) => doc.license_plates ?? []);
