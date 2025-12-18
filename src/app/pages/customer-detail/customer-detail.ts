@@ -108,8 +108,6 @@ export class CustomerDetail implements OnInit {
       next: (data) => this.customer.set(data),
       error: (err) => console.error(err),
     });
-
-
   }
 
   openContract(contract: CustomerDocument): void {
@@ -118,7 +116,7 @@ export class CustomerDetail implements OnInit {
     const url = contract.file_url.startsWith('/')
       ? `${AppConfig.apiBaseUrl}${contract.file_url}`
       : contract.file_url;
-
+      
     window.open(url, '_blank');
   }
 
