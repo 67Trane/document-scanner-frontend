@@ -29,12 +29,11 @@
 
   <!-- Hauptbereich - Verträge & Dokumente -->
   <div class="lg:col-span-8 xl:col-span-9 space-y-6">
-
     <!-- =========================
-     Contracts List
+     Notes Panel
      ========================= -->
-    <app-customer-contracts-list [documents]="alldocuments()"
-      (selectContract)="openContractPreview($event)"></app-customer-contracts-list>
+    <app-customer-notes-panel [notesDraft]="notesDraft()" [canSave]="canSaveNotes()"
+      (notesDraftChange)="notesDraft.set($event)" (save)="saveNotes()"></app-customer-notes-panel>
 
 
     <!-- =========================
@@ -43,12 +42,11 @@
     <app-customer-pdf-viewer [src]="viewerSrc() ?? undefined" [document]="document()"
       (openOriginal)="openContract(document()!)" (download)="downloadCurrentPdf()"></app-customer-pdf-viewer>
 
-
     <!-- =========================
-     Notes Panel
+     Contracts List
      ========================= -->
-    <app-customer-notes-panel [notes]="notes()" [noteDraft]="noteDraft()" [canSave]="canSaveNote()"
-      (noteDraftChange)="noteDraft.set($event)" (add)="addNote()"
-      (delete)="deleteNote($event)"></app-customer-notes-panel>
+    <app-customer-contracts-list [documents]="alldocuments()"
+      (selectContract)="openContractPreview($event)"></app-customer-contracts-list>
+
   </div>
 </div>

@@ -111,9 +111,14 @@ export class CustomerDetail {
      Notes State
      ========================= */
   notes = signal<CustomerNote[]>([]);
-  noteDraft = signal("");
+  notesDraft = signal("");
 
-  canSaveNote = computed(() => this.noteDraft().trim().length > 0);
+  canSaveNotes = computed(() => {
+    const current = (this.customer()?.notes ?? "").trim();
+    const draft = this.notesDraft().trim();
+    return draft.length > 0 && draft !== current;
+  });
+
 
   /* =========================
      Lifecycle (constructor init)
@@ -134,10 +139,14 @@ export class CustomerDetail {
      ========================= */
   private loadCustomer(customerId: number): void {
     this.customerService.getCustomer(customerId).subscribe({
-      next: (data) => this.customer.set(data),
+      next: (data) => {
+        this.customer.set(data);
+        this.notesDraft.set(data.notes ?? "");
+      },
       error: (err) => console.error("Fehler beim Laden des Kunden:", err),
     });
   }
+
 
   private loadDocuments(customerId: number): void {
     this.documentService.getDocumentsByCustomer(customerId).subscribe({
@@ -180,7 +189,7 @@ export class CustomerDetail {
      Notes
      ========================= */
   addNote(): void {
-    const text = this.noteDraft().trim();
+    const text = this.notesDraft().trim();
     if (!text) return;
 
     const next: CustomerNote = {
@@ -191,8 +200,25 @@ export class CustomerDetail {
 
     // Newest first
     this.notes.set([next, ...this.notes()]);
-    this.noteDraft.set("");
+    this.notesDraft.set("");
   }
+
+  saveNotes(): void {
+    const c = this.customer();
+    if (!c) return;
+
+    const notes = this.notesDraft().trim();
+
+    this.customerService.patchCustomer(c.id, { notes }).subscribe({
+      next: (updated) => {
+        this.customer.set(updated);
+        this.notesDraft.set(updated.notes ?? "");
+      },
+      error: (err) => console.error("Fehler beim Speichern der Notizen:", err),
+    });
+
+  }
+
 
   deleteNote(id: string): void {
     this.notes.set(this.notes().filter((n) => n.id !== id));

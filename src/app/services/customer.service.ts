@@ -32,6 +32,12 @@ export class CustomerService {
     });
   }
 
+  patchCustomer(id: number, data: Partial<Customer>) {
+    return this.http.patch<Customer>(`${this.baseUrl}${id}/`, data);
+  }
+
+
+
   createCustomer(data: Partial<Customer>): Observable<Customer> {
     return this.http.post<Customer>(this.baseUrl, data);
   }

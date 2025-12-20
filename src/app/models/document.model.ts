@@ -21,8 +21,9 @@ export interface CustomerDocument {
   license_plates: string[];
   customer: Customer | null;
 
-  contract_status: DocumentStatus;     
-  contract_typ: ContractType;  
+  contract_status: DocumentStatus;
+  contract_typ: ContractType;
+  contract_typ_display: ContractType;
 
   created_at: string;
 }
