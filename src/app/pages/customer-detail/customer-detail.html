@@ -33,7 +33,7 @@
      Notes Panel
      ========================= -->
     <app-customer-notes-panel [notesDraft]="notesDraft()" [canSave]="canSaveNotes()"
-      (notesDraftChange)="notesDraft.set($event)" (save)="saveNotes()"></app-customer-notes-panel>
+      [saveState]="notesSaveState()" (notesDraftChange)="notesDraft.set($event)" (save)="saveNotes()"></app-customer-notes-panel>
 
 
     <!-- =========================

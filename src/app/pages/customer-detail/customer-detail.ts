@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, inject, signal } from "@angular/core";
+import { Component, computed, inject, signal, effect } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 
 import { CustomerService } from "../../services/customer.service";
@@ -112,6 +112,19 @@ export class CustomerDetail {
      ========================= */
   notes = signal<CustomerNote[]>([]);
   notesDraft = signal("");
+  private notesAutoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastSavedNotes = "";
+  private isSavingNotes = signal(false);
+  private saveNotesError = signal(false);
+
+  notesSaveState = computed<"saved" | "saving" | "dirty" | "error">(() => {
+    const draft = this.notesDraft().trim();
+
+    if (this.isSavingNotes()) return "saving";
+    if (this.saveNotesError()) return "error";
+    if (draft === this.lastSavedNotes) return "saved";
+    return draft.length > 0 ? "dirty" : "saved";
+  });
 
   canSaveNotes = computed(() => {
     const current = (this.customer()?.notes ?? "").trim();
@@ -130,6 +143,20 @@ export class CustomerDetail {
       return;
     }
 
+    effect(() => {
+      const customer = this.customer();
+      if (!customer) return;
+
+      const draft = this.notesDraft().trim();
+      if (draft === this.lastSavedNotes) return;
+
+      if (this.notesAutoSaveTimer) clearTimeout(this.notesAutoSaveTimer);
+      this.notesAutoSaveTimer = setTimeout(() => {
+        this.notesAutoSaveTimer = null;
+        this.saveNotes();
+      }, 1200);
+    });
+
     this.loadCustomer(customerId);
     this.loadDocuments(customerId);
   }
@@ -142,6 +169,7 @@ export class CustomerDetail {
       next: (data) => {
         this.customer.set(data);
         this.notesDraft.set(data.notes ?? "");
+        this.lastSavedNotes = (data.notes ?? "").trim();
       },
       error: (err) => console.error("Fehler beim Laden des Kunden:", err),
     });
@@ -206,17 +234,29 @@ export class CustomerDetail {
   saveNotes(): void {
     const c = this.customer();
     if (!c) return;
+    if (this.isSavingNotes()) return;
 
     const notes = this.notesDraft().trim();
+    if (notes === this.lastSavedNotes) return;
+
+    this.isSavingNotes.set(true);
+    this.saveNotesError.set(false);
 
     this.customerService.patchCustomer(c.id, { notes }).subscribe({
       next: (updated) => {
         this.customer.set(updated);
-        this.notesDraft.set(updated.notes ?? "");
+        const synced = (updated.notes ?? "").trim();
+        this.notesDraft.set(synced);
+        this.lastSavedNotes = synced;
+        this.isSavingNotes.set(false);
+        this.saveNotesError.set(false);
       },
-      error: (err) => console.error("Fehler beim Speichern der Notizen:", err),
+      error: (err) => {
+        console.error("Fehler beim Speichern der Notizen:", err);
+        this.isSavingNotes.set(false);
+        this.saveNotesError.set(true);
+      },
     });
-
   }
 
 
