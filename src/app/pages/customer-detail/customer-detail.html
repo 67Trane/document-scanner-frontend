@@ -21,7 +21,7 @@
      ========================= -->
     <app-customer-contact-card [customer]="customer()" [email]="email()" [phone]="phone()"
       [addressLine1]="addressLine1()" [addressLine2]="addressLine2()" [licensePlates]="licensePlates()"
-      [policyNumbers]="policyNumbers()"></app-customer-contact-card>
+      [policyNumbers]="policyNumbers()" (saveChanges)="onSaveChanges($event)"></app-customer-contact-card>
 
   </aside>
 
