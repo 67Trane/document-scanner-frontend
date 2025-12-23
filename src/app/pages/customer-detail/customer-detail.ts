@@ -132,8 +132,25 @@ export class CustomerDetail {
     return draft.length > 0 && draft !== current;
   });
 
-  onSaveChanges(e: { phone: string | null; email: string | null; addressLine1: string; addressLine2: string }) {
-    this.customer.update(c => c ? ({ ...c, phone: e.phone, email: e.email, street: e.addressLine1, zip_code: e.addressLine2 }) : c);
+  onSaveChanges(e: {
+    phone: string | null;
+    email: string | null;
+    addressLine1: string;
+    addressLine2: string;
+  }) {
+    this.customer.update(currentCustomer => {
+      if (!currentCustomer) {
+        return currentCustomer;
+      }
+
+      return {
+        ...currentCustomer,
+        phone: e.phone,
+        email: e.email,
+        street: e.addressLine1,
+        zip_code: e.addressLine2,
+      };
+    });
   }
 
 
