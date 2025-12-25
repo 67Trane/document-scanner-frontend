@@ -1,8 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, input, output, signal, inject, ChangeDetectionStrategy } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { forkJoin } from "rxjs";
 import { Customer } from "../../../../models/customer.model";
 import { CustomerService } from "../../../../services/customer.service";
+import { DocumentService } from "../../../../services/document.service";
+import { CustomerDocument } from "../../../../models/document.model";
 import { ActivatedRoute } from "@angular/router";
 
 @Component({
@@ -15,7 +18,9 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class CustomerContactCard {
   customer = input<Customer | null>(null);
+  
   private customerService = inject(CustomerService);
+  private documentService = inject(DocumentService);
   private route = inject(ActivatedRoute);
   private customerId: number = 0;
 
@@ -52,17 +57,12 @@ export class CustomerContactCard {
   newLicensePlate = signal<string>("");
   newPolicyNumber = signal<string>("");
 
-  // Output events
-  saveChanges = output<{
-    email: string | null;
-    phone: string | null;
-    addressLine1: string;
-    addressLine2: string;
-  }>();
+  // Output event to notify parent of changes
+  contactUpdated = output<void>();
 
   toggleEdit() {
     if (!this.isEditing()) {
-      // Enter edit mode
+      // Enter edit mode - copy current values
       this.editEmail.set(this.email() || "");
       this.editPhone.set(this.phone() || "");
       this.editAddressLine1.set(this.addressLine1());
@@ -75,28 +75,35 @@ export class CustomerContactCard {
       return;
     }
 
-    // Exit edit mode - send PATCH
-    const payload: Partial<Customer> = {
+    // Exit edit mode - save changes
+    this.saveCustomerAndDocument();
+  }
+
+  private saveCustomerAndDocument() {
+    // Prepare payloads
+    const customerPayload: Partial<Customer> = {
       email: this.editEmail() || null,
       phone: this.editPhone(),
       street: this.editAddressLine1(),
-
-      // license_plates: this.editLicensePlates(),
-      // policy_numbers: this.editPolicyNumbers(),
     };
 
-    this.customerService.patchCustomer(this.customerId, payload).subscribe({
-      next: (updated) => {
-        this.saveChanges.emit({
-          email: updated.email ?? null,
-          phone: updated.phone ?? null,
-          addressLine1: updated.street ?? '',
-          addressLine2: updated.zip_code ?? '',
-        });
+    const documentPayload: Partial<CustomerDocument> = {
+      license_plates: this.editLicensePlates(),
+      policy_numbers: this.editPolicyNumbers(),
+    };
+
+    // Execute both PATCH requests in parallel
+    forkJoin({
+      customer: this.customerService.patchCustomer(this.customerId, customerPayload),
+      document: this.documentService.patchDocument(this.customerId, documentPayload),
+    }).subscribe({
+      next: () => {
         this.isEditing.set(false);
+        this.contactUpdated.emit();
       },
       error: (err) => {
-        console.error('PATCH failed', err);
+        console.error('Failed to update customer or document:', err);
+        // Keep edit mode open on error so user doesn't lose changes
       },
     });
   }

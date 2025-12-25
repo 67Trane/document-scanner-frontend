@@ -21,32 +21,32 @@
      ========================= -->
     <app-customer-contact-card [customer]="customer()" [email]="email()" [phone]="phone()"
       [addressLine1]="addressLine1()" [addressLine2]="addressLine2()" [licensePlates]="licensePlates()"
-      [policyNumbers]="policyNumbers()" (saveChanges)="onSaveChanges($event)"></app-customer-contact-card>
+      [policyNumbers]="policyNumbers()" (contactUpdated)="onContactUpdated()"></app-customer-contact-card>
 
   </aside>
 
 
 
   <!-- Hauptbereich - Verträge & Dokumente -->
-  <div class="lg:col-span-8 xl:col-span-9 space-y-6">
-    <!-- =========================
+  <div class=" lg:col-span-8 xl:col-span-9 space-y-6">
+      <!-- =========================
      Notes Panel
      ========================= -->
-    <app-customer-notes-panel [notesDraft]="notesDraft()" [canSave]="canSaveNotes()"
-      [saveState]="notesSaveState()" (notesDraftChange)="notesDraft.set($event)" (save)="saveNotes()"></app-customer-notes-panel>
+      <app-customer-notes-panel [notesDraft]="notesDraft()" [canSave]="canSaveNotes()" [saveState]="notesSaveState()"
+        (notesDraftChange)="notesDraft.set($event)" (save)="saveNotes()"></app-customer-notes-panel>
 
 
-    <!-- =========================
+      <!-- =========================
      PDF Viewer
      ========================= -->
-    <app-customer-pdf-viewer [src]="viewerSrc() ?? undefined" [document]="document()"
-      (openOriginal)="openContract(document()!)" (download)="downloadCurrentPdf()"></app-customer-pdf-viewer>
+      <app-customer-pdf-viewer [src]="viewerSrc() ?? undefined" [document]="document()"
+        (openOriginal)="openContract(document()!)" (download)="downloadCurrentPdf()"></app-customer-pdf-viewer>
 
-    <!-- =========================
+      <!-- =========================
      Contracts List
      ========================= -->
-    <app-customer-contracts-list [documents]="alldocuments()"
-      (selectContract)="openContractPreview($event)"></app-customer-contracts-list>
+      <app-customer-contracts-list [documents]="alldocuments()"
+        (selectContract)="openContractPreview($event)"></app-customer-contracts-list>
 
-  </div>
+</div>
 </div>

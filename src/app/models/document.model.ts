@@ -17,7 +17,7 @@ export interface CustomerDocument {
   file_path: string;
   file_url: string;
   raw_text: string;
-  policy_number: string | null;
+  policy_numbers: string[];
   license_plates: string[];
   customer: Customer | null;
 

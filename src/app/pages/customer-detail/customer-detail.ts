@@ -44,6 +44,7 @@ export class CustomerDetail {
   private route = inject(ActivatedRoute);
   private customerService = inject(CustomerService);
   private documentService = inject(DocumentService);
+  private customerId = Number(this.route.snapshot.paramMap.get("id"));
 
   /* =========================
      Core State
@@ -97,11 +98,15 @@ export class CustomerDetail {
 
   policyNumbers = computed(() => {
     const docs = this.alldocuments();
-    const numbers = docs
-      .map((doc) => doc.policy_number ?? "")
-      .filter((n) => n && n.trim().length > 0);
-    return Array.from(new Set(numbers));
+
+    const allNumbers = docs.flatMap((doc) => doc.policy_numbers ?? []);
+    const filtered = allNumbers
+      .map((n) => (n ?? "").trim())
+      .filter((n) => n.length > 0);
+
+    return Array.from(new Set(filtered));
   });
+
 
   activeContractsCount = computed(() => {
     return this.alldocuments().filter((doc) => doc.contract_status === "aktiv").length;
@@ -132,25 +137,9 @@ export class CustomerDetail {
     return draft.length > 0 && draft !== current;
   });
 
-  onSaveChanges(e: {
-    phone: string | null;
-    email: string | null;
-    addressLine1: string;
-    addressLine2: string;
-  }) {
-    this.customer.update(currentCustomer => {
-      if (!currentCustomer) {
-        return currentCustomer;
-      }
-
-      return {
-        ...currentCustomer,
-        phone: e.phone,
-        email: e.email,
-        street: e.addressLine1,
-        zip_code: e.addressLine2,
-      };
-    });
+  onContactUpdated(): void {
+    this.loadCustomer(this.customerId);
+    this.loadDocuments(this.customerId);
   }
 
 

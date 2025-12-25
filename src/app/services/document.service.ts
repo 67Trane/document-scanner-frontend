@@ -15,9 +15,9 @@ export class DocumentService {
 
   private baseUrl = `${AppConfig.apiBaseUrl}`;
 
-  // getDocuments(): Observable<CustomerDocument[]> {
-  //   return this.http.get<CustomerDocument[]>(`${this.baseUrl}api/documents/`);
-  // }
+  patchDocument(id: number, data: Partial<CustomerDocument>): Observable<CustomerDocument> {
+      return this.http.patch<CustomerDocument>(`${this.baseUrl}/api/documents/${id}/`, data);
+    }
 
   getDocument(id: number): Observable<CustomerDocument> {
     const url = new URL(`/api/documents/${id}/`, this.baseUrl).toString();
