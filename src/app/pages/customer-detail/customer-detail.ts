@@ -59,15 +59,9 @@ export class CustomerDetail {
   today = new Date();
 
   /* =========================
-     Computed: Viewer Source
+     PDF Viewer Source (Blob URL)
      ========================= */
-  viewerSrc = computed<string | undefined>(() => {
-    const url = this.document()?.file_url;
-    if (!url) return undefined;
-
-    // Ensure absolute URL for HttpClient / PDF viewer
-    return url.startsWith("/") ? new URL(url, AppConfig.apiBaseUrl).toString() : url;
-  });
+  viewerSrc = signal<string | undefined>(undefined);
 
   /* =========================
      Computed: Customer Basics
@@ -152,6 +146,38 @@ export class CustomerDetail {
       console.error("Keine gültige ID in der URL gefunden.");
       return;
     }
+
+    // Fetch PDF as a blob so auth cookies are sent; ngx-extended-pdf-viewer
+    // can't attach credentials to a plain URL fetch.
+    effect((onCleanup) => {
+      const doc = this.document();
+      const docId = doc?.id;
+      if (!docId) {
+        this.viewerSrc.set(undefined);
+        return;
+      }
+
+      let active = true;
+      let objectUrl: string | null = null;
+
+      const sub = this.documentService.getDocumentFileBlob(docId).subscribe({
+        next: (blob) => {
+          if (!active) return;
+          objectUrl = URL.createObjectURL(blob);
+          this.viewerSrc.set(objectUrl);
+        },
+        error: (err) => {
+          console.error("Fehler beim Laden des Dokuments:", err);
+          this.viewerSrc.set(undefined);
+        },
+      });
+
+      onCleanup(() => {
+        active = false;
+        sub.unsubscribe();
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+      });
+    });
 
     effect(() => {
       const customer = this.customer();

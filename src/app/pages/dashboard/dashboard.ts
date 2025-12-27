@@ -4,6 +4,7 @@ import { CustomerList } from '../../components/customer-list/customer-list';
 import { DocumentList } from '../../components/document-list/document-list';
 import { RouterLink } from '@angular/router';
 import { Router, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
@@ -15,6 +16,7 @@ type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
+  private auth = inject(AuthService);
   private router = inject(Router);
   searchTerm = signal<string>('');
 
@@ -24,6 +26,15 @@ export class Dashboard {
 
   setActive(section: SidebarSection) {
     this.activeSection.set(section);
+  }
+
+  logOut() {
+    this.auth.logout().subscribe({
+      next: () => {
+        this.router.navigateByUrl("/login");
+      },
+      error: (err) => console.error("Logout failed", err),
+    });
   }
 
   onSearch(term: string) {
