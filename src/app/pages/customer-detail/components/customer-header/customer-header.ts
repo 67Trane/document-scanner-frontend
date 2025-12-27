@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, input } from "@angular/core";
+import { Component, inject, input } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-customer-header",
@@ -7,11 +8,12 @@ import { Component, input } from "@angular/core";
   imports: [CommonModule],
   templateUrl: "./customer-header.html",
   styleUrl: "./customer-header.css",
-
 })
 export class CustomerHeader {
+  private router = inject(Router);
   fullName = input<string>("");
 
-  // Optional: If you want to wire the back button later
-  // back = output<void>();
+  goHome() {
+    this.router.navigateByUrl("/dashboard");
+  }
 }
