@@ -1,10 +1,11 @@
 <div
   class="min-h-screen bg-linear-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex transition-colors duration-300">
 
-  
+
   <aside
     class="hidden md:flex md:flex-col w-64 bg-slate-900 dark:bg-slate-950 text-slate-100 px-4 py-6 border-r border-transparent dark:border-slate-800">
-    <div class="flex items-center gap-2 mb-8 px-2"><button class="border-2 border-amber-300" (click)="logOut()">test</button>
+    <div class="flex items-center gap-2 mb-8 px-2"><button class="border-2 border-amber-300"
+        (click)="logOut()">test</button>
       <div
         class="h-9 w-9 rounded-xl bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-sm font-bold shadow-md">
         DS
@@ -125,7 +126,9 @@
                 class="w-8 h-8 bg-linear-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                 DU
               </div>
-              <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Demo Benutzer</span>
+              @if (username()) {
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-200">{{ username() }}</span>
+              }
             </div>
 
             <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" type="button">

@@ -1,18 +1,38 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable, inject, signal, computed } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, tap } from "rxjs";
+import { Observable, catchError, tap, throwError } from "rxjs";
 import { AppConfig } from "../config";
 
+export type MeResponse = { id: number; username: string };
+
 export type LoginPayload = {
-  username: string;          
-  password: string;
-  remember: boolean;         
+  username: string;
+  remember: boolean;
 };
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
   private http = inject(HttpClient);
   private baseUrl = `${AppConfig.apiBaseUrl}/api/auth`;
+
+  user = signal<MeResponse | null>(null);
+  isReady = signal(false);
+
+  isLoggedIn = computed(() => !!this.user());
+
+  loadUser(): Observable<MeResponse> {
+    return this.me().pipe(
+      tap((u) => {
+        this.user.set(u);
+        this.isReady.set(true);
+      }),
+      catchError((err) => {
+        this.user.set(null);
+        this.isReady.set(true);
+        return throwError(() => err);
+      })
+    );
+  }
 
   /**
    * IMPORTANT: Call once before first POST/PATCH/DELETE to get csrftoken cookie.

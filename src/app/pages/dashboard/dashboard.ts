@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, computed } from '@angular/core';
 import { CustomerSearch } from '../../components/customer-search/customer-search';
 import { CustomerList } from '../../components/customer-list/customer-list';
 import { DocumentList } from '../../components/document-list/document-list';
@@ -16,9 +16,10 @@ type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  private auth = inject(AuthService);
+  readonly auth = inject(AuthService);
   private router = inject(Router);
   searchTerm = signal<string>('');
+  username = computed(() => this.auth.user()?.username ?? '');
 
   constructor() { }
   year = new Date().getFullYear();
