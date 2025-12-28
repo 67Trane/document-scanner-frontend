@@ -1,4 +1,5 @@
-<div class="h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex transition-colors duration-300 overflow-hidden">
+<div
+  class="h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex transition-colors duration-300 overflow-hidden">
 
   <!-- Minimalist Sidebar -->
   <aside
@@ -106,7 +107,7 @@
     <!-- Main Content Area - Scrollable -->
     <main class="flex-1 overflow-auto">
       <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-4 h-full">
-        
+
         <!-- Compact Stats Dashboard -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           <!-- Stat Card 1 -->
@@ -191,7 +192,8 @@
             <div class="max-w-3xl mx-auto">
               <div class="text-center mb-4">
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Kundensuche</h2>
-                <p class="text-xs text-slate-600 dark:text-slate-400">Suche nach Name, Versicherungsnummer oder Kennzeichen</p>
+                <p class="text-xs text-slate-600 dark:text-slate-400">Suche nach Name, Versicherungsnummer oder
+                  Kennzeichen</p>
               </div>
 
               <app-customer-search (search)="onSearch($event)"></app-customer-search>
@@ -204,15 +206,15 @@
                 </button>
                 <button
                   class="px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                  Kfz
+                  Name
                 </button>
                 <button
                   class="px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                  Haftpflicht
+                  Versicherungsnummer
                 </button>
                 <button
                   class="px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                  Hausrat
+                  Kennzeichen
                 </button>
               </div>
             </div>
