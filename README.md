@@ -1,59 +1,65 @@
-# DocumentScannerFrontend
+# DocuScan – Document Scanner & Search Desk (Demo)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.0.
+DocuScan ist eine Fullstack-App zum Erfassen (Scan/Upload), Speichern und schnellen Wiederfinden von Dokumenten inkl. PDF-Preview und Metadatenpflege – optimiert für kleine Teams (2–5 Nutzer).
 
-## Development server
+> ⚠️ Dieses Repository ist eine **Dummy-/Demo-Version** für Portfolio & Interviews.  
+> Alle Daten (Kunden, Verträge, PDFs) sind **synthetisch** und enthalten **keine echten personenbezogenen Informationen**.
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
-```
+## Features
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Login mit Cookie-Auth + CSRF-Handshake
+- Dashboard: Kundensuche + schnelle Navigation
+- Kunden-Detail: Dokumentliste, Status, Metadaten bearbeiten
+- PDF Preview + Download
+- (Optional/Geplant) OCR/Extraktion & Volltextsuche
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Screenshots
+> Füge hier 3–6 Screenshots ein (Login, Dashboard, Customer Detail, PDF Preview).
+- `docs/screens/login.png`
+- `docs/screens/dashboard.png`
+- `docs/screens/customer-detail.png`
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Demo (optional)
+**Demo Login (Dummy):**
+- User: `demo`
+- Passwort: `demo1234`
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+## Architektur (kurz)
 
-To build the project run:
+Frontend (Angular 21) → Backend (Django REST Framework) → SQLite (Metadaten)  
+Dokument-Dateien: lokal im Dev-Setup (MEDIA_ROOT), in Produktion optional S3/Storage.
 
-```bash
-ng build
-```
+Datenfluss:
+1) Upload/Scan → Backend speichert Datei + Metadaten  
+2) UI listet Dokumente pro Kunde  
+3) PDF wird über `/file/` gestreamt/gedownloadet  
+4) Metadaten-Änderungen via `PATCH`
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Tech Stack
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Frontend
+- Angular 21 (standalone components + signals)
+- Tailwind CSS v4
+- RxJS
+- ngx-extended-pdf-viewer
 
-```bash
-ng test
-```
+### Backend
+- Django + Django REST Framework
+- SQLite (Dev/Demo)
+- Session/Cookie Auth + CSRF
+- (Optional) django-cors-headers, drf-spectacular
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Projektstruktur
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

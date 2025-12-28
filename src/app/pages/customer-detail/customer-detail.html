@@ -3,48 +3,75 @@
      ========================= -->
 <app-customer-header [fullName]="fullName()"></app-customer-header>
 
+<!-- Main Container with Light/Dark Background -->
+<div class="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-300">
+  <div class="max-w-[1600px] mx-auto px-6 lg:px-8 py-8">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Linke Sidebar - Kundeninfo -->
+      <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
 
-  <!-- Linke Sidebar - Kundeninfo -->
-  <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
+        <!-- =========================
+         Customer Profile Card
+         ========================= -->
+        <app-customer-profile-card 
+          [customer]="customer()" 
+          [contractsCount]="alldocuments().length"
+          [vehiclesCount]="licensePlates().length" 
+          [policiesCount]="policyNumbers().length">
+        </app-customer-profile-card>
 
-    <!-- =========================
-     Customer Profile Card
-     ========================= -->
-    <app-customer-profile-card [customer]="customer()" [contractsCount]="alldocuments().length"
-      [vehiclesCount]="licensePlates().length" [policiesCount]="policyNumbers().length"></app-customer-profile-card>
+        <!-- =========================
+         Contact Details Card
+         ========================= -->
+        <app-customer-contact-card 
+          [customer]="customer()" 
+          [email]="email()" 
+          [phone]="phone()"
+          [addressLine1]="addressLine1()" 
+          [addressLine2]="addressLine2()" 
+          [licensePlates]="licensePlates()"
+          [policyNumbers]="policyNumbers()" 
+          (contactUpdated)="onContactUpdated()">
+        </app-customer-contact-card>
 
-    <!-- =========================
-     Contact Details Card
-     ========================= -->
-    <app-customer-contact-card [customer]="customer()" [email]="email()" [phone]="phone()"
-      [addressLine1]="addressLine1()" [addressLine2]="addressLine2()" [licensePlates]="licensePlates()"
-      [policyNumbers]="policyNumbers()" (contactUpdated)="onContactUpdated()"></app-customer-contact-card>
+      </aside>
 
-  </aside>
+      <!-- Hauptbereich - Verträge & Dokumente -->
+      <div class="lg:col-span-8 xl:col-span-9 space-y-6">
+        
+        <!-- =========================
+         Notes Panel
+         ========================= -->
+        <app-customer-notes-panel 
+          [notesDraft]="notesDraft()" 
+          [canSave]="canSaveNotes()" 
+          [saveState]="notesSaveState()"
+          (notesDraftChange)="notesDraft.set($event)" 
+          (save)="saveNotes()">
+        </app-customer-notes-panel>
 
+        <!-- =========================
+         PDF Viewer
+         ========================= -->
+        <app-customer-pdf-viewer 
+          [src]="viewerSrc() ?? undefined" 
+          [document]="document()"
+          (openOriginal)="openContract(document()!)" 
+          (download)="downloadCurrentPdf()">
+        </app-customer-pdf-viewer>
 
+        <!-- =========================
+         Contracts List
+         ========================= -->
+        <app-customer-contracts-list 
+          [documents]="alldocuments()"
+          (selectContract)="openContractPreview($event)">
+        </app-customer-contracts-list>
 
-  <!-- Hauptbereich - Verträge & Dokumente -->
-  <div class=" lg:col-span-8 xl:col-span-9 space-y-6">
-    <!-- =========================
-     Notes Panel
-     ========================= -->
-    <app-customer-notes-panel [notesDraft]="notesDraft()" [canSave]="canSaveNotes()" [saveState]="notesSaveState()"
-      (notesDraftChange)="notesDraft.set($event)" (save)="saveNotes()"></app-customer-notes-panel>
-
-    <!-- =========================
-     PDF Viewer
-     ========================= -->
-    <app-customer-pdf-viewer [src]="viewerSrc() ?? undefined" [document]="document()"
-      (openOriginal)="openContract(document()!)" (download)="downloadCurrentPdf()"></app-customer-pdf-viewer>
-
-    <!-- =========================
-     Contracts List
-     ========================= -->
-    <app-customer-contracts-list [documents]="alldocuments()"
-      (selectContract)="openContractPreview($event)"></app-customer-contracts-list>
-
+      </div>
+    </div>
+    
   </div>
 </div>

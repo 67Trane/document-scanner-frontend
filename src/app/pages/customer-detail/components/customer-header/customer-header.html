@@ -3,36 +3,50 @@
      ========================= -->
 
 <header
-  class="border-b border-slate-800/50 backdrop-blur-xl bg-slate-900/30 sticky top-0 z-50 px-6 py-4 mb-6"
+  class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-50 shadow-sm transition-colors duration-300"
 >
-  <div class="flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <button class="p-2 hover:bg-slate-800/50 rounded-lg transition-colors" (click)="goHome()">
-        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
+  <div class="max-w-[1600px] mx-auto px-6 lg:px-8 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <button 
+          class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors" 
+          (click)="goHome()"
+          type="button"
+        >
+          <svg class="w-5 h-5 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-      <nav class="flex items-center gap-2 text-sm">
-        <a routerLink="/customers" class="text-slate-400 hover:text-white transition-colors">Kunden</a>
-        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-        <span class="text-white font-medium">{{ fullName() || "Lade..." }}</span>
-      </nav>
-    </div>
+        <nav class="flex items-center gap-2 text-sm">
+          <a 
+            routerLink="/dashboard" 
+            class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+          >
+            Kunden
+          </a>
+          <svg class="w-4 h-4 text-slate-400 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          <span class="text-slate-900 dark:text-white font-semibold">{{ fullName() || "Lade..." }}</span>
+        </nav>
+      </div>
 
-    <div class="flex items-center gap-3">
-      <button class="p-2 hover:bg-slate-800/50 rounded-lg transition-colors relative">
-        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-          />
-        </svg>
-      </button>
+      <div class="flex items-center gap-3">
+        <button 
+          class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors relative" 
+          type="button"
+        >
+          <svg class="w-5 h-5 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </header>

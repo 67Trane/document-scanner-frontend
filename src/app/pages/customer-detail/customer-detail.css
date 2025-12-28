@@ -4,6 +4,4 @@
 
 :host {
   display: block;
-  background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
-  min-height: 100vh;
 }

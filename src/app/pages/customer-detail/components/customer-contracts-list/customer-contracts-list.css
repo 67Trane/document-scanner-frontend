@@ -13,5 +13,11 @@
 
 .contract-item:hover {
   transform: translateX(4px);
-  background: rgba(59, 130, 246, 0.1) !important;
+  background: rgba(59, 130, 246, 0.05) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contract-item:hover {
+    background: rgba(59, 130, 246, 0.08) !important;
+  }
 }
