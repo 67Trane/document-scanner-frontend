@@ -53,6 +53,30 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "demo": {
+              "optimization": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputPath": "dist/document-scanner-frontend-demo",
+              "fileReplacements": [
+                {
+                  "replace": "src/app/runtime-config.ts",
+                  "with": "src/app/runtime-config.demo.ts"
+                }
+              ]
+            },
+            "nas": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputPath": "dist/document-scanner-frontend-nas",
+              "fileReplacements": [
+                {
+                  "replace": "src/app/runtime-config.ts",
+                  "with": "src/app/runtime-config.nas.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -65,6 +89,12 @@
             },
             "development": {
               "buildTarget": "document-scanner-frontend:build:development"
+            },
+            "demo": {
+              "buildTarget": "document-scanner-frontend:build:demo"
+            },
+            "nas": {
+              "buildTarget": "document-scanner-frontend:build:nas"
             }
           },
           "defaultConfiguration": "development"

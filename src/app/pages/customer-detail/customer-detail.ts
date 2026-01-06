@@ -6,7 +6,7 @@ import { CustomerService } from "../../services/customer.service";
 import { DocumentService } from "../../services/document.service";
 import { Customer } from "../../models/customer.model";
 import { CustomerDocument } from "../../models/document.model";
-import { AppConfig } from "../../runtime-config.dev";
+import { AppConfig } from "../../runtime-config";
 
 import { CustomerHeader } from "./components/customer-header/customer-header";
 import { CustomerProfileCard } from "./components/customer-profile-card/customer-profile-card";
