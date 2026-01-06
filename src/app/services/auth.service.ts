@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, catchError, tap, throwError } from "rxjs";
-import { AppConfig } from "../config";
+import { AppConfig } from "../runtime-config.dev";
 
 export type MeResponse = { id: number; username: string };
 

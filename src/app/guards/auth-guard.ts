@@ -12,17 +12,17 @@ export const authGuard: CanActivateFn = (route, state) => {
     catchError((err) => {
       if (err?.status === 401) {
         return of(
-          router.createUrlTree(["/login"], {
+          router.createUrlTree(["login"], {
             queryParams: { returnUrl: state.url },
           })
         );
       }
 
       if (err?.status === 403) {
-        return of(router.createUrlTree(["/login"]));
+        return of(router.createUrlTree(["login"]));
       }
 
-      return of(router.createUrlTree(["/login"]));
+      return of(router.createUrlTree(["login"]));
     })
   );
 };

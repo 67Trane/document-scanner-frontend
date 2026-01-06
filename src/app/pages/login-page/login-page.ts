@@ -42,11 +42,9 @@ export class LoginPage {
       )
       .subscribe({
         next: () => {
-          // After login, you can navigate to dashboard
           this.router.navigateByUrl("/dashboard");
         },
         error: (err) => {
-          // TODO: show a user-friendly error message
           console.error(err);
         },
       });

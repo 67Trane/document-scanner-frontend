@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppConfig } from '../config';
+import { AppConfig } from '../runtime-config.dev';
 import { CustomerDocument } from '../models/document.model';
 import { map } from "rxjs/operators";
 import { PaginatedResponse } from '../models/paginated-response.model';

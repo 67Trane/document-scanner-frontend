@@ -24,6 +24,5 @@ export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
       });
     }
   }
-
   return next(request);
 };
