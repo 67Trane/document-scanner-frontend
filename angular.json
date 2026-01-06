@@ -52,13 +52,15 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": false
             },
             "demo": {
               "optimization": true,
               "extractLicenses": false,
               "sourceMap": true,
               "outputPath": "dist/document-scanner-frontend-demo",
+              "baseHref": "/docuscan/",
+              "outputHashing": "all",
               "fileReplacements": [
                 {
                   "replace": "src/app/runtime-config.ts",
@@ -69,8 +71,9 @@
             "nas": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
+              "sourceMap": false,
               "outputPath": "dist/document-scanner-frontend-nas",
+              "outputHashing": "all",
               "fileReplacements": [
                 {
                   "replace": "src/app/runtime-config.ts",
