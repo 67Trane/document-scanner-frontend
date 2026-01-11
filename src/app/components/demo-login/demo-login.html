@@ -1,0 +1,88 @@
+<!-- Demo Login Box - app-demo-login component -->
+<div
+    class="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+
+    <!-- Header -->
+    <div class="px-6 py-5 bg-linear-to-r from-emerald-900/60 to-slate-900 border-b border-emerald-800/60">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-10 h-10 bg-linear-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-lg">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white">Demo-Zugang</h3>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="px-6 py-6">
+        <p class="text-sm text-slate-600 dark:text-slate-400 mb-5">
+            Nutzen Sie diesen Demo-Account, um die Anwendung unverbindlich zu testen.
+        </p>
+
+        <div class="space-y-3">
+            <!-- Benutzername -->
+            <div
+                class="bg-slate-50 dark:bg-slate-800 rounded-lg px-4 py-3 border border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Benutzername</span>
+                    <button onclick="navigator.clipboard.writeText('demo')"
+                        class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                        title="Kopieren">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="font-mono text-sm text-slate-900 dark:text-white mt-1">demo</p>
+            </div>
+
+            <!-- Password -->
+            <div
+                class="bg-slate-50 dark:bg-slate-800 rounded-lg px-4 py-3 border border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Passwort</span>
+                    <button onclick="navigator.clipboard.writeText('asdasd')"
+                        class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                        title="Kopieren">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="font-mono text-sm text-slate-900 dark:text-white mt-1">asdasd</p>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div
+            class="mt-5 flex items-start gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg px-3 py-3">
+            <svg class="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p class="text-xs text-amber-800 dark:text-amber-300">
+                Nur für Demo-Zwecke – keine echten Daten verwenden.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Keine Registrierung erforderlich</span>
+        </div>
+    </div>
+</div>

@@ -2,15 +2,20 @@ import { Component, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
 import { finalize, switchMap } from "rxjs";
+import { DemoLogin } from "../../components/demo-login/demo-login";
+import { AppConfig } from "../../runtime-config";
+
 
 @Component({
   selector: "app-login-page",
+  imports: [DemoLogin],
   standalone: true,
   templateUrl: "./login-page.html",
 })
 export class LoginPage {
   private auth = inject(AuthService);
   private router = inject(Router);
+  production = AppConfig.production
 
   // Your template already uses these signals :contentReference[oaicite:4]{index=4}
   email = signal("");
