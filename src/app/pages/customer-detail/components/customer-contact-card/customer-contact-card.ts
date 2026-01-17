@@ -33,6 +33,7 @@ export class CustomerContactCard {
   phone = input<string | null>(null);
   addressLine1 = input<string>("");
   addressLine2 = input<string>("");
+  birthday = input<string | null>(null);
 
   // Arrays
   licensePlates = input<string[]>([]);
@@ -48,6 +49,7 @@ export class CustomerContactCard {
   // Editable values
   editEmail = signal<string>("");
   editPhone = signal<string>("");
+  editBirthday = signal<string>("");
   editAddressLine1 = signal<string>("");
   editAddressLine2 = signal<string>("");
   editLicensePlates = signal<string[]>([]);
@@ -65,6 +67,7 @@ export class CustomerContactCard {
       // Enter edit mode - copy current values
       this.editEmail.set(this.email() || "");
       this.editPhone.set(this.phone() || "");
+      this.editBirthday.set(this.birthday() || "");
       this.editAddressLine1.set(this.addressLine1());
       this.editAddressLine2.set(this.addressLine2());
       this.editLicensePlates.set([...this.licensePlates()]);
@@ -85,6 +88,7 @@ export class CustomerContactCard {
       email: this.editEmail() || null,
       phone: this.editPhone(),
       street: this.editAddressLine1(),
+      date_of_birth: this.editBirthday() || null,
     };
 
     const documentPayload: Partial<CustomerDocument> = {

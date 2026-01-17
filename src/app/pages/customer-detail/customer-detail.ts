@@ -73,6 +73,8 @@ export class CustomerDetail {
 
   email = computed(() => this.customer()?.email?.trim() || null);
   phone = computed(() => this.customer()?.phone?.trim() || null);
+  dateOfBirth = computed(() => this.customer()?.date_of_birth ?? null);
+
 
   addressLine1 = computed(() => this.customer()?.street || "");
   addressLine2 = computed(() => {
