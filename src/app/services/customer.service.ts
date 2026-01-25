@@ -36,6 +36,18 @@ export class CustomerService {
     return this.http.get<Customer>(`${this.baseUrl}${id}/`);
   }
 
+  getCustomerCount(search?: string) {
+    const options = search?.trim()
+      ? { params: { q: search.trim() } as const }
+      : {};
+
+    return this.http.get<{ count: number }>(
+      `${this.baseUrl}count/`,
+      options
+    );
+  }
+
+
   /**
    * Lightweight search without pagination.
    * Intended for autocomplete / quick search.
