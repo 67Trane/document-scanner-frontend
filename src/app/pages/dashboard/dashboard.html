@@ -191,9 +191,8 @@
 
             <div class="max-w-3xl mx-auto">
               <div class="text-center mb-4">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Kundensuche</h2>
-                <p class="text-xs text-slate-600 dark:text-slate-400">Suche nach Name, Versicherungsnummer oder
-                  Kennzeichen</p>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-1">{{currentSearch|| "Suchen"}} </h2>
+                <p class="text-xs text-slate-600 dark:text-slate-400">{{currentSearchDescription || "Bitte wähle eine der Optionen aus"}}</p>
               </div>
 
               <app-customer-search (search)="onSearch($event)"></app-customer-search>
@@ -205,14 +204,16 @@
                   Alle
                 </button>
                 <button
-                  class="px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                  (click)="setSearch('Name')" class="px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                   Name
                 </button>
                 <button
+                (click)="setSearch('Geburtstag')"
                   class="px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                  Versicherungsnummer
+                  Geburtstag
                 </button>
                 <button
+                (click)="setSearch('Kennzeichen')"
                   class="px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                   Kennzeichen
                 </button>

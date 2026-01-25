@@ -26,9 +26,24 @@ export class Dashboard implements OnInit {
   constructor() { }
   year = new Date().getFullYear();
   activeSection = signal<SidebarSection>('overview');
+  searchOptions: Record<string, string> = {
+    Name: 'Suche nach Namen',
+    Kennzeichen: 'Suche nach Auto-Kennzeichen',
+    Geburtstag: 'Suche nach Geburtstag',
+    Termin: 'Suche nach Termin',
+  };
+
+  currentSearch = ""
+  currentSearchDescription = ""
+
 
   setActive(section: SidebarSection) {
     this.activeSection.set(section);
+  }
+
+  setSearch(option: string) {
+    this.currentSearch = option
+    this.currentSearchDescription = this.searchOptions[option] ?? '';
   }
 
   customerCount = signal<number>(5);
