@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { AppConfig } from '../runtime-config';
 import { Customer } from '../models/customer.model';
 import { PaginatedResponse } from '../models/paginated-response.model';
+import { CustomerSearchMode } from '../models/customer-search-mode.model';
+
 
 @Injectable({
   providedIn: 'root',
@@ -22,11 +24,20 @@ export class CustomerService {
    * Get paginated list of customers.
    * Optional search query and page number.
    */
-  getCustomers(q = '', page = 1): Observable<PaginatedResponse<Customer>> {
-    const params: any = { page };
-    if (q) params.q = q;
+  getCustomers(term = "", mode: CustomerSearchMode = "name", page = 1) {
+    const params: Record<string, string> = { page: String(page) };
 
-    return this.http.get<PaginatedResponse<Customer>>(this.baseUrl, { params });
+    if (term.trim()) {
+      params["q"] = term.trim();
+      params["mode"] = mode;
+    }
+
+    return this.http.get<{
+      count: number;
+      next: string | null;
+      previous: string | null;
+      results: Customer[];
+    }>(this.baseUrl, { params });
   }
 
   /**
@@ -52,9 +63,9 @@ export class CustomerService {
    * Lightweight search without pagination.
    * Intended for autocomplete / quick search.
    */
-  searchCustomers(term: string): Observable<Customer[]> {
+  searchCustomers(term: string, mode: CustomerSearchMode): Observable<Customer[]> {
     return this.http.get<Customer[]>(this.baseUrl, {
-      params: { q: term },
+      params: { q: term, mode },
     });
   }
 

@@ -3,6 +3,8 @@ import { Component, effect, input, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { CustomerService } from "../../services/customer.service";
 import { Customer } from "../../models/customer.model";
+import { CustomerSearchMode } from "../../models/customer-search-mode.model";
+
 
 @Component({
   selector: "app-customer-list",
@@ -12,6 +14,7 @@ import { Customer } from "../../models/customer.model";
 })
 export class CustomerList {
   searchTerm = input<string>(""); // <-- input signal
+  searchOption = input<CustomerSearchMode>("name");
 
   customers = signal<Customer[]>([]);
   loading = signal(false);
@@ -28,16 +31,17 @@ export class CustomerList {
   ) {
     effect(() => {
       const term = (this.searchTerm() || "").trim(); // <-- read signal
+      const mode = this.searchOption();
       this.page.set(1);
-      this.loadCustomers(term, 1);
+      this.loadCustomers(term, mode, 1);
     });
   }
 
-  loadCustomers(term = "", page = 1) {
+  loadCustomers(term = "", mode: CustomerSearchMode = "name", page = 1) {
     this.loading.set(true);
     this.error.set(null);
 
-    this.customerService.getCustomers(term, page).subscribe({
+    this.customerService.getCustomers(term, mode, page).subscribe({
       next: (res) => {
         this.customers.set(res.results);
         this.count.set(res.count);
@@ -56,15 +60,16 @@ export class CustomerList {
     if (!this.next()) return;
     const newPage = this.page() + 1;
     this.page.set(newPage);
-    this.loadCustomers((this.searchTerm() || "").trim(), newPage);
+    this.loadCustomers((this.searchTerm() || "").trim(), this.searchOption(), newPage);
   }
 
   goPrev() {
     if (!this.previous()) return;
     const newPage = Math.max(1, this.page() - 1);
     this.page.set(newPage);
-    this.loadCustomers((this.searchTerm() || "").trim(), newPage);
+    this.loadCustomers((this.searchTerm() || "").trim(), this.searchOption(), newPage);
   }
+
 
   goToCustomer(id: number) {
     this.router.navigate(["/customer", id]);

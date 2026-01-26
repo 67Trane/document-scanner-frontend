@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CustomerService } from '../../services/customer.service';
+import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
@@ -27,26 +28,35 @@ export class Dashboard implements OnInit {
   year = new Date().getFullYear();
   activeSection = signal<SidebarSection>('overview');
   searchOptions: Record<string, string> = {
-    Name: 'Suche nach Namen',
-    Kennzeichen: 'Suche nach Auto-Kennzeichen',
-    Geburtstag: 'Suche nach Geburtstag',
-    Termin: 'Suche nach Termin',
+    name: 'Suche nach Namen',
+    license: 'Suche nach Auto-Kennzeichen',
+    birthdate: 'Suche nach Geburtstag',
+    appointment_at: 'Suche nach Termin',
   };
 
-  currentSearch = ""
+  currentSearch: CustomerSearchMode = "name"
   currentSearchDescription = ""
+  customerCount = signal<number>(5);
 
+  get searchLabel(): string {
+    return {
+      name: "Name",
+      license: "Kennzeichen",
+      birthdate: "Geburtstag",
+    }[this.currentSearch];
+  }
 
   setActive(section: SidebarSection) {
     this.activeSection.set(section);
   }
 
-  setSearch(option: string) {
+  currentSearchType: string = 'all';
+
+  setSearch(option: CustomerSearchMode) {
+    this.currentSearchType = option;
     this.currentSearch = option
     this.currentSearchDescription = this.searchOptions[option] ?? '';
   }
-
-  customerCount = signal<number>(5);
 
   ngOnInit(): void {
     this.customerService.getCustomerCount().subscribe({
