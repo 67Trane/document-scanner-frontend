@@ -8,6 +8,15 @@
     <div class="absolute bottom-20 right-10 w-96 h-96 bg-slate-500/10 rounded-full blur-3xl"></div>
   </div>
 
+  <app-status-window
+  [title]="toast.title"
+  [description]="toast.description"
+  [type]="toast.type"
+  [visible]="toast.visible"
+  [autoCloseDuration]="3200"
+  (closed)="hideToast()"
+></app-status-window>
+
   <!-- Login Card -->
   <div class="relative w-full max-w-5xl flex flex-col lg:flex-row gap-8 justify-center items-start">
     <div
