@@ -71,7 +71,6 @@ export class LoginPage {
           
         },
         error: (err) => {
-          console.error(err); 
           this.showToast('error', 'Fehler!', `Falscher Benutzername oder Passwort, (${err.error.error}, ${err.status})`);
         },
       });
