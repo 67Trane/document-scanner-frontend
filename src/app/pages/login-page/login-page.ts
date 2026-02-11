@@ -24,7 +24,6 @@ export class LoginPage {
     description: '',
   };
 
-  // Your template already uses these signals :contentReference[oaicite:4]{index=4}
   email = signal("");
   password = signal("");
   rememberMe = signal(false);
@@ -68,10 +67,16 @@ export class LoginPage {
           setTimeout(() => {
             this.router.navigateByUrl("/dashboard");
           }, 1000);
-          
         },
         error: (err) => {
-          this.showToast('error', 'Fehler!', `Falscher Benutzername oder Passwort, (${err.error.error}, ${err.status})`);
+          if (err.status == 400) {
+            this.showToast('error', 'Fehler!', `Falscher Benutzername oder Passwort, (${err.error.error}, ${err.status})`);
+          } else if (err.status == 500) {
+            this.showToast('error', 'Fehler!', `Server aktuell nicht erreichbar, (${err.error.error}, ${err.status})`);
+          } else {
+            this.showToast('error', 'Fehler!', `${err.error.error}, ${err.status}`);
+          }
+          
         },
       });
   }
