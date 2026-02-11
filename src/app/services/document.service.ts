@@ -19,6 +19,15 @@ export class DocumentService {
     return this.http.patch<CustomerDocument>(`${this.baseUrl}/api/documents/${id}/`, data);
   }
 
+  getUnassignedDocuments(): Observable<CustomerDocument[]> {
+    const url = new URL('/api/documents/', this.baseUrl).toString();
+
+    return this.http.get<CustomerDocument[]>(url, {
+      params: { unassigned: '1' },
+    });
+  }
+
+
   getDocument(id: number): Observable<CustomerDocument> {
     const url = new URL(`/api/documents/${id}/`, this.baseUrl).toString();
     return this.http.get<CustomerDocument>(url);

@@ -7,6 +7,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CustomerService } from '../../services/customer.service';
 import { CustomerSearchMode } from '../../models/customer-search-mode.model';
+import { DocumentService } from '../../services/document.service';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
@@ -21,6 +22,7 @@ export class Dashboard implements OnInit {
   readonly auth = inject(AuthService);
   private router = inject(Router);
   customerService = inject(CustomerService)
+  documentService = inject(DocumentService)
   searchTerm = signal<string>('');
   username = computed(() => this.auth.user()?.username ?? '');
 
@@ -49,6 +51,18 @@ export class Dashboard implements OnInit {
   setActive(section: SidebarSection) {
     this.activeSection.set(section);
   }
+
+  test() {
+    this.documentService.getUnassignedDocuments().subscribe({
+      next: (data) => {
+        console.log('UNASSIGNED:', data);
+      },
+      error: (err) => {
+        console.error('ERROR:', err);
+      }
+    });
+  }
+
 
   currentSearchType: string = 'all';
 
