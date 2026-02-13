@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { CustomerService } from '../../services/customer.service';
 import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 import { DocumentService } from '../../services/document.service';
+import { CustomerDocument } from '../../models/document.model';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
@@ -25,6 +26,7 @@ export class Dashboard implements OnInit {
   documentService = inject(DocumentService)
   searchTerm = signal<string>('');
   username = computed(() => this.auth.user()?.username ?? '');
+  unassignedDocuments: any = []
 
   constructor() { }
   year = new Date().getFullYear();
@@ -52,10 +54,12 @@ export class Dashboard implements OnInit {
     this.activeSection.set(section);
   }
 
-  test() {
+  getUnassignedDocuments() {
     this.documentService.getUnassignedDocuments().subscribe({
       next: (data) => {
         console.log('UNASSIGNED:', data);
+        this.unassignedDocuments = data
+        console.log(this.unassignedDocuments)
       },
       error: (err) => {
         console.error('ERROR:', err);
@@ -74,7 +78,7 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.customerService.getCustomerCount().subscribe({
-      next: (res) => this.customerCount.set(res.count),
+      next: (res) => { this.customerCount.set(res.count); this.getUnassignedDocuments() },
       error: (err) => console.error('getCustomerCount failed', err),
     });
   }

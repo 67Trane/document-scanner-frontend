@@ -133,7 +133,7 @@
             class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300">
             <div class="flex items-center justify-between">
               <div>
-                <p (click)="test()" class="text-xs font-medium text-slate-600 dark:text-slate-400">Offene Dok.</p>
+                <p class="text-xs font-medium text-slate-600 dark:text-slate-400">Offene Dok.</p>
                 <p class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">12</p>
               </div>
               <div class="w-10 h-10 bg-amber-500/10 dark:bg-amber-500/20 rounded-lg flex items-center justify-center">
@@ -397,37 +397,38 @@
               </div>
             </div>
 
-            <!-- Quick Actions -->
+            <!-- Unassigned Documents -->
             <div
               class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300 shrink-0">
               <div class="flex items-center gap-2 mb-3">
-                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <h3 class="text-base font-semibold text-slate-900 dark:text-white">Schnellzugriff</h3>
+                <h3 class="text-base font-semibold text-slate-900 dark:text-white">Nicht Zugeordnet</h3>
               </div>
 
               <div class="space-y-2">
-                <button
-                  class="w-full flex items-center gap-2 px-3 py-2 bg-slate-50/80 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition-colors text-left">
-                  <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span class="text-xs font-medium text-slate-900 dark:text-white">Neuer Kunde</span>
-                </button>
-
-                <button
-                  class="w-full flex items-center gap-2 px-3 py-2 bg-slate-50/80 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition-colors text-left">
-                  <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor"
+                @for (item of unassignedDocuments.results; track $index) {
+                <div
+                  class="flex gap-2 p-2.5 bg-slate-50/50 dark:bg-slate-900/50 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-900 transition-colors cursor-pointer">
+                  <div class="w-2 h-2 bg-amber-500 rounded-full mt-1.5 shrink-0"></div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-slate-900 dark:text-white truncate">{{ item }}</p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Warten auf Zuweisung</p>
+                  </div>
+                </div>
+                } @empty {
+                <div class="text-center py-4">
+                  <svg class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="text-xs font-medium text-slate-900 dark:text-white">Dokument hochladen</span>
-                </button>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">Keine offenen Dokumente</p>
+                </div>
+                }
               </div>
             </div>
 
