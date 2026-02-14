@@ -63,18 +63,18 @@ export class LoginPage {
       )
       .subscribe({
         next: () => {
-          this.showToast('success', 'Fehler!', `Falscher Benutzername oder Passwort`);
+          this.showToast('success', 'Success✔️', `Herzlich Wilkommen`);
           setTimeout(() => {
             this.router.navigateByUrl("/dashboard");
           }, 1000);
         },
         error: (err) => {
           if (err.status == 400) {
-            this.showToast('error', 'Fehler!', `Falscher Benutzername oder Passwort, (${err.error.error}, ${err.status})`);
+            this.showToast('error', '❌Fehler!', `Falscher Benutzername oder Passwort, (${err.error.error}, ${err.status})`);
           } else if (err.status == 500) {
-            this.showToast('error', 'Fehler!', `Server aktuell nicht erreichbar, (${err.error.error}, ${err.status})`);
+            this.showToast('error', '❌Fehler!', `Server aktuell nicht erreichbar, (${err.error.error}, ${err.status})`);
           } else {
-            this.showToast('error', 'Fehler!', `${err.error.error}, ${err.status}`);
+            this.showToast('error', '❌Fehler!', `${err.error.error}, ${err.status}`);
           }
           
         },

@@ -9,13 +9,14 @@ import { CustomerService } from '../../services/customer.service';
 import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 import { DocumentService } from '../../services/document.service';
 import { CustomerDocument } from '../../models/document.model';
+import { JsonPipe } from '@angular/common';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CustomerSearch, CustomerList],
+  imports: [CustomerSearch, CustomerList, JsonPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -26,7 +27,9 @@ export class Dashboard implements OnInit {
   documentService = inject(DocumentService)
   searchTerm = signal<string>('');
   username = computed(() => this.auth.user()?.username ?? '');
-  unassignedDocuments: any = []
+  unassignedDocuments= signal<CustomerDocument[]>([]);
+  
+  
 
   constructor() { }
   year = new Date().getFullYear();
@@ -58,8 +61,8 @@ export class Dashboard implements OnInit {
     this.documentService.getUnassignedDocuments().subscribe({
       next: (data) => {
         console.log('UNASSIGNED:', data);
-        this.unassignedDocuments = data
-        console.log(this.unassignedDocuments)
+        this.unassignedDocuments.set(data.results)
+        console.log('UNASSIGNED:', this.unassignedDocuments());
       },
       error: (err) => {
         console.error('ERROR:', err);
@@ -96,4 +99,7 @@ export class Dashboard implements OnInit {
   onSearch(term: string) {
     this.searchTerm.set(term);
   }
+
+
+  
 }
