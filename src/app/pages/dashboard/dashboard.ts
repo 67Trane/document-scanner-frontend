@@ -10,13 +10,14 @@ import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 import { DocumentService } from '../../services/document.service';
 import { CustomerDocument } from '../../models/document.model';
 import { JsonPipe } from '@angular/common';
+import { DocumentEditModal } from '../../components/document-edit-modal/document-edit-modal';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CustomerSearch, CustomerList, JsonPipe],
+  imports: [CustomerSearch, CustomerList, JsonPipe, DocumentEditModal],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -27,9 +28,21 @@ export class Dashboard implements OnInit {
   documentService = inject(DocumentService)
   searchTerm = signal<string>('');
   username = computed(() => this.auth.user()?.username ?? '');
-  unassignedDocuments= signal<CustomerDocument[]>([]);
-  
-  
+  unassignedDocuments = signal<CustomerDocument[]>([]);
+
+  selectedDocument = signal<CustomerDocument | null>(null);
+  isEditOpen = signal(false);
+
+  openEdit(doc: CustomerDocument) {
+    this.selectedDocument.set(doc);
+    this.isEditOpen.set(true);
+  }
+
+  closeEdit() {
+    this.isEditOpen.set(false);
+    this.selectedDocument.set(null);
+  }
+
 
   constructor() { }
   year = new Date().getFullYear();
@@ -101,5 +114,5 @@ export class Dashboard implements OnInit {
   }
 
 
-  
+
 }
