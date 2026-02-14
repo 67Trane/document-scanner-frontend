@@ -27,6 +27,13 @@ export class DocumentService {
     });
   }
 
+  assignDocument(documentId: number, customerId: number): Observable<CustomerDocument> {
+    const url = new URL(`/api/documents/${documentId}/assign/`, this.baseUrl).toString();
+
+    // Backend expects: { customer_id: ... }
+    return this.http.post<CustomerDocument>(url, { customer_id: customerId });
+  }
+
 
   getDocument(id: number): Observable<CustomerDocument> {
     const url = new URL(`/api/documents/${id}/`, this.baseUrl).toString();

@@ -1,21 +1,22 @@
-<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200" 
-     (click)="close.emit()">
-    
-    <div class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 animate-in zoom-in-95 duration-200" 
-         (click)="$event.stopPropagation()">
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+    (click)="close.emit()">
+
+    <div class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 animate-in zoom-in-95 duration-200"
+        (click)="$event.stopPropagation()">
 
         <!-- Header -->
         <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <div
+                    class="w-10 h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
                 <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Dokument bearbeiten</h2>
             </div>
-            <button 
-                (click)="close.emit()"
+            <button (click)="close.emit()"
                 class="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors flex items-center justify-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -23,18 +24,16 @@
             </button>
         </div>
 
+
+
         <!-- Form -->
         <div class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Vorname
                 </label>
-                <input 
-                    type="text"
-                    [value]="firstName()"
-                    (input)="firstName.set($any($event.target).value)"
-                    placeholder="z.B. Max"
-                    class="w-full border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5
+                <input type="text" [value]="firstName()" (input)="firstName.set($any($event.target).value)"
+                    placeholder="z.B. Max" class="w-full border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5
                            bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                            placeholder:text-slate-400
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -45,12 +44,8 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Nachname
                 </label>
-                <input 
-                    type="text"
-                    [value]="lastName()"
-                    (input)="lastName.set($any($event.target).value)"
-                    placeholder="z.B. Mustermann"
-                    class="w-full border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5
+                <input type="text" [value]="lastName()" (input)="lastName.set($any($event.target).value)"
+                    placeholder="z.B. Mustermann" class="w-full border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5
                            bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                            placeholder:text-slate-400
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -58,20 +53,36 @@
             </div>
         </div>
 
+        <!-- Customer assignment -->
+        <div class="space-y-2 mt-4">
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Customer-ID (Zuweisen)
+            </label>
+
+            <input type="number" [value]="customerId() ?? ''"
+                (input)="customerId.set($any($event.target).value ? +$any($event.target).value : null)"
+                placeholder="z.B. 12" class="w-full border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5
+           bg-white dark:bg-slate-700 text-slate-900 dark:text-white
+           placeholder:text-slate-400
+           focus:ring-2 focus:ring-blue-500 focus:border-transparent
+           transition-all duration-200" />
+
+            @if (errorMsg()) {
+            <p class="text-sm text-red-600 dark:text-red-400">{{ errorMsg() }}</p>
+            }
+        </div>
+
+
         <!-- Footer -->
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <button
-                (click)="close.emit()"
-                class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 
+            <button (click)="close.emit()" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 
                        hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                 Abbrechen
             </button>
-            <button
-                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
-                       rounded-lg transition-colors shadow-lg shadow-blue-500/30">
-                Speichern
+            <button (click)="assignToCustomer()" [disabled]="isSaving()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700
+         rounded-lg transition-colors shadow-lg shadow-blue-500/30 disabled:opacity-60">
+                @if (isSaving()) { Zuweisen... } @else { Zuweisen }
             </button>
         </div>
-
     </div>
 </div>

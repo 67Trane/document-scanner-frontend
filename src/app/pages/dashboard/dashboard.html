@@ -439,8 +439,9 @@
     </main>
   </div>
   @if (isEditOpen()) {
-  <app-document-edit-modal [doc]="selectedDocument()" (close)="closeEdit()">
+  <app-document-edit-modal [doc]="selectedDocument()" (close)="closeEdit()" (assigned)="onAssigned()">
   </app-document-edit-modal>
   }
+
 
 </div>

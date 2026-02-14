@@ -113,6 +113,9 @@ export class Dashboard implements OnInit {
     this.searchTerm.set(term);
   }
 
+onAssigned() {
+  this.getUnassignedDocuments();
+}
 
 
 }
