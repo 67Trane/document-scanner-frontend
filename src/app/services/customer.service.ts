@@ -59,6 +59,20 @@ export class CustomerService {
   }
 
 
+   searchCustomersPaginated(
+    q: string,
+    mode: CustomerSearchMode = 'name',
+    page = 1
+  ): Observable<PaginatedResponse<Customer>> {
+    return this.http.get<PaginatedResponse<Customer>>(this.baseUrl, {
+      params: {
+        q,
+        mode,
+        page: String(page),
+      },
+    });
+  }
+
   /**
    * Lightweight search without pagination.
    * Intended for autocomplete / quick search.
