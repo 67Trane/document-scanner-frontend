@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, inject, signal, effect } from "@angular/core";
+import { Component, computed, DestroyRef, effect, inject, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
 
 import { CustomerService } from "../../services/customer.service";
@@ -14,16 +15,6 @@ import { CustomerContactCard } from "./components/customer-contact-card/customer
 import { CustomerContractsList } from "./components/customer-contracts-list/customer-contracts-list";
 import { CustomerPdfViewer } from "./components/customer-pdf-viewer/customer-pdf-viewer";
 import { CustomerNotesPanel } from "./components/customer-notes-panel/customer-notes-panel";
-
-/* =========================
-   Notes Types
-   ========================= */
-// Note: Comments in English as requested.
-type CustomerNote = {
-  id: string;
-  text: string;
-  createdAt: Date;
-};
 
 @Component({
   selector: "app-customer-detail",
@@ -41,31 +32,18 @@ type CustomerNote = {
   styleUrl: "./customer-detail.css",
 })
 export class CustomerDetail {
-  private route = inject(ActivatedRoute);
-  private customerService = inject(CustomerService);
-  private documentService = inject(DocumentService);
-  private customerId = Number(this.route.snapshot.paramMap.get("id"));
+  private readonly route = inject(ActivatedRoute);
+  private readonly customerService = inject(CustomerService);
+  private readonly documentService = inject(DocumentService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly customerId = Number(this.route.snapshot.paramMap.get("id"));
 
-  /* =========================
-     Core State
-     ========================= */
   customer = signal<Customer | null>(null);
   document = signal<CustomerDocument | null>(null);
   alldocuments = signal<CustomerDocument[]>([]);
 
-  /* =========================
-     UI Helpers
-     ========================= */
-  today = new Date();
-
-  /* =========================
-     PDF Viewer Source (Blob URL)
-     ========================= */
   viewerSrc = signal<string | undefined>(undefined);
 
-  /* =========================
-     Computed: Customer Basics
-     ========================= */
   fullName = computed(() => {
     const c = this.customer();
     return c ? `${c.first_name} ${c.last_name}` : "";
@@ -75,43 +53,29 @@ export class CustomerDetail {
   phone = computed(() => this.customer()?.phone?.trim() || null);
   dateOfBirth = computed(() => this.customer()?.date_of_birth ?? null);
 
-
   addressLine1 = computed(() => this.customer()?.street || "");
   addressLine2 = computed(() => {
     const c = this.customer();
     return c ? `${c.zip_code} ${c.city}`.trim() : "";
   });
 
-  /* =========================
-     Computed: Insights
-     ========================= */
   licensePlates = computed(() => {
     const docs = this.alldocuments();
     const allPlates = docs.flatMap((doc) => doc.license_plates ?? []);
-    const filtered = allPlates.filter((p) => p && p.trim().length > 0);
+    const filtered = allPlates.filter((plate) => plate && plate.trim().length > 0);
     return Array.from(new Set(filtered));
   });
 
   policyNumbers = computed(() => {
     const docs = this.alldocuments();
-
     const allNumbers = docs.flatMap((doc) => doc.policy_numbers ?? []);
     const filtered = allNumbers
-      .map((n) => (n ?? "").trim())
-      .filter((n) => n.length > 0);
+      .map((num) => (num ?? "").trim())
+      .filter((num) => num.length > 0);
 
     return Array.from(new Set(filtered));
   });
 
-
-  activeContractsCount = computed(() => {
-    return this.alldocuments().filter((doc) => doc.contract_status === "aktiv").length;
-  });
-
-  /* =========================
-     Notes State
-     ========================= */
-  notes = signal<CustomerNote[]>([]);
   notesDraft = signal("");
   private notesAutoSaveTimer: ReturnType<typeof setTimeout> | null = null;
   private lastSavedNotes = "";
@@ -133,27 +97,13 @@ export class CustomerDetail {
     return draft.length > 0 && draft !== current;
   });
 
-  onContactUpdated(): void {
-    this.loadCustomer(this.customerId);
-    this.loadDocuments(this.customerId);
-  }
-
-
-  /* =========================
-     Lifecycle (constructor init)
-     ========================= */
   constructor() {
-    const customerId = Number(this.route.snapshot.paramMap.get("id"));
-    if (!customerId) {
-      console.error("Keine gültige ID in der URL gefunden.");
-      return;
-    }
+    if (!this.customerId) return;
 
-    // Fetch PDF as a blob so auth cookies are sent; ngx-extended-pdf-viewer
-    // can't attach credentials to a plain URL fetch.
+    // Blob URLs keep authenticated PDF loading reliable in the embedded viewer.
     effect((onCleanup) => {
-      const doc = this.document();
-      const docId = doc?.id;
+      const selectedDocument = this.document();
+      const docId = selectedDocument?.id;
       if (!docId) {
         this.viewerSrc.set(undefined);
         return;
@@ -162,14 +112,13 @@ export class CustomerDetail {
       let active = true;
       let objectUrl: string | null = null;
 
-      const sub = this.documentService.getDocumentFileBlob(docId).subscribe({
+      const sub = this.documentService.getDocumentFileBlob(docId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (blob) => {
           if (!active) return;
           objectUrl = URL.createObjectURL(blob);
           this.viewerSrc.set(objectUrl);
         },
-        error: (err) => {
-          console.error("Fehler beim Laden des Dokuments:", err);
+        error: () => {
           this.viewerSrc.set(undefined);
         },
       });
@@ -182,8 +131,8 @@ export class CustomerDetail {
     });
 
     effect(() => {
-      const customer = this.customer();
-      if (!customer) return;
+      const currentCustomer = this.customer();
+      if (!currentCustomer) return;
 
       const draft = this.notesDraft().trim();
       if (draft === this.lastSavedNotes) return;
@@ -195,38 +144,44 @@ export class CustomerDetail {
       }, 1200);
     });
 
-    this.loadCustomer(customerId);
-    this.loadDocuments(customerId);
+    this.loadCustomer(this.customerId);
+    this.loadDocuments(this.customerId);
   }
 
-  /* =========================
-     Data Loading
-     ========================= */
+  /**
+   * Reloads data after child components persist contact changes.
+   */
+  onContactUpdated(): void {
+    this.loadCustomer(this.customerId);
+    this.loadDocuments(this.customerId);
+  }
+
   private loadCustomer(customerId: number): void {
-    this.customerService.getCustomer(customerId).subscribe({
+    this.customerService.getCustomer(customerId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.customer.set(data);
         this.notesDraft.set(data.notes ?? "");
         this.lastSavedNotes = (data.notes ?? "").trim();
       },
-      error: (err) => console.error("Fehler beim Laden des Kunden:", err),
+      error: () => {
+        this.customer.set(null);
+      },
     });
   }
 
-
   private loadDocuments(customerId: number): void {
-    this.documentService.getDocumentsByCustomer(customerId).subscribe({
+    this.documentService.getDocumentsByCustomer(customerId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (docs) => {
         this.alldocuments.set(docs);
         this.document.set(docs[0] ?? null);
       },
-      error: (err) => console.error("Fehler beim Laden der Dokumente:", err),
+      error: () => {
+        this.alldocuments.set([]);
+        this.document.set(null);
+      },
     });
   }
 
-  /* =========================
-     Contracts
-     ========================= */
   openContractPreview(contract: CustomerDocument): void {
     this.document.set(contract);
   }
@@ -243,35 +198,20 @@ export class CustomerDetail {
     const url = this.viewerSrc();
     if (!url) return;
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "dokument.pdf";
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.click();
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "dokument.pdf";
+    anchor.target = "_blank";
+    anchor.rel = "noopener";
+    anchor.click();
   }
 
-  /* =========================
-     Notes
-     ========================= */
-  addNote(): void {
-    const text = this.notesDraft().trim();
-    if (!text) return;
-
-    const next: CustomerNote = {
-      id: crypto.randomUUID(),
-      text,
-      createdAt: new Date(),
-    };
-
-    // Newest first
-    this.notes.set([next, ...this.notes()]);
-    this.notesDraft.set("");
-  }
-
+  /**
+   * Uses PATCH to keep note updates small and avoid overwriting unrelated customer fields.
+   */
   saveNotes(): void {
-    const c = this.customer();
-    if (!c) return;
+    const currentCustomer = this.customer();
+    if (!currentCustomer) return;
     if (this.isSavingNotes()) return;
 
     const notes = this.notesDraft().trim();
@@ -280,7 +220,7 @@ export class CustomerDetail {
     this.isSavingNotes.set(true);
     this.saveNotesError.set(false);
 
-    this.customerService.patchCustomer(c.id, { notes }).subscribe({
+    this.customerService.patchCustomer(currentCustomer.id, { notes }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updated) => {
         this.customer.set(updated);
         const synced = (updated.notes ?? "").trim();
@@ -289,43 +229,10 @@ export class CustomerDetail {
         this.isSavingNotes.set(false);
         this.saveNotesError.set(false);
       },
-      error: (err) => {
-        console.error("Fehler beim Speichern der Notizen:", err);
+      error: () => {
         this.isSavingNotes.set(false);
         this.saveNotesError.set(true);
       },
     });
-  }
-
-
-  deleteNote(id: string): void {
-    this.notes.set(this.notes().filter((n) => n.id !== id));
-  }
-
-  onNoteKeydown(event: KeyboardEvent): void {
-    // Enter saves, Shift+Enter creates a new line
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      this.addNote();
-    }
-  }
-
-  /* =========================
-     Upload (placeholder)
-     ========================= */
-  openFilePicker(input: HTMLInputElement): void {
-    input.click();
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-
-    // Reset input so selecting the same file again triggers change
-    input.value = "";
-
-    // TODO: Wire to backend upload endpoint via DocumentService
-    console.log("Selected file:", file.name, file.type, file.size);
   }
 }

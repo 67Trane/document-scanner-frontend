@@ -25,5 +25,10 @@ export interface CustomerDocument {
   contract_typ: ContractType;
   contract_typ_display: ContractType;
 
+  extracted_data?: {
+    first_name?: string | null;
+    last_name?: string | null;
+  } | null;
+
   created_at: string;
 }

@@ -1,12 +1,13 @@
 import { Component, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
-import { AuthService } from "../../services/auth.service";
 import { finalize, switchMap } from "rxjs";
+import { AuthService } from "../../services/auth.service";
 import { DemoLogin } from "../../components/demo-login/demo-login";
 import { AppConfig } from "../../runtime-config";
 import { StatusWindow } from "../../components/status-window/status-window";
 
-type StatusType = 'success' | 'error' | 'info';
+type StatusType = "success" | "error" | "info";
+
 @Component({
   selector: "app-login-page",
   imports: [DemoLogin, StatusWindow],
@@ -14,28 +15,27 @@ type StatusType = 'success' | 'error' | 'info';
   templateUrl: "./login-page.html",
 })
 export class LoginPage {
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  production = AppConfig.production
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  production = AppConfig.production;
+  currentYear = new Date().getFullYear();
+
   toast = {
     visible: false,
-    type: 'info' as StatusType,
-    title: '',
-    description: '',
+    type: "info" as StatusType,
+    title: "",
+    description: "",
   };
 
   email = signal("");
   password = signal("");
   rememberMe = signal(false);
-  currentYear = new Date().getFullYear()
-  type = "error"
-  showError = false
-
   showPassword = signal(false);
   isLoading = signal(false);
 
-  togglePasswordVisibility() {
-    this.showPassword.update(v => !v);
+  togglePasswordVisibility(): void {
+    this.showPassword.update((current) => !current);
   }
 
   showToast(type: StatusType, title: string, description: string): void {
@@ -46,11 +46,23 @@ export class LoginPage {
     this.toast = { ...this.toast, visible: false };
   }
 
-  onSubmit() {
+  onEmailInput(event: Event): void {
+    this.email.set((event.target as HTMLInputElement).value);
+  }
+
+  onPasswordInput(event: Event): void {
+    this.password.set((event.target as HTMLInputElement).value);
+  }
+
+  onRememberMeChange(event: Event): void {
+    this.rememberMe.set((event.target as HTMLInputElement).checked);
+  }
+
+  onSubmit(): void {
     this.isLoading.set(true);
 
     const payload = {
-      username: this.email().trim(),   // or map to "username" field
+      username: this.email().trim(),
       password: this.password(),
       remember: this.rememberMe(),
     };
@@ -63,29 +75,35 @@ export class LoginPage {
       )
       .subscribe({
         next: () => {
-          this.showToast('success', 'Success✔️', `Herzlich Wilkommen`);
+          this.showToast("success", "Erfolg", "Herzlich willkommen");
           setTimeout(() => {
             this.router.navigateByUrl("/dashboard");
           }, 1000);
         },
-        error: (err) => {
-          if (err.status == 400) {
-            this.showToast('error', '❌Fehler!', `Falscher Benutzername oder Passwort, (${err.error.error}, ${err.status})`);
-          } else if (err.status == 500) {
-            this.showToast('error', '❌Fehler!', `Server aktuell nicht erreichbar, (${err.error.error}, ${err.status})`);
-          } else {
-            this.showToast('error', '❌Fehler!', `${err.error.error}, ${err.status}`);
+        error: (err: { status?: number; error?: { error?: string } }) => {
+          const status = err.status ?? 0;
+          const message = err.error?.error ?? "Unbekannter Fehler";
+
+          if (status === 400) {
+            this.showToast("error", "Fehler", `Falscher Benutzername oder Passwort (${message}, ${status})`);
+            return;
           }
-          
+
+          if (status === 500) {
+            this.showToast("error", "Fehler", `Server aktuell nicht erreichbar (${message}, ${status})`);
+            return;
+          }
+
+          this.showToast("error", "Fehler", `${message} (${status})`);
         },
       });
   }
 
-  onForgotPassword() {
-    // TODO
+  onForgotPassword(): void {
+    this.showToast("info", "Hinweis", "Bitte wenden Sie sich an den Support, um Ihr Passwort zurueckzusetzen.");
   }
 
-  onContactSupport() {
-    // TODO
+  onContactSupport(): void {
+    this.showToast("info", "Support", "Kontakt: support@example.com");
   }
 }

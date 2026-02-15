@@ -16,8 +16,11 @@ export class CustomerNotesPanel {
   notesDraftChange = output<string>();
   save = output<void>();
 
-  onDraftInput(value: string) {
-    this.notesDraftChange.emit(value);
+  /**
+   * Emits draft updates to keep save orchestration centralized in the parent container.
+   */
+  onDraftInput(event: Event): void {
+    this.notesDraftChange.emit((event.target as HTMLTextAreaElement).value);
   }
 
   statusLabel(): string {

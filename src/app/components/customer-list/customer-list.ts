@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, signal } from "@angular/core";
+import { Component, DestroyRef, effect, inject, input, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
 import { CustomerService } from "../../services/customer.service";
 import { Customer } from "../../models/customer.model";
@@ -13,6 +14,10 @@ import { CustomerSearchMode } from "../../models/customer-search-mode.model";
   templateUrl: "./customer-list.html",
 })
 export class CustomerList {
+  private readonly customerService = inject(CustomerService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
   searchTerm = input<string>(""); // <-- input signal
   searchOption = input<CustomerSearchMode>("name");
 
@@ -25,10 +30,7 @@ export class CustomerList {
   next = signal<string | null>(null);
   previous = signal<string | null>(null);
 
-  constructor(
-    private customerService: CustomerService,
-    private router: Router
-  ) {
+  constructor() {
     effect(() => {
       const term = (this.searchTerm() || "").trim(); // <-- read signal
       const mode = this.searchOption();
@@ -37,11 +39,14 @@ export class CustomerList {
     });
   }
 
-  loadCustomers(term = "", mode: CustomerSearchMode = "name", page = 1) {
+  /**
+   * Reloads the customer page whenever search filters or pagination change.
+   */
+  loadCustomers(term = "", mode: CustomerSearchMode = "name", page = 1): void {
     this.loading.set(true);
     this.error.set(null);
 
-    this.customerService.getCustomers(term, mode, page).subscribe({
+    this.customerService.getCustomers(term, mode, page).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.customers.set(res.results);
         this.count.set(res.count);
@@ -56,22 +61,21 @@ export class CustomerList {
     });
   }
 
-  goNext() {
+  goNext(): void {
     if (!this.next()) return;
     const newPage = this.page() + 1;
     this.page.set(newPage);
     this.loadCustomers((this.searchTerm() || "").trim(), this.searchOption(), newPage);
   }
 
-  goPrev() {
+  goPrev(): void {
     if (!this.previous()) return;
     const newPage = Math.max(1, this.page() - 1);
     this.page.set(newPage);
     this.loadCustomers((this.searchTerm() || "").trim(), this.searchOption(), newPage);
   }
 
-
-  goToCustomer(id: number) {
+  goToCustomer(id: number): void {
     this.router.navigate(["/customer", id]);
   }
 }

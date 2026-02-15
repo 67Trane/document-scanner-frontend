@@ -1,9 +1,8 @@
-import { Component, signal, inject, computed, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CustomerSearch } from '../../components/customer-search/customer-search';
 import { CustomerList } from '../../components/customer-list/customer-list';
-import { DocumentList } from '../../components/document-list/document-list';
-import { RouterLink } from '@angular/router';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CustomerService } from '../../services/customer.service';
 import { CustomerSearchMode } from '../../models/customer-search-mode.model';
@@ -22,100 +21,101 @@ type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
+  /**
+   * Dashboard shell that coordinates customer search and unassigned document assignment.
+   */
   readonly auth = inject(AuthService);
-  private router = inject(Router);
-  customerService = inject(CustomerService)
-  documentService = inject(DocumentService)
+  private readonly router = inject(Router);
+  private readonly customerService = inject(CustomerService);
+  private readonly documentService = inject(DocumentService);
+  private readonly destroyRef = inject(DestroyRef);
+
   searchTerm = signal<string>('');
   username = computed(() => this.auth.user()?.username ?? '');
   unassignedDocuments = signal<CustomerDocument[]>([]);
-
   selectedDocument = signal<CustomerDocument | null>(null);
   isEditOpen = signal(false);
+  customerCount = signal<number>(0);
 
-  openEdit(doc: CustomerDocument) {
+  currentSearch = signal<CustomerSearchMode>('name');
+  currentSearchDescription = computed(() => this.searchOptions[this.currentSearch()] ?? '');
+
+  readonly searchOptions: Record<CustomerSearchMode, string> = {
+    name: 'Suche nach Namen',
+    license: 'Suche nach Auto-Kennzeichen',
+    birthdate: 'Suche nach Geburtstag',
+  };
+
+  readonly searchLabel = computed(() => {
+    return {
+      name: 'Name',
+      license: 'Kennzeichen',
+      birthdate: 'Geburtstag',
+    }[this.currentSearch()];
+  });
+
+  /**
+   * Opens the document assignment dialog with the selected document context.
+   */
+  openEdit(doc: CustomerDocument): void {
     this.selectedDocument.set(doc);
     this.isEditOpen.set(true);
   }
 
-  closeEdit() {
+  closeEdit(): void {
     this.isEditOpen.set(false);
     this.selectedDocument.set(null);
   }
 
-
-  constructor() { }
-  year = new Date().getFullYear();
   activeSection = signal<SidebarSection>('overview');
-  searchOptions: Record<string, string> = {
-    name: 'Suche nach Namen',
-    license: 'Suche nach Auto-Kennzeichen',
-    birthdate: 'Suche nach Geburtstag',
-    appointment_at: 'Suche nach Termin',
-  };
 
-  currentSearch: CustomerSearchMode = "name"
-  currentSearchDescription = ""
-  customerCount = signal<number>(5);
-
-  get searchLabel(): string {
-    return {
-      name: "Name",
-      license: "Kennzeichen",
-      birthdate: "Geburtstag",
-    }[this.currentSearch];
-  }
-
-  setActive(section: SidebarSection) {
+  setActive(section: SidebarSection): void {
     this.activeSection.set(section);
   }
 
-  getUnassignedDocuments() {
-    this.documentService.getUnassignedDocuments().subscribe({
+  /**
+   * Refreshes the "unassigned documents" list after initial load and assignments.
+   */
+  getUnassignedDocuments(): void {
+    this.documentService.getUnassignedDocuments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        console.log('UNASSIGNED:', data);
-        this.unassignedDocuments.set(data.results)
-        console.log('UNASSIGNED:', this.unassignedDocuments());
+        this.unassignedDocuments.set(data.results);
       },
-      error: (err) => {
-        console.error('ERROR:', err);
+      error: () => {
+        this.unassignedDocuments.set([]);
       }
     });
   }
 
-
-  currentSearchType: string = 'all';
-
-  setSearch(option: CustomerSearchMode) {
-    this.currentSearchType = option;
-    this.currentSearch = option
-    this.currentSearchDescription = this.searchOptions[option] ?? '';
+  setSearch(option: CustomerSearchMode): void {
+    this.currentSearch.set(option);
   }
 
   ngOnInit(): void {
-    this.customerService.getCustomerCount().subscribe({
-      next: (res) => { this.customerCount.set(res.count); this.getUnassignedDocuments() },
-      error: (err) => console.error('getCustomerCount failed', err),
-    });
-  }
-
-
-  logOut() {
-    this.auth.logout().subscribe({
-      next: () => {
-        this.router.navigateByUrl("/login");
+    this.customerService.getCustomerCount().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (res) => {
+        this.customerCount.set(res.count);
+        this.getUnassignedDocuments();
       },
-      error: (err) => console.error("Logout failed", err),
+      error: () => {
+        this.customerCount.set(0);
+      },
     });
   }
 
-  onSearch(term: string) {
+  logOut(): void {
+    this.auth.logout().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.router.navigateByUrl('/login');
+      },
+    });
+  }
+
+  onSearch(term: string): void {
     this.searchTerm.set(term);
   }
 
-onAssigned() {
-  this.getUnassignedDocuments();
-}
-
-
+  onAssigned(): void {
+    this.getUnassignedDocuments();
+  }
 }

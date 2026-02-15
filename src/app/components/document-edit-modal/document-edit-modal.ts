@@ -4,38 +4,64 @@ import { DocumentService } from '../../services/document.service';
 
 @Component({
   selector: 'app-document-edit-modal',
+  standalone: true,
   imports: [],
   templateUrl: './document-edit-modal.html',
   styleUrl: './document-edit-modal.css',
 })
 export class DocumentEditModal {
-  private documents = inject(DocumentService);
+  /**
+   * Modal for validating OCR results and assigning a document to a customer.
+   */
+  private readonly documents = inject(DocumentService);
 
   doc = input<CustomerDocument | null>(null);
   close = output<void>();
-
-
-  assigned = output<CustomerDocument>(); // let parent refresh list / UI
+  assigned = output<CustomerDocument>();
 
   firstName = signal('');
   lastName = signal('');
-
-
   customerId = signal<number | null>(null);
   isSaving = signal(false);
   errorMsg = signal<string>('');
 
   constructor() {
     effect(() => {
-      const d = this.doc();
-      this.firstName.set((d as any)?.extracted_data?.first_name ?? '');
-      this.lastName.set((d as any)?.extracted_data?.last_name ?? '');
+      const currentDocument = this.doc();
+      this.firstName.set(currentDocument?.extracted_data?.first_name ?? '');
+      this.lastName.set(currentDocument?.extracted_data?.last_name ?? '');
       this.customerId.set(null);
       this.errorMsg.set('');
     });
   }
 
-  assignToCustomer() {
+  /**
+   * Keeps template input handlers strongly typed without relying on `$any` in templates.
+   */
+  onFirstNameInput(event: Event): void {
+    this.firstName.set((event.target as HTMLInputElement).value);
+  }
+
+  /**
+   * Keeps template input handlers strongly typed without relying on `$any` in templates.
+   */
+  onLastNameInput(event: Event): void {
+    this.lastName.set((event.target as HTMLInputElement).value);
+  }
+
+  /**
+   * Normalizes the optional customer ID so empty values are persisted as `null`.
+   */
+  onCustomerIdInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.customerId.set(value ? Number(value) : null);
+  }
+
+  /**
+   * Validates and submits the assignment.
+   * Keeping this flow in the modal avoids leaking half-edited data to parent state.
+   */
+  assignToCustomer(): void {
     const d = this.doc();
     const cid = this.customerId();
 
@@ -57,7 +83,7 @@ export class DocumentEditModal {
         this.assigned.emit(updatedDoc);
         this.close.emit();
       },
-      error: (err) => {
+      error: (err: { error?: { error?: string } }) => {
         this.isSaving.set(false);
         this.errorMsg.set(err?.error?.error ?? 'Zuweisen fehlgeschlagen.');
       },

@@ -52,6 +52,6 @@
     rows="6"
     placeholder="Notizen zum Kunden..."
     [value]="notesDraft()"
-    (input)="onDraftInput(($any($event.target)).value)"
+    (input)="onDraftInput($event)"
   ></textarea>
 </section>

@@ -1,4 +1,4 @@
-import { Component, effect, signal, output } from "@angular/core";
+import { Component, output, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
 @Component({
@@ -13,9 +13,12 @@ export class CustomerSearch {
 
   // internal state
   private rawValue = signal("");
-  private debounceTimer: any = null;
+  private debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-  onInput(event: Event) {
+  /**
+   * Debounces text input to reduce backend requests while the user is still typing.
+   */
+  onInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.rawValue.set(value);
 
@@ -26,7 +29,7 @@ export class CustomerSearch {
     }, 300);
   }
 
-  onSubmit() {
+  onSubmit(): void {
     // immediate search on button click
     this.search.emit(this.rawValue().trim());
   }
