@@ -8,7 +8,6 @@ import { CustomerService } from '../../services/customer.service';
 import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 import { DocumentService } from '../../services/document.service';
 import { CustomerDocument } from '../../models/document.model';
-import { JsonPipe } from '@angular/common';
 import { DocumentEditModal } from '../../components/document-edit-modal/document-edit-modal';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
@@ -16,7 +15,7 @@ type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CustomerSearch, CustomerList, JsonPipe, DocumentEditModal],
+  imports: [CustomerSearch, CustomerList, DocumentEditModal],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
