@@ -31,6 +31,7 @@ export class Dashboard implements OnInit {
 
   searchTerm = signal<string>('');
   username = computed(() => this.auth.user()?.username ?? '');
+  usernameId = computed(() => this.auth.user()?.id ?? '');
   unassignedDocuments = signal<CustomerDocument[]>([]);
   selectedDocument = signal<CustomerDocument | null>(null);
   isEditOpen = signal(false);
