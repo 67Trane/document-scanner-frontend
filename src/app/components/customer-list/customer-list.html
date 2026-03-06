@@ -41,6 +41,7 @@
       <th class="py-2 font-medium">Name</th>
       <th class="py-2 font-medium">Kundennummer</th>
       <th class="py-2 font-medium">Status</th>
+      <th class="py-2 font-medium"></th>
     </tr>
   </thead>
 
@@ -80,6 +81,24 @@
         </span>
         }
       </td>
+
+      <!-- Delete button -->
+      <td class="py-2 text-right" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="p-1.5 rounded-md text-slate-500 hover:text-red-400 hover:bg-red-900/20 transition-colors"
+          (click)="openDeleteDialog(customer)"
+          title="Kunde löschen">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+          </svg>
+        </button>
+      </td>
     </tr>
     }
   </tbody>
@@ -112,4 +131,60 @@
   </div>
 </div>
 }
+}
+
+<!-- =========================
+     Delete Confirmation Dialog
+     ========================= -->
+
+@if (customerToDelete()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+  (click)="closeDeleteDialog()">
+  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4"
+    (click)="$event.stopPropagation()">
+
+    <!-- Icon -->
+    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-900/30 border border-red-800 mx-auto mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-400" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+        <path d="M10 11v6"></path>
+        <path d="M14 11v6"></path>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+      </svg>
+    </div>
+
+    <!-- Title & message -->
+    <h3 class="text-base font-semibold text-slate-100 text-center mb-1">Kunde löschen</h3>
+    <p class="text-sm text-slate-400 text-center mb-6">
+      Soll <span class="text-slate-200 font-medium">
+        {{ customerToDelete()!.first_name | titlecase }} {{ customerToDelete()!.last_name | titlecase }}
+      </span> wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.
+    </p>
+
+    <!-- Error message -->
+    @if (deleteError()) {
+    <p class="text-sm text-red-400 text-center mb-4">{{ deleteError() }}</p>
+    }
+
+    <!-- Actions -->
+    <div class="flex gap-3">
+      <button type="button"
+        class="flex-1 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors text-sm"
+        (click)="closeDeleteDialog()" [disabled]="deleteLoading()">
+        Abbrechen
+      </button>
+      <button type="button"
+        class="flex-1 px-4 py-2 rounded-lg bg-red-700 hover:bg-red-600 text-white transition-colors text-sm font-medium disabled:opacity-50"
+        (click)="confirmDelete()" [disabled]="deleteLoading()">
+        @if (deleteLoading()) {
+          Löschen...
+        } @else {
+          Löschen
+        }
+      </button>
+    </div>
+  </div>
+</div>
 }

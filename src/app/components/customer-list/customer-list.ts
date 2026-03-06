@@ -18,7 +18,7 @@ export class CustomerList {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  searchTerm = input<string>(""); // <-- input signal
+  searchTerm = input<string>("");
   searchOption = input<CustomerSearchMode>("name");
 
   customers = signal<Customer[]>([]);
@@ -30,9 +30,14 @@ export class CustomerList {
   next = signal<string | null>(null);
   previous = signal<string | null>(null);
 
+  // Delete dialog state
+  customerToDelete = signal<Customer | null>(null);
+  deleteLoading = signal(false);
+  deleteError = signal<string | null>(null);
+
   constructor() {
     effect(() => {
-      const term = (this.searchTerm() || "").trim(); // <-- read signal
+      const term = (this.searchTerm() || "").trim();
       const mode = this.searchOption();
       this.page.set(1);
       this.loadCustomers(term, mode, 1);
@@ -77,5 +82,43 @@ export class CustomerList {
 
   goToCustomer(id: number): void {
     this.router.navigate(["/customer", id]);
+  }
+
+  // ─── Delete ───────────────────────────────────────────────
+
+  openDeleteDialog(customer: Customer): void {
+    this.customerToDelete.set(customer);
+    this.deleteError.set(null);
+  }
+
+  closeDeleteDialog(): void {
+    if (this.deleteLoading()) return;
+    this.customerToDelete.set(null);
+    this.deleteError.set(null);
+  }
+
+  confirmDelete(): void {
+    const customer = this.customerToDelete();
+    if (!customer) return;
+
+    this.deleteLoading.set(true);
+    this.deleteError.set(null);
+
+    this.customerService.deleteCustomer(customer.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.deleteLoading.set(false);
+        this.customerToDelete.set(null);
+        // Reload current page; if last item on page > 1, go back one page
+        const currentPage = this.page();
+        const isLastOnPage = this.customers().length === 1 && currentPage > 1;
+        const newPage = isLastOnPage ? currentPage - 1 : currentPage;
+        this.page.set(newPage);
+        this.loadCustomers((this.searchTerm() || "").trim(), this.searchOption(), newPage);
+      },
+      error: () => {
+        this.deleteLoading.set(false);
+        this.deleteError.set("Fehler beim Löschen des Kunden.");
+      },
+    });
   }
 }
