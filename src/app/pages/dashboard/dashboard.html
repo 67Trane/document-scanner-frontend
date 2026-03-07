@@ -109,7 +109,7 @@
       <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-4 h-full">
 
         <!-- Compact Stats Dashboard -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        <div class="grid grid-cols-2 gap-3 mb-4">
           <!-- Stat Card 1 -->
           <div
             class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300">
@@ -133,51 +133,14 @@
             class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-xs font-medium text-slate-600 dark:text-slate-400">Offene Dok.</p>
-                <p class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">12</p>
+                <p class="text-xs font-medium text-slate-600 dark:text-slate-400">Nicht Zugeordnet</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{unassignedDocuments().length}}</p>
               </div>
               <div class="w-10 h-10 bg-amber-500/10 dark:bg-amber-500/20 rounded-lg flex items-center justify-center">
                 <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stat Card 3 -->
-          <div
-            class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs font-medium text-slate-600 dark:text-slate-400">Ablaufend</p>
-                <p class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">5</p>
-              </div>
-              <div class="w-10 h-10 bg-red-500/10 dark:bg-red-500/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stat Card 4 -->
-          <div
-            class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs font-medium text-slate-600 dark:text-slate-400">Heute</p>
-                <p class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">8</p>
-              </div>
-              <div
-                class="w-10 h-10 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
@@ -346,57 +309,12 @@
             </div>
           </div>
 
-          <!-- Compact Sidebar Activities -->
-          <div class="space-y-4 flex flex-col min-h-0">
-
-            <!-- Recent Activities - Scrollable -->
-            <div
-              class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300 flex-1 flex flex-col min-h-0">
-              <div class="flex items-center gap-2 mb-3 shrink-0">
-                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 class="text-base font-semibold text-slate-900 dark:text-white">Letzte Aktivitäten</h3>
-              </div>
-
-              <div class="space-y-2 overflow-auto flex-1">
-                <div
-                  class="flex gap-2 p-2.5 bg-slate-50/50 dark:bg-slate-900/50 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-900 transition-colors">
-                  <div class="w-2 h-2 bg-blue-500 rounded-full mt-1.5 shrink-0"></div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-slate-900 dark:text-white">Dokument hochgeladen</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Max Mustermann</p>
-                    <p class="text-xs text-slate-400 dark:text-slate-500">vor 2h</p>
-                  </div>
-                </div>
-
-                <div
-                  class="flex gap-2 p-2.5 bg-slate-50/50 dark:bg-slate-900/50 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-900 transition-colors">
-                  <div class="w-2 h-2 bg-emerald-500 rounded-full mt-1.5 shrink-0"></div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-slate-900 dark:text-white">Kunde hinzugefügt</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Anna Schmidt</p>
-                    <p class="text-xs text-slate-400 dark:text-slate-500">vor 5h</p>
-                  </div>
-                </div>
-
-                <div
-                  class="flex gap-2 p-2.5 bg-slate-50/50 dark:bg-slate-900/50 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-900 transition-colors">
-                  <div class="w-2 h-2 bg-amber-500 rounded-full mt-1.5 shrink-0"></div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-slate-900 dark:text-white">Police aktualisiert</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Peter Müller</p>
-                    <p class="text-xs text-slate-400 dark:text-slate-500">gestern</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <!-- Sidebar: Unassigned Documents (full height) -->
+          <div class="flex flex-col min-h-0">
 
             <!-- Unassigned Documents -->
             <div
-              class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300 shrink-0">
+              class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 hover:shadow-xl transition-all duration-300 flex-1 flex flex-col min-h-0">
               <div class="flex items-center gap-2 mb-3">
                 <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
@@ -406,7 +324,7 @@
                 <h3 class="text-base font-semibold text-slate-900 dark:text-white">Nicht Zugeordnet</h3>
               </div>
 
-              <div class="space-y-2">
+              <div class="space-y-2 overflow-auto flex-1">
                 @for (doc of unassignedDocuments(); track $index) {
                 <div (click)="openEdit(doc)"
                   class="flex gap-2 p-2.5 bg-slate-50/50 dark:bg-slate-900/50 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-900 transition-colors cursor-pointer">
