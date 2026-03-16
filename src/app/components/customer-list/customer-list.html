@@ -39,6 +39,7 @@
     <tr>
       <th class="py-2 font-medium">ID</th>
       <th class="py-2 font-medium">Name</th>
+      <th class="py-2 font-medium">Geburtstag</th>
       <th class="py-2 font-medium">Kundennummer</th>
       <th class="py-2 font-medium">Status</th>
       <th class="py-2 font-medium"></th>
@@ -60,6 +61,11 @@
       <!-- Name -->
       <td class="py-2 font-medium text-slate-900 dark:text-slate-200">
         {{ customer.first_name | titlecase }} {{ customer.last_name | titlecase }}
+      </td>
+
+      <!-- Date of Birth -->
+      <td class="py-2 font-medium text-slate-900 dark:text-slate-200">
+        {{ customer.date_of_birth | titlecase }}
       </td>
 
       <!-- Customer number -->
