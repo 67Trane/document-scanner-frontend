@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, input, output, signal, inject, ChangeDetectionStrategy } from "@angular/core";
-import { forkJoin } from "rxjs";
+import { forkJoin, Observable } from "rxjs";
 import { Customer } from "../../../../models/customer.model";
 import { CustomerService } from "../../../../services/customer.service";
 import { DocumentService } from "../../../../services/document.service";
@@ -20,7 +20,8 @@ export class CustomerContactCard {
    * Encapsulates editable customer contact and policy metadata for the detail page sidebar.
    */
   customer = input<Customer | null>(null);
-  
+  documentId = input<number | null>(null);
+
   private readonly customerService = inject(CustomerService);
   private readonly documentService = inject(DocumentService);
   private readonly route = inject(ActivatedRoute);
@@ -99,10 +100,13 @@ export class CustomerContactCard {
 
     this.saveError.set(null);
 
-    forkJoin({
-      customer: this.customerService.patchCustomer(this.customerId, customerPayload),
-      document: this.documentService.patchDocument(this.customerId, documentPayload),
-    }).subscribe({
+    const docId = this.documentId();
+    const customerPatch$ = this.customerService.patchCustomer(this.customerId, customerPayload);
+    const save$: Observable<unknown[]> = docId !== null
+      ? forkJoin([customerPatch$, this.documentService.patchDocument(docId, documentPayload)])
+      : forkJoin([customerPatch$]);
+
+    save$.subscribe({
       next: () => {
         this.isEditing.set(false);
         this.contactUpdated.emit();

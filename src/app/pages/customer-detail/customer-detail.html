@@ -25,15 +25,16 @@
         <!-- =========================
          Contact Details Card
          ========================= -->
-        <app-customer-contact-card 
-          [customer]="customer()" 
-          [email]="email()" 
+        <app-customer-contact-card
+          [customer]="customer()"
+          [documentId]="alldocuments()[0]?.id ?? null"
+          [email]="email()"
           [phone]="phone()"
           [birthday]="dateOfBirth()"
-          [addressLine1]="addressLine1()" 
-          [addressLine2]="addressLine2()" 
+          [addressLine1]="addressLine1()"
+          [addressLine2]="addressLine2()"
           [licensePlates]="licensePlates()"
-          [policyNumbers]="policyNumbers()" 
+          [policyNumbers]="policyNumbers()"
           (contactUpdated)="onContactUpdated()">
         </app-customer-contact-card>
 
