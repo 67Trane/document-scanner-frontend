@@ -158,9 +158,11 @@
               <div class="flex flex-wrap gap-2 justify-center mt-4">
                 <!-- Name Button - Blue Theme -->
                 <button [class.ring-2]="currentSearch() === 'name'" [class.ring-blue-500]="currentSearch() === 'name'"
-                  [class.bg-blue-500]="currentSearch() === 'name'" [class.text-white]="currentSearch() === 'name'"
                   [class.shadow-lg]="currentSearch() === 'name'" [class.shadow-blue-500/30]="currentSearch() === 'name'"
-                  [class.scale-105]="currentSearch() === 'name'" (click)="setSearch('name')"
+                  [class.scale-105]="currentSearch() === 'name'"
+                  [style.background-color]="currentSearch() === 'name' ? 'rgb(59 130 246)' : null"
+                  [style.color]="currentSearch() === 'name' ? 'white' : null"
+                  (click)="setSearch('name')"
                   class="px-4 py-2 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold hover:bg-blue-100 dark:hover:bg-blue-950/30 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-200 hover:scale-105 active:scale-95 border border-transparent hover:border-blue-200 dark:hover:border-blue-800">
                   <span class="flex items-center gap-1.5">
                     @if (currentSearch() === 'name') {
@@ -177,11 +179,12 @@
                 <!-- Birthdate Button - Purple Theme -->
                 <button [class.ring-2]="currentSearch() === 'birthdate'"
                   [class.ring-purple-500]="currentSearch() === 'birthdate'"
-                  [class.bg-purple-500]="currentSearch() === 'birthdate'"
-                  [class.text-white]="currentSearch() === 'birthdate'"
                   [class.shadow-lg]="currentSearch() === 'birthdate'"
                   [class.shadow-purple-500/30]="currentSearch() === 'birthdate'"
-                  [class.scale-105]="currentSearch() === 'birthdate'" (click)="setSearch('birthdate')"
+                  [class.scale-105]="currentSearch() === 'birthdate'"
+                  [style.background-color]="currentSearch() === 'birthdate' ? 'rgb(168 85 247)' : null"
+                  [style.color]="currentSearch() === 'birthdate' ? 'white' : null"
+                  (click)="setSearch('birthdate')"
                   class="px-4 py-2 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold hover:bg-purple-100 dark:hover:bg-purple-950/30 hover:text-purple-700 dark:hover:text-purple-300 transition-all duration-200 hover:scale-105 active:scale-95 border border-transparent hover:border-purple-200 dark:hover:border-purple-800">
                   <span class="flex items-center gap-1.5">
                     @if (currentSearch() === 'birthdate') {
@@ -198,10 +201,12 @@
                 <!-- License Button - Emerald Theme -->
                 <button [class.ring-2]="currentSearch() === 'license'"
                   [class.ring-emerald-500]="currentSearch() === 'license'"
-                  [class.bg-emerald-500]="currentSearch() === 'license'"
-                  [class.text-white]="currentSearch() === 'license'" [class.shadow-lg]="currentSearch() === 'license'"
+                  [class.shadow-lg]="currentSearch() === 'license'"
                   [class.shadow-emerald-500/30]="currentSearch() === 'license'"
-                  [class.scale-105]="currentSearch() === 'license'" (click)="setSearch('license')"
+                  [class.scale-105]="currentSearch() === 'license'"
+                  [style.background-color]="currentSearch() === 'license' ? 'rgb(16 185 129)' : null"
+                  [style.color]="currentSearch() === 'license' ? 'white' : null"
+                  (click)="setSearch('license')"
                   class="px-4 py-2 bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-950/30 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-200 hover:scale-105 active:scale-95 border border-transparent hover:border-emerald-200 dark:hover:border-emerald-800">
                   <span class="flex items-center gap-1.5">
                     @if (currentSearch() === 'license') {
