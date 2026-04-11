@@ -57,19 +57,23 @@
         <!-- =========================
          PDF Viewer
          ========================= -->
-        <app-customer-pdf-viewer 
-          [src]="viewerSrc() ?? undefined" 
+        <app-customer-pdf-viewer
+          [src]="viewerSrc() ?? undefined"
           [document]="document()"
-          (openOriginal)="openContract(document()!)" 
-          (download)="downloadCurrentPdf()">
+          [email]="email()"
+          (openOriginal)="openContract(document()!)"
+          (download)="downloadCurrentPdf()"
+          (sendDocument)="sendCurrentPdf()">
         </app-customer-pdf-viewer>
 
         <!-- =========================
          Contracts List
          ========================= -->
-        <app-customer-contracts-list 
+        <app-customer-contracts-list
           [documents]="alldocuments()"
-          (selectContract)="openContractPreview($event)">
+          (selectContract)="openContractPreview($event)"
+          (deleteContract)="onDeleteContract($event)"
+          (contractTypeChanged)="onContractTypeChanged($event)">
         </app-customer-contracts-list>
 
       </div>

@@ -41,9 +41,9 @@ export class Dashboard implements OnInit {
   currentSearchDescription = computed(() => this.searchOptions[this.currentSearch()] ?? '');
 
   readonly searchOptions: Record<CustomerSearchMode, string> = {
-    name: 'Suche nach Namen',
-    license: 'Suche nach Auto-Kennzeichen',
-    birthdate: 'Suche nach Geburtstag',
+    name:      'Suche nach Namen',
+    license:   'Suche nach Auto-Kennzeichen',
+    birthdate: 'Suche nach Geburtstag – Format: TT.MM.JJJJ, MM.JJJJ oder JJJJ',
   };
 
   readonly searchLabel = computed(() => {

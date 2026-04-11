@@ -19,6 +19,10 @@ export class DocumentService {
     return this.http.patch<CustomerDocument>(`${this.baseUrl}/api/documents/${id}/`, data);
   }
 
+  deleteDocument(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/api/documents/${id}/`);
+  }
+
   getUnassignedDocuments(): Observable<PaginatedResponse<CustomerDocument>> {
     const url = new URL('/api/documents/', this.baseUrl).toString();
 

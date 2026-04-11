@@ -152,7 +152,7 @@
                 </div>
               </div>
 
-              <app-customer-search (search)="onSearch($event)"></app-customer-search>
+              <app-customer-search [mode]="currentSearch()" (search)="onSearch($event)"></app-customer-search>
 
               <!-- Quick Filter Chips -->
               <div class="flex flex-wrap gap-2 justify-center mt-4">

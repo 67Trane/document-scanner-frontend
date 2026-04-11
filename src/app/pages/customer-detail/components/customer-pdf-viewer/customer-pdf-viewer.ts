@@ -18,7 +18,11 @@ export class CustomerPdfViewer {
   // Selected document (used for labels / buttons)
   document = input<CustomerDocument | null>(null);
 
+  // Customer email — pre-fills the mailto link if present
+  email = input<string | null>(null);
+
   // Actions
   download = output<void>();
   openOriginal = output<void>();
+  sendDocument = output<void>();
 }

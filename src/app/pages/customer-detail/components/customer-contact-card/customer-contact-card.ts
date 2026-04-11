@@ -1,11 +1,31 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, input, output, signal, inject, ChangeDetectionStrategy } from "@angular/core";
 import { forkJoin, Observable } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 import { Customer } from "../../../../models/customer.model";
 import { CustomerService } from "../../../../services/customer.service";
 import { DocumentService } from "../../../../services/document.service";
 import { CustomerDocument } from "../../../../models/document.model";
 import { ActivatedRoute } from "@angular/router";
+
+const FIELD_LABELS: Record<string, string> = {
+  email:          "E-Mail",
+  phone:          "Telefon",
+  date_of_birth:  "Geburtsdatum",
+  street:         "Straße",
+  license_plates: "Kennzeichen",
+  policy_numbers: "Versicherungsschein-Nummern",
+};
+
+const ERROR_TRANSLATIONS: Record<string, string> = {
+  "Enter a valid email address.":    "Ungültige E-Mail-Adresse.",
+  "This field may not be blank.":    "Dieses Feld darf nicht leer sein.",
+  "This field is required.":         "Dieses Feld ist erforderlich.",
+  "Date has wrong format.":          "Ungültiges Datumsformat. Bitte TT.MM.JJJJ verwenden.",
+  "Ensure this field has no more than": "Der eingegebene Wert ist zu lang.",
+  "This field may not be null.":     "Dieses Feld darf nicht leer sein.",
+  "A valid integer is required.":    "Bitte eine gültige Zahl eingeben.",
+};
 
 @Component({
   selector: "app-customer-contact-card",
@@ -111,10 +131,30 @@ export class CustomerContactCard {
         this.isEditing.set(false);
         this.contactUpdated.emit();
       },
-      error: () => {
-        this.saveError.set("Speichern fehlgeschlagen. Bitte erneut versuchen.");
+      error: (err: HttpErrorResponse) => {
+        this.saveError.set(this.parseError(err));
       },
     });
+  }
+
+  private parseError(err: HttpErrorResponse): string {
+    if (err.status === 0) return "Keine Verbindung zum Server.";
+    if (err.status === 403) return "Keine Berechtigung zum Speichern.";
+    if (err.status >= 500) return "Serverfehler. Bitte erneut versuchen.";
+
+    const body = err.error;
+    if (body && typeof body === "object") {
+      for (const field of Object.keys(body)) {
+        const messages: string[] = Array.isArray(body[field]) ? body[field] : [body[field]];
+        const label = FIELD_LABELS[field] ?? field;
+        const raw = messages[0] ?? "";
+        const translated = Object.keys(ERROR_TRANSLATIONS).find(k => raw.startsWith(k));
+        const message = translated ? ERROR_TRANSLATIONS[translated] : raw;
+        return `${label}: ${message}`;
+      }
+    }
+
+    return "Speichern fehlgeschlagen. Bitte erneut versuchen.";
   }
 
   cancelEdit(): void {

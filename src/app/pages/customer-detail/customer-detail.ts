@@ -186,6 +186,25 @@ export class CustomerDetail {
     this.document.set(contract);
   }
 
+  onContractTypeChanged(updated: CustomerDocument): void {
+    this.alldocuments.update(docs => docs.map(d => d.id === updated.id ? updated : d));
+    if (this.document()?.id === updated.id) {
+      this.document.set(updated);
+    }
+  }
+
+  onDeleteContract(contract: CustomerDocument): void {
+    this.documentService.deleteDocument(contract.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.alldocuments.update(docs => docs.filter(d => d.id !== contract.id));
+        if (this.document()?.id === contract.id) {
+          const remaining = this.alldocuments();
+          this.document.set(remaining[0] ?? null);
+        }
+      },
+    });
+  }
+
   openContract(contract: CustomerDocument): void {
     const url = contract.file_url;
     if (!url) return;
@@ -204,6 +223,19 @@ export class CustomerDetail {
     anchor.target = "_blank";
     anchor.rel = "noopener";
     anchor.click();
+  }
+
+  sendCurrentPdf(): void {
+    // 1. Download the PDF so the broker can attach it from Downloads.
+    this.downloadCurrentPdf();
+
+    // 2. Open the email client with the customer email pre-filled if available.
+    const to = this.email() ?? "";
+    const subject = encodeURIComponent("Ihr Versicherungsdokument");
+    const body = encodeURIComponent(
+      "Sehr geehrte Damen und Herren,\n\nanbei finden Sie Ihr Versicherungsdokument.\n\nMit freundlichen Grüßen"
+    );
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
   }
 
   /**

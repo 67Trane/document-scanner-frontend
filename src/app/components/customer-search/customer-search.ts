@@ -1,5 +1,12 @@
-import { Component, output, signal } from "@angular/core";
+import { Component, computed, input, output, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { CustomerSearchMode } from "../../models/customer-search-mode.model";
+
+const PLACEHOLDERS: Record<CustomerSearchMode, string> = {
+  name:      "z.B. Max Mustermann",
+  license:   "z.B. M-AB 1234",
+  birthdate: "z.B. 06.03.1990 oder 03.1990 oder 1990",
+};
 
 @Component({
   selector: "app-customer-search",
@@ -8,7 +15,9 @@ import { CommonModule } from "@angular/common";
   templateUrl: "./customer-search.html",
 })
 export class CustomerSearch {
-  // outgoing event
+  mode = input<CustomerSearchMode>("name");
+  placeholder = computed(() => PLACEHOLDERS[this.mode()]);
+
   search = output<string>();
 
   // internal state

@@ -3,14 +3,36 @@ import { Customer } from './customer.model';
 export type DocumentStatus = 'aktiv' | 'ruhend';
 
 export type ContractType =
-  | 'Kfz-Versicherung'
+  | 'kfz'
   | 'haftpflicht'
   | 'hausrat'
   | 'rechtschutz'
   | 'wohngebaeude'
   | 'unfall'
+  | 'lebensversicherung'
+  | 'rentenversicherung'
   | 'berufsunfaehigkeit'
-  | 'krankenversicherung';
+  | 'krankenversicherung'
+  | 'tierversicherung'
+  | 'reise'
+  | 'gruene_karte';
+
+export const CONTRACT_TYPE_OPTIONS: { value: ContractType | ''; label: string }[] = [
+  { value: '',              label: 'Sonstige' },
+  { value: 'kfz',               label: 'Kfz-Versicherung' },
+  { value: 'haftpflicht',       label: 'Privat-Haftpflicht' },
+  { value: 'hausrat',           label: 'Hausrat' },
+  { value: 'rechtschutz',       label: 'Rechtsschutz' },
+  { value: 'wohngebaeude',      label: 'Wohngebäudeversicherung' },
+  { value: 'unfall',            label: 'Unfallversicherung' },
+  { value: 'lebensversicherung', label: 'Lebensversicherung' },
+  { value: 'rentenversicherung', label: 'Rentenversicherung' },
+  { value: 'berufsunfaehigkeit', label: 'Berufsunfähigkeitsversicherung' },
+  { value: 'krankenversicherung', label: 'Private Krankenversicherung' },
+  { value: 'tierversicherung',  label: 'Tierhalterhaftpflicht / Tierkranken' },
+  { value: 'reise',             label: 'Reiseversicherung' },
+  { value: 'gruene_karte',      label: 'Grüne Karte' },
+];
 
 export interface CustomerDocument {
   id: number;
