@@ -3,7 +3,7 @@
   (click)="close.emit()"
 >
   <div
-    class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+    class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
     (click)="$event.stopPropagation()"
   >
     <!-- ========================= -->
@@ -245,6 +245,72 @@
     </div>
 
     <!-- ========================= -->
+    <!-- Confirmation overlay -->
+    <!-- ========================= -->
+    @if (confirmMode()) {
+      <div class="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center p-8 rounded-3xl animate-in fade-in duration-200">
+
+        @if (confirmMode() === 'assign') {
+          <div class="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white text-center mb-2">Zuweisung bestätigen</h3>
+          <p class="text-slate-600 dark:text-slate-400 text-center mb-8">
+            Dieses Dokument wird
+            <span class="font-semibold text-slate-900 dark:text-white">
+              {{ selectedCustomer()!.first_name }} {{ selectedCustomer()!.last_name }}
+            </span>
+            zugewiesen. Stimmt das?
+          </p>
+        }
+
+        @if (confirmMode() === 'create') {
+          <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white text-center mb-2">Neuen Kunden anlegen?</h3>
+          <p class="text-slate-600 dark:text-slate-400 text-center mb-8">
+            Es wird ein neuer Kunde
+            <span class="font-semibold text-slate-900 dark:text-white">
+              {{ firstName() }} {{ lastName() }}
+            </span>
+            angelegt und das Dokument zugewiesen. Stimmt das?
+          </p>
+        }
+
+        <div class="flex gap-3">
+          <button
+            type="button"
+            (click)="cancelConfirm()"
+            class="px-6 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+          >
+            Zurück
+          </button>
+          <button
+            type="button"
+            (click)="confirmMode() === 'assign' ? assignToSelectedCustomer() : createCustomerAndAssign()"
+            [disabled]="isSaving()"
+            class="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-blue-500/30"
+          >
+            @if (isSaving()) {
+              <span class="inline-flex items-center gap-2">
+                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Bitte warten…
+              </span>
+            } @else {
+              Ja, bestätigen
+            }
+          </button>
+        </div>
+
+      </div>
+    }
+
+    <!-- ========================= -->
     <!-- Actions -->
     <!-- ========================= -->
     <div class="flex justify-end gap-3 px-8 py-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
@@ -259,7 +325,7 @@
 
       <button
         type="button"
-        (click)="createCustomerAndAssign()"
+        (click)="requestCreate()"
         [disabled]="isSaving()"
         class="px-6 py-2.5 text-sm font-semibold text-white bg-slate-700 hover:bg-slate-800 
                rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
@@ -282,7 +348,7 @@
 
       <button
         type="button"
-        (click)="assignToSelectedCustomer()"
+        (click)="requestAssign()"
         [disabled]="isSaving()"
         class="px-6 py-2.5 text-sm font-semibold text-white bg-linear-to-r from-blue-600 to-blue-700 
                hover:from-blue-700 hover:to-blue-800 rounded-xl transition-all duration-200 

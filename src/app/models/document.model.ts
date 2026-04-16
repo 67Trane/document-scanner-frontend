@@ -34,6 +34,15 @@ export const CONTRACT_TYPE_OPTIONS: { value: ContractType | ''; label: string }[
   { value: 'gruene_karte',      label: 'Grüne Karte' },
 ];
 
+export type ActivityLogAction = 'customer_created' | 'document_assigned' | 'document_unresolved';
+
+export interface ActivityLog {
+  id: number;
+  action: ActivityLogAction;
+  description: string;
+  created_at: string;
+}
+
 export interface CustomerDocument {
   id: number;
   file_path: string;

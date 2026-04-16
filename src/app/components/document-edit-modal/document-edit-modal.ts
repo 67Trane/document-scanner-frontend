@@ -44,6 +44,9 @@ export class DocumentEditModal {
   // Saving
   isSaving = signal(false);
 
+  // Confirmation step: null = normal view, 'assign' = confirm existing, 'create' = confirm new
+  confirmMode = signal<'assign' | 'create' | null>(null);
+
   // Debounce
   private searchTimer: number | null = null;
 
@@ -60,6 +63,7 @@ export class DocumentEditModal {
       this.resetSearchState();
       this.isSaving.set(false);
       this.errorMsg.set('');
+      this.confirmMode.set(null);
     });
   }
 
@@ -159,6 +163,26 @@ export class DocumentEditModal {
   // -------------------------
   // Assign / Create
   // -------------------------
+
+  requestAssign(): void {
+    if (!this.selectedCustomer()?.id) {
+      this.errorMsg.set('Bitte einen Kunden aus der Liste auswählen.');
+      return;
+    }
+    this.confirmMode.set('assign');
+  }
+
+  requestCreate(): void {
+    if (!this.firstName().trim() || !this.lastName().trim()) {
+      this.errorMsg.set('Bitte Vorname und Nachname ausfüllen.');
+      return;
+    }
+    this.confirmMode.set('create');
+  }
+
+  cancelConfirm(): void {
+    this.confirmMode.set(null);
+  }
 
   assignToSelectedCustomer(): void {
     const d = this.doc();

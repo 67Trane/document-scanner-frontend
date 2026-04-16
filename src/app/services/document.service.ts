@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppConfig } from '../runtime-config';
-import { CustomerDocument } from '../models/document.model';
+import { ActivityLog, CustomerDocument } from '../models/document.model';
 import { map } from "rxjs/operators";
 import { PaginatedResponse } from '../models/paginated-response.model';
 
@@ -61,6 +61,8 @@ export class DocumentService {
     return this.http.get(url, { responseType: "blob", withCredentials: true });
   }
 
-
-
+  getActivityLog(): Observable<ActivityLog[]> {
+    const url = new URL('/api/activity-log/', AppConfig.apiBaseUrl).toString();
+    return this.http.get<ActivityLog[]>(url);
+  }
 }

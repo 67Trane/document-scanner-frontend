@@ -20,18 +20,29 @@ export class CustomerContractsList {
   contractTypeChanged = output<CustomerDocument>();
 
   editingId = signal<number | null>(null);
+  deletingId = signal<number | null>(null);
   readonly contractTypeOptions = CONTRACT_TYPE_OPTIONS;
 
   onSelect(contract: CustomerDocument) {
     if (this.editingId() === contract.id) return;
+    if (this.deletingId() === contract.id) return;
     this.selectContract.emit(contract);
   }
 
   onDelete(event: MouseEvent, contract: CustomerDocument) {
     event.stopPropagation();
-    if (confirm(`Dokument wirklich löschen?`)) {
-      this.deleteContract.emit(contract);
-    }
+    this.deletingId.set(contract.id);
+  }
+
+  onDeleteConfirm(event: MouseEvent, contract: CustomerDocument) {
+    event.stopPropagation();
+    this.deletingId.set(null);
+    this.deleteContract.emit(contract);
+  }
+
+  onDeleteCancel(event: MouseEvent) {
+    event.stopPropagation();
+    this.deletingId.set(null);
   }
 
   onEditType(event: MouseEvent, contract: CustomerDocument) {

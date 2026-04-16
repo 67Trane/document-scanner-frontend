@@ -1,4 +1,5 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CustomerSearch } from '../../components/customer-search/customer-search';
 import { CustomerList } from '../../components/customer-list/customer-list';
@@ -7,15 +8,16 @@ import { AuthService } from '../../services/auth.service';
 import { CustomerService } from '../../services/customer.service';
 import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 import { DocumentService } from '../../services/document.service';
-import { CustomerDocument } from '../../models/document.model';
+import { ActivityLog, CustomerDocument } from '../../models/document.model';
 import { DocumentEditModal } from '../../components/document-edit-modal/document-edit-modal';
+import { interval } from 'rxjs';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CustomerSearch, CustomerList, DocumentEditModal],
+  imports: [CustomerSearch, CustomerList, DocumentEditModal, DatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -36,6 +38,8 @@ export class Dashboard implements OnInit {
   selectedDocument = signal<CustomerDocument | null>(null);
   isEditOpen = signal(false);
   customerCount = signal<number>(0);
+  hasNewDocuments = signal(false);
+  activityLog = signal<ActivityLog[]>([]);
 
   currentSearch = signal<CustomerSearchMode>('name');
   currentSearchDescription = computed(() => this.searchOptions[this.currentSearch()] ?? '');
@@ -87,6 +91,38 @@ export class Dashboard implements OnInit {
     });
   }
 
+  startPolling(): void {
+    interval(30000).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => {
+      // Refresh unassigned documents
+      this.documentService.getUnassignedDocuments().subscribe({
+        next: (data) => {
+          const prev = this.unassignedDocuments().length;
+          this.unassignedDocuments.set(data.results);
+          if (data.results.length > prev) {
+            this.hasNewDocuments.set(true);
+          }
+        },
+      });
+
+      // Refresh customer count
+      this.customerService.getCustomerCount().subscribe({
+        next: (res) => this.customerCount.set(res.count),
+      });
+
+      // Refresh activity log
+      this.documentService.getActivityLog().subscribe({
+        next: (logs) => this.activityLog.set(logs),
+      });
+    });
+  }
+
+  scrollToUnassigned(): void {
+    document.getElementById('unassigned-section')?.scrollIntoView({ behavior: 'smooth' });
+    this.hasNewDocuments.set(false);
+  }
+
   setSearch(option: CustomerSearchMode): void {
     this.currentSearch.set(option);
   }
@@ -101,6 +137,12 @@ export class Dashboard implements OnInit {
         this.customerCount.set(0);
       },
     });
+
+    this.documentService.getActivityLog().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (logs) => this.activityLog.set(logs),
+    });
+
+    this.startPolling();
   }
 
   logOut(): void {
@@ -117,5 +159,8 @@ export class Dashboard implements OnInit {
 
   onAssigned(): void {
     this.getUnassignedDocuments();
+    this.documentService.getActivityLog().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (logs) => this.activityLog.set(logs),
+    });
   }
 }
