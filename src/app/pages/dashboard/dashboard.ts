@@ -10,6 +10,7 @@ import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 import { DocumentService } from '../../services/document.service';
 import { ActivityLog, CustomerDocument } from '../../models/document.model';
 import { DocumentEditModal } from '../../components/document-edit-modal/document-edit-modal';
+import { ThemeService } from '../../services/theme.service';
 import { interval } from 'rxjs';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
@@ -26,6 +27,7 @@ export class Dashboard implements OnInit {
    * Dashboard shell that coordinates customer search and unassigned document assignment.
    */
   readonly auth = inject(AuthService);
+  readonly theme = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly customerService = inject(CustomerService);
   private readonly documentService = inject(DocumentService);

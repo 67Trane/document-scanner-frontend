@@ -1,47 +1,264 @@
 <div
-  class="fixed inset-0 bg-linear-to-br from-black/70 to-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
-  (click)="close.emit()"
+  class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
 >
   <div
-    class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
-    (click)="$event.stopPropagation()"
+    class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
   >
+
     <!-- ========================= -->
-    <!-- Header mit Gradient -->
+    <!-- Header -->
     <!-- ========================= -->
-    <div class="bg-linear-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-8 py-6">
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-2xl font-bold text-white">Dokument zuweisen</h2>
-          <p class="text-blue-100 text-sm mt-1">Kunde suchen oder neu anlegen</p>
+    <div class="bg-linear-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-6 py-5">
+      <div class="flex justify-between items-start gap-4">
+        <div class="flex-1 min-w-0">
+          <h2 class="text-xl font-bold text-white">Dokument zuweisen</h2>
+
+          <!-- Document metadata strip -->
+          @if (doc()) {
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+              @if (doc()?.contract_typ_display) {
+                <span class="text-blue-100 text-xs font-medium inline-flex items-center gap-1">
+                  <svg class="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ doc()?.contract_typ_display }}
+                </span>
+              }
+              @if (doc()?.policy_numbers?.length) {
+                <span class="text-blue-100 text-xs font-medium inline-flex items-center gap-1">
+                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                  </svg>
+                  {{ doc()?.policy_numbers?.join(', ') }}
+                </span>
+              }
+              @if (doc()?.created_at) {
+                <span class="text-blue-200 text-xs inline-flex items-center gap-1">
+                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  {{ doc()?.created_at | date:'dd.MM.yyyy' }}
+                </span>
+              }
+              <button
+                type="button"
+                (click)="openPdf()"
+                [disabled]="isPdfLoading()"
+                class="text-white/80 hover:text-white text-xs font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+              >
+                @if (isPdfLoading()) {
+                  <div class="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                } @else {
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                }
+                PDF öffnen
+              </button>
+            </div>
+          }
         </div>
-        
+
         <button
           (click)="close.emit()"
-          class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white transition-all duration-200 flex items-center justify-center hover:scale-105"
+          class="shrink-0 w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all flex items-center justify-center"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
     </div>
 
-    <div class="p-8">
-      <!-- ========================= -->
-      <!-- OCR / New customer input -->
-      <!-- ========================= -->
-      <div class="mb-8">
-        <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
+    <!-- ========================= -->
+    <!-- Tab switcher — pick a path -->
+    <!-- ========================= -->
+    <div class="px-6 pt-5 pb-0">
+      <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+        <button
+          type="button"
+          (click)="switchTab('search')"
+          class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
+          [class.bg-white]="activeTab() === 'search'"
+          [class.dark:bg-slate-700]="activeTab() === 'search'"
+          [class.text-blue-600]="activeTab() === 'search'"
+          [class.dark:text-blue-400]="activeTab() === 'search'"
+          [class.shadow-sm]="activeTab() === 'search'"
+          [class.text-slate-500]="activeTab() !== 'search'"
+          [class.dark:text-slate-400]="activeTab() !== 'search'"
+          [class.hover:text-slate-700]="activeTab() !== 'search'"
+          [class.dark:hover:text-slate-200]="activeTab() !== 'search'"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
-          Neuer Kunde
-        </h3>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div class="group">
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">
+          Kunden suchen
+        </button>
+
+        <button
+          type="button"
+          (click)="switchTab('create')"
+          class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
+          [class.bg-white]="activeTab() === 'create'"
+          [class.dark:bg-slate-700]="activeTab() === 'create'"
+          [class.text-blue-600]="activeTab() === 'create'"
+          [class.dark:text-blue-400]="activeTab() === 'create'"
+          [class.shadow-sm]="activeTab() === 'create'"
+          [class.text-slate-500]="activeTab() !== 'create'"
+          [class.dark:text-slate-400]="activeTab() !== 'create'"
+          [class.hover:text-slate-700]="activeTab() !== 'create'"
+          [class.dark:hover:text-slate-200]="activeTab() !== 'create'"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
+          Neuen Kunden anlegen
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- Tab: Search existing -->
+    <!-- ========================= -->
+    @if (activeTab() === 'search') {
+      <div class="px-6 pt-5 pb-6 space-y-4">
+
+        <!-- Search mode selector + input -->
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+            <input
+              type="text"
+              [value]="searchTerm()"
+              (input)="onSearchInput($event)"
+              placeholder="Mindestens 2 Zeichen…"
+              class="w-full border-2 border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5
+                     bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm
+                     placeholder:text-slate-400 dark:placeholder:text-slate-500
+                     focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900
+                     focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+            />
+            @if (isSearching()) {
+              <div class="absolute right-3.5 top-1/2 -translate-y-1/2">
+                <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            }
+          </div>
+
+          <select
+            class="text-sm font-medium border-2 border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5
+                   bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300
+                   focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shrink-0"
+            (change)="onModeChange($event)"
+          >
+            <option value="name">Name</option>
+            <option value="license">Kennzeichen</option>
+            <option value="birthdate">Geburtsdatum</option>
+          </select>
+        </div>
+
+        <!-- Search results dropdown -->
+        @if (results().length > 0) {
+          <div class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-lg animate-in slide-in-from-top-2 duration-200">
+            <div class="max-h-52 overflow-auto divide-y divide-slate-100 dark:divide-slate-700/50">
+              @for (c of results(); track c.id) {
+                <button
+                  type="button"
+                  (click)="selectCustomer(c)"
+                  class="w-full text-left px-4 py-3 hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-colors group"
+                >
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 shrink-0">
+                        {{ c.first_name.charAt(0) }}{{ c.last_name.charAt(0) }}
+                      </div>
+                      <div class="min-w-0">
+                        <div class="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                          {{ c.first_name }} {{ c.last_name }}
+                        </div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                          {{ c.customer_number || 'Keine Nr.' }}
+                          @if (c.city) { · {{ c.city }} }
+                        </div>
+                      </div>
+                    </div>
+                    <svg class="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </div>
+                </button>
+              }
+              @if (hasNext()) {
+                <button
+                  type="button"
+                  (click)="loadMore()"
+                  class="w-full text-center px-4 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400
+                         hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-colors"
+                >
+                  Mehr laden ({{ results().length }} / {{ count() }})
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Selected customer chip -->
+        @if (selectedCustomer()) {
+          <div class="flex items-center justify-between p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 animate-in slide-in-from-top-2 duration-200">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                {{ selectedCustomer()!.first_name.charAt(0) }}{{ selectedCustomer()!.last_name.charAt(0) }}
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-slate-900 dark:text-white">
+                  {{ selectedCustomer()!.first_name }} {{ selectedCustomer()!.last_name }}
+                </div>
+                <div class="text-xs text-slate-500 dark:text-slate-400">
+                  {{ selectedCustomer()!.customer_number || '–' }}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="clearSelection()"
+              class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-white px-2 py-1 rounded-lg hover:bg-white/60 dark:hover:bg-slate-700 transition-all"
+            >
+              Ändern
+            </button>
+          </div>
+        }
+
+        <!-- Empty hint when no results and no selection -->
+        @if (!isSearching() && !results().length && !selectedCustomer() && searchTerm().trim().length >= 2) {
+          <p class="text-sm text-center text-slate-400 dark:text-slate-500 py-4">
+            Kein Kunde gefunden — oder
+            <button type="button" (click)="switchTab('create')" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+              neuen Kunden anlegen
+            </button>
+          </p>
+        }
+
+      </div>
+    }
+
+    <!-- ========================= -->
+    <!-- Tab: Create new customer -->
+    <!-- ========================= -->
+    @if (activeTab() === 'create') {
+      <div class="px-6 pt-5 pb-6 space-y-4">
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          Es wird ein neuer Kundeneintrag angelegt und das Dokument direkt zugewiesen.
+        </p>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
               Vorname
             </label>
             <input
@@ -49,17 +266,15 @@
               [value]="firstName()"
               (input)="onFirstNameInput($event)"
               placeholder="Max"
-              class="w-full border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3
-                     bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white
-                     placeholder:text-slate-400 dark:placeholder:text-slate-500
-                     focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 
-                     focus:ring-4 focus:ring-blue-500/10 transition-all duration-200
-                     group-hover:border-slate-300 dark:group-hover:border-slate-600"
+              class="w-full border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5
+                     bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm
+                     placeholder:text-slate-400
+                     focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900
+                     focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
             />
           </div>
-
-          <div class="group">
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
               Nachname
             </label>
             <input
@@ -67,181 +282,85 @@
               [value]="lastName()"
               (input)="onLastNameInput($event)"
               placeholder="Mustermann"
-              class="w-full border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3
-                     bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white
-                     placeholder:text-slate-400 dark:placeholder:text-slate-500
-                     focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 
-                     focus:ring-4 focus:ring-blue-500/10 transition-all duration-200
-                     group-hover:border-slate-300 dark:group-hover:border-slate-600"
+              class="w-full border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5
+                     bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm
+                     placeholder:text-slate-400
+                     focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900
+                     focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
             />
           </div>
         </div>
-      </div>
 
-      <!-- ========================= -->
-      <!-- Divider -->
-      <!-- ========================= -->
-      <div class="relative mb-8">
-        <div class="absolute inset-0 flex items-center">
-          <div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
-        </div>
-        <div class="relative flex justify-center">
-          <span class="px-4 bg-white dark:bg-slate-900 text-sm font-medium text-slate-500 dark:text-slate-400">
-            oder
+        <p class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+          </svg>
+          Weitere Daten können später im Kundenprofil ergänzt werden.
+        </p>
+      </div>
+    }
+
+    <!-- ========================= -->
+    <!-- Error message -->
+    <!-- ========================= -->
+    @if (errorMsg()) {
+      <div class="mx-6 mb-4 flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 animate-in slide-in-from-top-2 duration-200">
+        <svg class="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+        </svg>
+        <p class="text-sm text-red-700 dark:text-red-300">{{ errorMsg() }}</p>
+      </div>
+    }
+
+    <!-- ========================= -->
+    <!-- Footer actions -->
+    <!-- ========================= -->
+    <div class="flex justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300
+               border-2 border-slate-200 dark:border-slate-700 rounded-xl
+               hover:bg-white dark:hover:bg-slate-700 transition-all"
+      >
+        Abbrechen
+      </button>
+
+      @if (activeTab() === 'search') {
+        <button
+          type="button"
+          (click)="requestAssign()"
+          [disabled]="isSaving() || !selectedCustomer()"
+          class="px-5 py-2.5 text-sm font-semibold text-white rounded-xl transition-all duration-200
+                 disabled:opacity-40 disabled:cursor-not-allowed
+                 bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30"
+        >
+          <span class="inline-flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            </svg>
+            Dokument zuweisen
           </span>
-        </div>
-      </div>
+        </button>
+      }
 
-      <!-- ========================= -->
-      <!-- Search existing customer -->
-      <!-- ========================= -->
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+      @if (activeTab() === 'create') {
+        <button
+          type="button"
+          (click)="requestCreate()"
+          [disabled]="isSaving()"
+          class="px-5 py-2.5 text-sm font-semibold text-white rounded-xl transition-all duration-200
+                 disabled:opacity-40 disabled:cursor-not-allowed
+                 bg-slate-700 hover:bg-slate-800 hover:shadow-lg"
+        >
+          <span class="inline-flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
             </svg>
-            Bestehenden Kunden suchen
-          </h3>
-
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-500 dark:text-slate-400">Suche nach:</span>
-            <select
-              class="text-xs font-medium border-2 border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 
-                     bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white
-                     focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
-              (change)="onModeChange($event)"
-            >
-              <option value="name">Name</option>
-              <option value="license">Kennzeichen</option>
-              <option value="birthdate">Geburtsdatum</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          
-          <input
-            type="text"
-            [value]="searchTerm()"
-            (input)="onSearchInput($event)"
-            placeholder="Mindestens 2 Zeichen eingeben..."
-            class="w-full border-2 border-slate-200 dark:border-slate-700 rounded-xl pl-12 pr-4 py-3
-                   bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white
-                   placeholder:text-slate-400 dark:placeholder:text-slate-500
-                   focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 
-                   focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
-          />
-
-          @if (isSearching()) {
-            <div class="absolute right-4 top-1/2 -translate-y-1/2">
-              <div class="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          }
-
-          @if (results().length > 0) {
-            <div
-              class="absolute left-0 right-0 mt-2 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-10 animate-in slide-in-from-top-2 duration-200"
-            >
-              <div class="max-h-64 overflow-auto">
-                @for (c of results(); track c.id) {
-                  <button
-                    type="button"
-                    (click)="selectCustomer(c)"
-                    class="w-full text-left px-5 py-4 hover:bg-blue-50 dark:hover:bg-slate-700/50 
-                           transition-all duration-150 border-b border-slate-100 dark:border-slate-700/50 
-                           last:border-b-0 group"
-                  >
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1">
-                        <div class="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                          {{ c.first_name }} {{ c.last_name }}
-                        </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-3">
-                          <span class="inline-flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2 4a1 1 0 011-1h14a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4z" />
-                            </svg>
-                            {{ c.customer_number || 'Keine Nr.' }}
-                          </span>
-                          <span class="inline-flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9z" clip-rule="evenodd" />
-                            </svg>
-                            {{ c.zip_code || '–' }} {{ c.city || '' }}
-                          </span>
-                        </div>
-                      </div>
-                      <svg class="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </button>
-                }
-
-                @if (hasNext()) {
-                  <button
-                    type="button"
-                    (click)="loadMore()"
-                    class="w-full text-center px-5 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400 
-                           hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-all duration-150
-                           border-t-2 border-slate-100 dark:border-slate-700"
-                  >
-                    <span class="inline-flex items-center gap-2">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
-                      Mehr laden ({{ results().length }} / {{ count() }})
-                    </span>
-                  </button>
-                }
-              </div>
-            </div>
-          }
-        </div>
-
-        @if (selectedCustomer()) {
-          <div
-            class="flex items-center justify-between p-4 rounded-xl bg-linear-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-2 border-blue-200 dark:border-blue-800 animate-in slide-in-from-top-2 duration-200"
-          >
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
-                {{ selectedCustomer()!.first_name.charAt(0) }}{{ selectedCustomer()!.last_name.charAt(0) }}
-              </div>
-              <div>
-                <div class="text-sm font-semibold text-slate-900 dark:text-white">
-                  {{ selectedCustomer()!.first_name }} {{ selectedCustomer()!.last_name }}
-                </div>
-                <div class="text-xs text-slate-600 dark:text-slate-400">
-                  Kundennr: {{ selectedCustomer()!.customer_number || '–' }}
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              (click)="clearSelection()"
-              class="text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-slate-700/50 transition-all"
-            >
-              Entfernen
-            </button>
-          </div>
-        }
-
-        @if (errorMsg()) {
-          <div class="flex items-center gap-2 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 animate-in slide-in-from-top-2 duration-200">
-            <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-            <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ errorMsg() }}</p>
-          </div>
-        }
-      </div>
+            Kunden anlegen & zuweisen
+          </span>
+        </button>
+      }
     </div>
 
     <!-- ========================= -->
@@ -251,34 +370,29 @@
       <div class="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center p-8 rounded-3xl animate-in fade-in duration-200">
 
         @if (confirmMode() === 'assign') {
-          <div class="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center mb-6">
-            <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center mb-5">
+            <svg class="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white text-center mb-2">Zuweisung bestätigen</h3>
-          <p class="text-slate-600 dark:text-slate-400 text-center mb-8">
-            Dieses Dokument wird
-            <span class="font-semibold text-slate-900 dark:text-white">
-              {{ selectedCustomer()!.first_name }} {{ selectedCustomer()!.last_name }}
-            </span>
-            zugewiesen. Stimmt das?
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white text-center mb-2">Zuweisung bestätigen</h3>
+          <p class="text-slate-500 dark:text-slate-400 text-center text-sm mb-8 max-w-xs">
+            Das Dokument wird
+            <span class="font-semibold text-slate-800 dark:text-white">{{ selectedCustomer()!.first_name }} {{ selectedCustomer()!.last_name }}</span>
+            zugewiesen.
           </p>
         }
 
         @if (confirmMode() === 'create') {
-          <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-6">
-            <svg class="w-8 h-8 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-5">
+            <svg class="w-7 h-7 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white text-center mb-2">Neuen Kunden anlegen?</h3>
-          <p class="text-slate-600 dark:text-slate-400 text-center mb-8">
-            Es wird ein neuer Kunde
-            <span class="font-semibold text-slate-900 dark:text-white">
-              {{ firstName() }} {{ lastName() }}
-            </span>
-            angelegt und das Dokument zugewiesen. Stimmt das?
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white text-center mb-2">Neuen Kunden anlegen?</h3>
+          <p class="text-slate-500 dark:text-slate-400 text-center text-sm mb-8 max-w-xs">
+            <span class="font-semibold text-slate-800 dark:text-white">{{ firstName() }} {{ lastName() }}</span>
+            wird als neuer Kunde angelegt und das Dokument direkt zugewiesen.
           </p>
         }
 
@@ -286,7 +400,7 @@
           <button
             type="button"
             (click)="cancelConfirm()"
-            class="px-6 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+            class="px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
           >
             Zurück
           </button>
@@ -294,7 +408,8 @@
             type="button"
             (click)="confirmMode() === 'assign' ? assignToSelectedCustomer() : createCustomerAndAssign()"
             [disabled]="isSaving()"
-            class="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-blue-500/30"
+            class="px-5 py-2.5 text-sm font-semibold text-white rounded-xl transition-all disabled:opacity-50
+                   bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30"
           >
             @if (isSaving()) {
               <span class="inline-flex items-center gap-2">
@@ -306,69 +421,8 @@
             }
           </button>
         </div>
-
       </div>
     }
 
-    <!-- ========================= -->
-    <!-- Actions -->
-    <!-- ========================= -->
-    <div class="flex justify-end gap-3 px-8 py-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
-      <button
-        (click)="close.emit()"
-        class="px-6 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 
-               hover:bg-white dark:hover:bg-slate-700 rounded-xl transition-all duration-200
-               border-2 border-transparent hover:border-slate-200 dark:hover:border-slate-600"
-      >
-        Abbrechen
-      </button>
-
-      <button
-        type="button"
-        (click)="requestCreate()"
-        [disabled]="isSaving()"
-        class="px-6 py-2.5 text-sm font-semibold text-white bg-slate-700 hover:bg-slate-800 
-               rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
-               hover:shadow-lg hover:scale-105 active:scale-100"
-      >
-        @if (isSaving()) {
-          <span class="inline-flex items-center gap-2">
-            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            Erstellen…
-          </span>
-        } @else {
-          <span class="inline-flex items-center gap-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
-            </svg>
-            Neuen Kunden erstellen
-          </span>
-        }
-      </button>
-
-      <button
-        type="button"
-        (click)="requestAssign()"
-        [disabled]="isSaving()"
-        class="px-6 py-2.5 text-sm font-semibold text-white bg-linear-to-r from-blue-600 to-blue-700 
-               hover:from-blue-700 hover:to-blue-800 rounded-xl transition-all duration-200 
-               disabled:opacity-50 disabled:cursor-not-allowed
-               hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 active:scale-100"
-      >
-        @if (isSaving()) {
-          <span class="inline-flex items-center gap-2">
-            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            Zuweisen…
-          </span>
-        } @else {
-          <span class="inline-flex items-center gap-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-            Zuweisen
-          </span>
-        }
-      </button>
-    </div>
   </div>
 </div>

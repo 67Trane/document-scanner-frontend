@@ -56,7 +56,7 @@ export class CustomerDetail {
   addressLine1 = computed(() => this.customer()?.street || "");
   addressLine2 = computed(() => {
     const c = this.customer();
-    return c ? `${c.zip_code} ${c.city}`.trim() : "";
+    return c ? `${c.zip_code ?? ''} ${c.city ?? ''}`.trim() : "";
   });
 
   licensePlates = computed(() => {
@@ -184,6 +184,13 @@ export class CustomerDetail {
 
   openContractPreview(contract: CustomerDocument): void {
     this.document.set(contract);
+  }
+
+  openSourceDocument(value: string): void {
+    const doc = this.alldocuments().find(d =>
+      d.license_plates?.includes(value) || d.policy_numbers?.includes(value)
+    );
+    if (doc) this.document.set(doc);
   }
 
   onContractTypeChanged(updated: CustomerDocument): void {

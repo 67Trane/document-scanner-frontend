@@ -117,6 +117,57 @@
               </div>
             }
 
+            <!-- Document category -->
+            <div class="flex items-center gap-1.5">
+              @if (editingCategoryId() === contract.id) {
+                <select
+                  class="text-xs font-medium rounded-lg border border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-2 py-0.5 focus:outline-none"
+                  (change)="onCategoryChange($event, contract)"
+                  (click)="$event.stopPropagation()"
+                >
+                  @for (option of categoryOptions; track option.value) {
+                    <option [value]="option.value" [selected]="option.value === (contract.document_category ?? '')">
+                      {{ option.label }}
+                    </option>
+                  }
+                </select>
+                <button
+                  type="button"
+                  (click)="onEditCategoryCancel($event)"
+                  class="p-0.5 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              } @else if (contract.document_category_display) {
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-500/30">
+                  {{ contract.document_category_display }}
+                </span>
+                <button
+                  type="button"
+                  (click)="onEditCategory($event, contract)"
+                  class="p-0.5 rounded text-slate-400 hover:text-blue-500 transition-colors"
+                  title="Kategorie ändern"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                  </svg>
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  (click)="onEditCategory($event, contract)"
+                  class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-blue-500 transition-colors"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  Kategorie hinzufügen
+                </button>
+              }
+            </div>
+
             <!-- Upload date -->
             <span class="text-xs text-slate-500 dark:text-slate-500">
               Hochgeladen: {{ contract.created_at | date: "dd.MM.yyyy" }}
@@ -142,10 +193,10 @@
             <button
               type="button"
               (click)="onDelete($event, contract)"
-              class="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+              class="p-2 rounded-lg text-slate-400 dark:text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
               title="Dokument löschen"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </button>

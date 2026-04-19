@@ -4,7 +4,7 @@
 <app-customer-header [fullName]="fullName()"></app-customer-header>
 
 <!-- Main Container with Light/Dark Background -->
-<div class="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-300">
+<div class="min-h-screen bg-linear-to-br from-amber-50/60 via-stone-50 to-orange-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-300">
   <div class="max-w-[1600px] mx-auto px-6 lg:px-8 py-8">
     
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -15,11 +15,12 @@
         <!-- =========================
          Customer Profile Card
          ========================= -->
-        <app-customer-profile-card 
-          [customer]="customer()" 
+        <app-customer-profile-card
+          [customer]="customer()"
           [contractsCount]="alldocuments().length"
-          [vehiclesCount]="licensePlates().length" 
-          [policiesCount]="policyNumbers().length">
+          [vehiclesCount]="licensePlates().length"
+          [policiesCount]="policyNumbers().length"
+          (customerUpdated)="onContactUpdated()">
         </app-customer-profile-card>
 
         <!-- =========================
@@ -35,7 +36,8 @@
           [addressLine2]="addressLine2()"
           [licensePlates]="licensePlates()"
           [policyNumbers]="policyNumbers()"
-          (contactUpdated)="onContactUpdated()">
+          (contactUpdated)="onContactUpdated()"
+          (openSourceDocument)="openSourceDocument($event)">
         </app-customer-contact-card>
 
       </aside>
@@ -46,13 +48,7 @@
         <!-- =========================
          Notes Panel
          ========================= -->
-        <app-customer-notes-panel 
-          [notesDraft]="notesDraft()" 
-          [canSave]="canSaveNotes()" 
-          [saveState]="notesSaveState()"
-          (notesDraftChange)="notesDraft.set($event)" 
-          (save)="saveNotes()">
-        </app-customer-notes-panel>
+        <app-customer-notes-panel></app-customer-notes-panel>
 
         <!-- =========================
          PDF Viewer

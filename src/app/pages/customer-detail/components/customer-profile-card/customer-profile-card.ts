@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject, input, signal } from "@angular/core";
+import { Component, inject, input, output, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Customer } from "../../../../models/customer.model";
 import { CustomerService } from "../../../../services/customer.service";
@@ -24,8 +24,25 @@ export class CustomerProfileCard {
   private readonly customerService = inject(CustomerService);
   private readonly customerId = Number(this.route.snapshot.paramMap.get("id"));
 
+  customerUpdated = output<void>();
+
   showDeleteConfirm = signal(false);
   deleteError = signal<string | null>(null);
+  isTogglingStatus = signal(false);
+
+  toggleActiveStatus(): void {
+    const current = this.customer()?.active_status;
+    if (!current || this.isTogglingStatus()) return;
+    const next = current === 'aktiv' ? 'ruhend' : 'aktiv';
+    this.isTogglingStatus.set(true);
+    this.customerService.patchCustomer(this.customerId, { active_status: next }).subscribe({
+      next: () => {
+        this.isTogglingStatus.set(false);
+        this.customerUpdated.emit();
+      },
+      error: () => this.isTogglingStatus.set(false),
+    });
+  }
 
   confirmDelete(): void {
     this.deleteError.set(null);

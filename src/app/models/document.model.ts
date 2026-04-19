@@ -34,6 +34,28 @@ export const CONTRACT_TYPE_OPTIONS: { value: ContractType | ''; label: string }[
   { value: 'gruene_karte',      label: 'Grüne Karte' },
 ];
 
+export type DocumentCategory =
+  | 'police'
+  | 'rechnung'
+  | 'beitragsrechnung'
+  | 'gruene_karte'
+  | 'vertragsaenderung'
+  | 'antrag'
+  | 'schaden'
+  | 'maklervollmacht';
+
+export const DOCUMENT_CATEGORY_OPTIONS: { value: DocumentCategory | ''; label: string }[] = [
+  { value: '',                  label: '– Keine Kategorie –' },
+  { value: 'police',            label: 'Police' },
+  { value: 'rechnung',          label: 'Rechnung' },
+  { value: 'beitragsrechnung',  label: 'Beitragsrechnung / Gutschrift' },
+  { value: 'gruene_karte',      label: 'Grüne Karte' },
+  { value: 'vertragsaenderung', label: 'Vertragsänderung' },
+  { value: 'antrag',            label: 'Antrag' },
+  { value: 'schaden',           label: 'Schaden' },
+  { value: 'maklervollmacht',   label: 'Maklervollmacht' },
+];
+
 export type ActivityLogAction = 'customer_created' | 'document_assigned' | 'document_unresolved';
 
 export interface ActivityLog {
@@ -54,7 +76,9 @@ export interface CustomerDocument {
 
   contract_status: DocumentStatus;
   contract_typ: ContractType;
-  contract_typ_display: ContractType;
+  contract_typ_display: string;
+  document_category: DocumentCategory | null;
+  document_category_display: string | null;
 
   extracted_data?: {
     first_name?: string | null;

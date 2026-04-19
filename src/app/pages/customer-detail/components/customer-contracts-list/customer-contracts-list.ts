@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject, input, output, signal } from "@angular/core";
-import { CONTRACT_TYPE_OPTIONS, CustomerDocument } from "../../../../models/document.model";
+import { CONTRACT_TYPE_OPTIONS, DOCUMENT_CATEGORY_OPTIONS, CustomerDocument } from "../../../../models/document.model";
 import { DocumentService } from "../../../../services/document.service";
 
 @Component({
@@ -20,8 +20,10 @@ export class CustomerContractsList {
   contractTypeChanged = output<CustomerDocument>();
 
   editingId = signal<number | null>(null);
+  editingCategoryId = signal<number | null>(null);
   deletingId = signal<number | null>(null);
   readonly contractTypeOptions = CONTRACT_TYPE_OPTIONS;
+  readonly categoryOptions = DOCUMENT_CATEGORY_OPTIONS;
 
   onSelect(contract: CustomerDocument) {
     if (this.editingId() === contract.id) return;
@@ -67,5 +69,29 @@ export class CustomerContractsList {
   onEditCancel(event: MouseEvent) {
     event.stopPropagation();
     this.editingId.set(null);
+  }
+
+  onEditCategory(event: MouseEvent, contract: CustomerDocument) {
+    event.stopPropagation();
+    this.editingCategoryId.set(contract.id);
+  }
+
+  onCategoryChange(event: Event, contract: CustomerDocument) {
+    event.stopPropagation();
+    const newCategory = (event.target as HTMLSelectElement).value || null;
+    this.documentService.patchDocument(contract.id, { document_category: newCategory as any }).subscribe({
+      next: (updated) => {
+        this.contractTypeChanged.emit(updated);
+        this.editingCategoryId.set(null);
+      },
+      error: () => {
+        this.editingCategoryId.set(null);
+      },
+    });
+  }
+
+  onEditCategoryCancel(event: MouseEvent) {
+    event.stopPropagation();
+    this.editingCategoryId.set(null);
   }
 }

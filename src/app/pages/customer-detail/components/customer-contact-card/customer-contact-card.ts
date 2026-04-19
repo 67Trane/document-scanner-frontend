@@ -70,7 +70,8 @@ export class CustomerContactCard {
   editPhone = signal<string>("");
   editBirthday = signal<string>("");
   editAddressLine1 = signal<string>("");
-  editAddressLine2 = signal<string>("");
+  editZipCode = signal<string>("");
+  editCity = signal<string>("");
   editLicensePlates = signal<string[]>([]);
   editPolicyNumbers = signal<string[]>([]);
   saveError = signal<string | null>(null);
@@ -81,6 +82,7 @@ export class CustomerContactCard {
 
   // Output event to notify parent of changes
   contactUpdated = output<void>();
+  openSourceDocument = output<string>();
 
   /**
    * A single toggle entry point keeps edit-mode transitions predictable for the parent page.
@@ -92,7 +94,8 @@ export class CustomerContactCard {
       this.editPhone.set(this.phone() || "");
       this.editBirthday.set(this.birthday() || "");
       this.editAddressLine1.set(this.addressLine1());
-      this.editAddressLine2.set(this.addressLine2());
+      this.editZipCode.set(this.customer()?.zip_code ?? "");
+      this.editCity.set(this.customer()?.city ?? "");
       this.editLicensePlates.set([...this.licensePlates()]);
       this.editPolicyNumbers.set([...this.policyNumbers()]);
       this.newLicensePlate.set("");
@@ -110,6 +113,8 @@ export class CustomerContactCard {
       email: this.editEmail() || null,
       phone: this.editPhone(),
       street: this.editAddressLine1(),
+      zip_code: this.editZipCode() || null,
+      city: this.editCity() || null,
       date_of_birth: this.editBirthday() || null,
     };
 
@@ -218,8 +223,12 @@ export class CustomerContactCard {
     this.editAddressLine1.set((event.target as HTMLInputElement).value);
   }
 
-  onEditAddressLine2Input(event: Event): void {
-    this.editAddressLine2.set((event.target as HTMLInputElement).value);
+  onEditZipCodeInput(event: Event): void {
+    this.editZipCode.set((event.target as HTMLInputElement).value);
+  }
+
+  onEditCityInput(event: Event): void {
+    this.editCity.set((event.target as HTMLInputElement).value);
   }
 
   onNewLicensePlateInput(event: Event): void {
