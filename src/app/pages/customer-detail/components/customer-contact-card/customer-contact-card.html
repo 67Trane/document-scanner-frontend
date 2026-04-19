@@ -3,7 +3,7 @@
      ========================= -->
 
 <div
-  class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-6 space-y-4 hover:shadow-xl transition-all duration-300">
+  class="bg-[#fffaf4] dark:bg-slate-800 rounded-3xl shadow-sm border border-stone-200 dark:border-slate-700/50 p-6 space-y-4 hover:shadow-xl transition-all duration-300">
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center gap-2">
       <div class="w-8 h-8 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center">
@@ -230,7 +230,7 @@
         <div class="flex flex-wrap gap-2">
           @for (num of editPolicyNumbers(); track num) {
           <div
-            class="group/chip flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 dark:border-indigo-500/40">
+            class="group/chip flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-stone-300 dark:border-slate-600">
             <span class="text-xs font-mono font-medium">{{ num }}</span>
             <button (click)="removePolicyNumber(num)" class="opacity-60 hover:opacity-100 transition-opacity"
               type="button">
@@ -270,7 +270,7 @@
           type="button"
           (click)="openSourceDocument.emit(num)"
           title="Quelldokument öffnen"
-          class="group/badge inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 dark:border-indigo-500/40 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 hover:border-indigo-500/60 hover:shadow-sm transition-all cursor-pointer">
+          class="group/badge inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-stone-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-stone-300 dark:border-slate-600 hover:bg-stone-200 dark:hover:bg-slate-600 hover:border-stone-400 hover:shadow-sm transition-all cursor-pointer">
           {{ num }}
           <svg class="w-3 h-3 opacity-0 group-hover/badge:opacity-70 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
