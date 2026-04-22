@@ -66,6 +66,7 @@ export class CustomerContactCard {
   isEditing = signal(false);
 
   // Editable values
+  editFullName = signal<string>("");
   editEmail = signal<string>("");
   editPhone = signal<string>("");
   editBirthday = signal<string>("");
@@ -90,6 +91,8 @@ export class CustomerContactCard {
   toggleEdit(): void {
     if (!this.isEditing()) {
       // Clone current values so cancel can fully restore the pre-edit state.
+      const c = this.customer();
+      this.editFullName.set(`${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim());
       this.editEmail.set(this.email() || "");
       this.editPhone.set(this.phone() || "");
       this.editBirthday.set(this.birthday() || "");
@@ -109,7 +112,10 @@ export class CustomerContactCard {
   }
 
   private saveCustomerAndDocument(): void {
+    const parts = this.editFullName().trim().split(/\s+/);
     const customerPayload: Partial<Customer> = {
+      first_name: parts[0] ?? "",
+      last_name: parts.slice(1).join(" "),
       email: this.editEmail() || null,
       phone: this.editPhone(),
       street: this.editAddressLine1(),
@@ -205,6 +211,10 @@ export class CustomerContactCard {
       event.preventDefault();
       this.addPolicyNumber();
     }
+  }
+
+  onEditFullNameInput(event: Event): void {
+    this.editFullName.set((event.target as HTMLInputElement).value);
   }
 
   onEditEmailInput(event: Event): void {
