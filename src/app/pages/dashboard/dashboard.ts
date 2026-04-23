@@ -165,4 +165,59 @@ export class Dashboard implements OnInit {
       next: (logs) => this.activityLog.set(logs),
     });
   }
+
+  // New customer form
+  isNewCustomerOpen = signal(false);
+  newCustomerName = signal('');
+  newCustomerSalutation = signal<'Herr' | 'Frau' | ''>('');
+  isSavingCustomer = signal(false);
+  newCustomerError = signal('');
+
+  openNewCustomerForm(): void {
+    this.newCustomerName.set('');
+    this.newCustomerSalutation.set('');
+    this.newCustomerError.set('');
+    this.isNewCustomerOpen.set(true);
+  }
+
+  closeNewCustomerForm(): void {
+    this.isNewCustomerOpen.set(false);
+  }
+
+  onNewCustomerNameInput(e: Event): void {
+    this.newCustomerName.set((e.target as HTMLInputElement).value);
+  }
+
+  onNewCustomerSalutationChange(e: Event): void {
+    this.newCustomerSalutation.set((e.target as HTMLSelectElement).value as 'Herr' | 'Frau' | '');
+  }
+
+  submitNewCustomer(): void {
+    const full = this.newCustomerName().trim();
+    if (!full) { this.newCustomerError.set('Name ist erforderlich.'); return; }
+
+    const parts = full.split(/\s+/);
+    const first_name = parts[0];
+    const last_name = parts.slice(1).join(' ');
+
+    this.isSavingCustomer.set(true);
+    this.newCustomerError.set('');
+
+    this.customerService.createCustomer({
+      first_name,
+      last_name,
+      salutation: this.newCustomerSalutation() || null,
+    } as any).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (customer) => {
+        this.isSavingCustomer.set(false);
+        this.isNewCustomerOpen.set(false);
+        this.customerCount.update(n => n + 1);
+        this.router.navigateByUrl(`/customer/${customer.id}`);
+      },
+      error: () => {
+        this.isSavingCustomer.set(false);
+        this.newCustomerError.set('Fehler beim Anlegen. Bitte erneut versuchen.');
+      },
+    });
+  }
 }
