@@ -28,7 +28,7 @@
          ========================= -->
         <app-customer-contact-card
           [customer]="customer()"
-          [documentId]="alldocuments()[0]?.id ?? null"
+          [documents]="alldocuments()"
           [email]="email()"
           [phone]="phone()"
           [birthday]="dateOfBirth()"

@@ -13,6 +13,8 @@ const FIELD_LABELS: Record<string, string> = {
   phone:          "Telefon",
   date_of_birth:  "Geburtsdatum",
   street:         "Straße",
+  zip_code:       "PLZ",
+  city:           "Ort",
   license_plates: "Kennzeichen",
   policy_numbers: "Versicherungsschein-Nummern",
 };
@@ -40,7 +42,7 @@ export class CustomerContactCard {
    * Encapsulates editable customer contact and policy metadata for the detail page sidebar.
    */
   customer = input<Customer | null>(null);
-  documentId = input<number | null>(null);
+  documents = input<CustomerDocument[]>([]);
 
   private readonly customerService = inject(CustomerService);
   private readonly documentService = inject(DocumentService);
@@ -119,23 +121,36 @@ export class CustomerContactCard {
       email: this.editEmail() || null,
       phone: this.editPhone(),
       street: this.editAddressLine1(),
-      zip_code: this.editZipCode() || null,
+      zip_code: this.editZipCode() || "",
       city: this.editCity() || null,
       date_of_birth: this.editBirthday() || null,
     };
 
-    const documentPayload: Partial<CustomerDocument> = {
-      license_plates: this.editLicensePlates(),
-      policy_numbers: this.editPolicyNumbers(),
-    };
-
     this.saveError.set(null);
 
-    const docId = this.documentId();
+    const keepPlates = new Set(this.editLicensePlates());
+    const keepPolicies = new Set(this.editPolicyNumbers());
+    const docs = this.documents();
+
+    // Plates/policies added by the user that don't exist in any document yet
+    const allOriginalPlates = new Set(docs.flatMap(d => d.license_plates ?? []));
+    const allOriginalPolicies = new Set(docs.flatMap(d => d.policy_numbers ?? []));
+    const newPlates = this.editLicensePlates().filter(p => !allOriginalPlates.has(p));
+    const newPolicies = this.editPolicyNumbers().filter(p => !allOriginalPolicies.has(p));
+
     const customerPatch$ = this.customerService.patchCustomer(this.customerId, customerPayload);
-    const save$: Observable<unknown[]> = docId !== null
-      ? forkJoin([customerPatch$, this.documentService.patchDocument(docId, documentPayload)])
-      : forkJoin([customerPatch$]);
+
+    // Patch every document: keep only values still in the edit list, add new ones to first doc
+    const docPatches$ = docs.map((doc, i) => {
+      const plates = (doc.license_plates ?? []).filter(p => keepPlates.has(p));
+      const policies = (doc.policy_numbers ?? []).filter(p => keepPolicies.has(p));
+      return this.documentService.patchDocument(doc.id, {
+        license_plates: i === 0 ? [...plates, ...newPlates] : plates,
+        policy_numbers: i === 0 ? [...policies, ...newPolicies] : policies,
+      });
+    });
+
+    const save$: Observable<unknown[]> = forkJoin([customerPatch$, ...docPatches$]);
 
     save$.subscribe({
       next: () => {

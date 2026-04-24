@@ -42,7 +42,11 @@ export type DocumentCategory =
   | 'vertragsaenderung'
   | 'antrag'
   | 'schaden'
-  | 'maklervollmacht';
+  | 'maklervollmacht'
+  | 'kuendigung'
+  | 'fahrzeugschein'
+  | 'fuehrerschein'
+  | 'ace';
 
 export const DOCUMENT_CATEGORY_OPTIONS: { value: DocumentCategory | ''; label: string }[] = [
   { value: '',                  label: '– Keine Kategorie –' },
@@ -54,6 +58,10 @@ export const DOCUMENT_CATEGORY_OPTIONS: { value: DocumentCategory | ''; label: s
   { value: 'antrag',            label: 'Antrag' },
   { value: 'schaden',           label: 'Schaden' },
   { value: 'maklervollmacht',   label: 'Maklervollmacht' },
+  { value: 'kuendigung',        label: 'Kündigung' },
+  { value: 'fahrzeugschein',    label: 'Fahrzeugschein' },
+  { value: 'fuehrerschein',     label: 'Führerschein' },
+  { value: 'ace',               label: 'ACE' },
 ];
 
 export type ActivityLogAction = 'customer_created' | 'document_assigned' | 'document_unresolved';
