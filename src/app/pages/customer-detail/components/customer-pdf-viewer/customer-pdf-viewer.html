@@ -78,6 +78,25 @@
         </svg>
         Im Original öffnen
       </button>
+
+      <!-- Move to another customer -->
+      <button
+        (click)="moveDocument.emit()"
+        [disabled]="!document()"
+        title="Dokument einem anderen Kunden zuordnen"
+        class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 disabled:opacity-50 disabled:cursor-not-allowed"
+        type="button"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+          />
+        </svg>
+        Verschieben
+      </button>
     </div>
   </div>
 

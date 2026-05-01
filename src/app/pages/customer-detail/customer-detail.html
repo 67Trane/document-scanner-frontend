@@ -59,7 +59,8 @@
           [email]="email()"
           (openOriginal)="openContract(document()!)"
           (download)="downloadCurrentPdf()"
-          (sendDocument)="sendCurrentPdf()">
+          (sendDocument)="sendCurrentPdf()"
+          (moveDocument)="openMoveDocument()">
         </app-customer-pdf-viewer>
 
         <!-- =========================
@@ -74,6 +75,18 @@
 
       </div>
     </div>
-    
+
   </div>
 </div>
+
+<!-- =========================
+     Move Document Modal
+     ========================= -->
+@if (isMoveOpen()) {
+  <app-document-edit-modal
+    [doc]="moveTarget()"
+    mode="move"
+    (close)="closeMoveDocument()"
+    (assigned)="onDocumentMoved($event)">
+  </app-document-edit-modal>
+}

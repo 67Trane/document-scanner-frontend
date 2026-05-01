@@ -1,0 +1,55 @@
+name: Deploy demo to All-Inkl
+
+# Trigger only when a git tag matching v* is pushed (e.g. v1.2.0).
+# This makes deploys intentional and traceable — every live demo
+# corresponds to a specific tag, so you can always answer
+# "what's currently deployed?" by looking at the latest tag.
+on:
+  push:
+    tags:
+      - 'v*'
+
+# If two tags are pushed quickly, the older deploy is cancelled.
+# Prevents two FTPS uploads writing to the same folder simultaneously.
+concurrency:
+  group: deploy-demo
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the exact commit the tag points to.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node version must match what you use locally.
+      # cache: npm restores node_modules between runs → faster builds.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # npm ci respects package-lock.json exactly. Never use "npm install" in CI.
+      - name: Install dependencies
+        run: npm ci
+
+      # Uses runtime-config.demo.ts via the "demo" configuration in angular.json.
+      - name: Build demo
+        run: npm run build -- --configuration=demo
+
+      # Upload via FTPS (encrypted). Credentials come from GitHub Secrets,
+      # never hardcoded, never logged. The action keeps a sync-state file on
+      # the server so subsequent deploys only upload changed files.
+      - name: Deploy to All-Inkl
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.ALLINKL_HOST }}
+          username: ${{ secrets.ALLINKL_USERNAME }}
+          password: ${{ secrets.ALLINKL_PASSWORD }}
+          server-dir: ${{ secrets.ALLINKL_REMOTE_PATH }}
+          local-dir: ./dist/document-scanner-frontend-demo/browser/
+          protocol: ftps
+          port: 21

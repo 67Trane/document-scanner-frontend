@@ -25,4 +25,5 @@ export class CustomerPdfViewer {
   download = output<void>();
   openOriginal = output<void>();
   sendDocument = output<void>();
+  moveDocument = output<void>();
 }

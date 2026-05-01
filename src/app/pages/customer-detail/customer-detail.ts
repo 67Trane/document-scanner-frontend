@@ -15,6 +15,7 @@ import { CustomerContactCard } from "./components/customer-contact-card/customer
 import { CustomerContractsList } from "./components/customer-contracts-list/customer-contracts-list";
 import { CustomerPdfViewer } from "./components/customer-pdf-viewer/customer-pdf-viewer";
 import { CustomerNotesPanel } from "./components/customer-notes-panel/customer-notes-panel";
+import { DocumentEditModal } from "../../components/document-edit-modal/document-edit-modal";
 
 @Component({
   selector: "app-customer-detail",
@@ -27,6 +28,7 @@ import { CustomerNotesPanel } from "./components/customer-notes-panel/customer-n
     CustomerContractsList,
     CustomerPdfViewer,
     CustomerNotesPanel,
+    DocumentEditModal,
   ],
   templateUrl: "./customer-detail.html",
   styleUrl: "./customer-detail.css",
@@ -43,6 +45,10 @@ export class CustomerDetail {
   alldocuments = signal<CustomerDocument[]>([]);
 
   viewerSrc = signal<string | undefined>(undefined);
+
+  // Move-document modal state
+  isMoveOpen = signal(false);
+  moveTarget = signal<CustomerDocument | null>(null);
 
   fullName = computed(() => {
     const c = this.customer();
@@ -198,6 +204,31 @@ export class CustomerDetail {
     if (this.document()?.id === updated.id) {
       this.document.set(updated);
     }
+  }
+
+  openMoveDocument(): void {
+    const current = this.document();
+    if (!current) return;
+    this.moveTarget.set(current);
+    this.isMoveOpen.set(true);
+  }
+
+  closeMoveDocument(): void {
+    this.isMoveOpen.set(false);
+    this.moveTarget.set(null);
+  }
+
+  /**
+   * Handler for after the modal successfully reassigned the document.
+   * The doc no longer belongs to this customer, so drop it from the local view.
+   */
+  onDocumentMoved(updated: CustomerDocument): void {
+    this.alldocuments.update(docs => docs.filter(d => d.id !== updated.id));
+    if (this.document()?.id === updated.id) {
+      const remaining = this.alldocuments();
+      this.document.set(remaining[0] ?? null);
+    }
+    this.closeMoveDocument();
   }
 
   onDeleteContract(contract: CustomerDocument): void {

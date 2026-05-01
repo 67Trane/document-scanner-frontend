@@ -22,6 +22,9 @@ export class DocumentEditModal {
 
   // Inputs/Outputs
   doc = input<CustomerDocument | null>(null);
+  // 'assign' = first-time customer assignment (dashboard flow)
+  // 'move'   = reassigning a document already linked to another customer
+  mode = input<'assign' | 'move'>('assign');
   close = output<void>();
   assigned = output<CustomerDocument>();
 
