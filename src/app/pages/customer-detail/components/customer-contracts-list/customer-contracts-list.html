@@ -125,7 +125,7 @@
                   (change)="onCategoryChange($event, contract)"
                   (click)="$event.stopPropagation()"
                 >
-                  @for (option of categoryOptions; track option.value) {
+                  @for (option of categoryOptions(); track option.value) {
                     <option [value]="option.value" [selected]="option.value === (contract.document_category ?? '')">
                       {{ option.label }}
                     </option>

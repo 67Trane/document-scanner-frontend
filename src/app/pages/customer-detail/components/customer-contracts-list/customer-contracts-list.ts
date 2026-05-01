@@ -1,7 +1,8 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject, input, output, signal } from "@angular/core";
-import { CONTRACT_TYPE_OPTIONS, DOCUMENT_CATEGORY_OPTIONS, CustomerDocument } from "../../../../models/document.model";
+import { Component, computed, inject, input, output, signal } from "@angular/core";
+import { CONTRACT_TYPE_OPTIONS, CustomerDocument } from "../../../../models/document.model";
 import { DocumentService } from "../../../../services/document.service";
+import { CategoryService } from "../../../../services/category.service";
 
 @Component({
   selector: "app-customer-contracts-list",
@@ -12,6 +13,7 @@ import { DocumentService } from "../../../../services/document.service";
 })
 export class CustomerContractsList {
   private documentService = inject(DocumentService);
+  private categoryService = inject(CategoryService);
 
   documents = input<CustomerDocument[]>([]);
 
@@ -23,7 +25,19 @@ export class CustomerContractsList {
   editingCategoryId = signal<number | null>(null);
   deletingId = signal<number | null>(null);
   readonly contractTypeOptions = CONTRACT_TYPE_OPTIONS;
-  readonly categoryOptions = DOCUMENT_CATEGORY_OPTIONS;
+
+  /**
+   * Built from the live category list. The empty-value entry remains at the top
+   * so users can still pick "Sonstige" to clear an existing category.
+   */
+  readonly categoryOptions = computed(() => [
+    { value: "", label: "Sonstige" },
+    ...this.categoryService.categories().map(c => ({ value: c.slug, label: c.label })),
+  ]);
+
+  constructor() {
+    this.categoryService.load();
+  }
 
   onSelect(contract: CustomerDocument) {
     if (this.editingId() === contract.id) return;

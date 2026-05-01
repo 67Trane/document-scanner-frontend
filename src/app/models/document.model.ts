@@ -34,35 +34,18 @@ export const CONTRACT_TYPE_OPTIONS: { value: ContractType | ''; label: string }[
   { value: 'gruene_karte',      label: 'Grüne Karte' },
 ];
 
-export type DocumentCategory =
-  | 'police'
-  | 'rechnung'
-  | 'beitragsrechnung'
-  | 'gruene_karte'
-  | 'vertragsaenderung'
-  | 'antrag'
-  | 'schaden'
-  | 'maklervollmacht'
-  | 'kuendigung'
-  | 'fahrzeugschein'
-  | 'fuehrerschein'
-  | 'ace';
+// Slugs are now broker-defined and dynamic. The narrow union type is gone —
+// keep an alias so existing call sites don't break, but treat it as a string.
+export type DocumentCategory = string;
 
-export const DOCUMENT_CATEGORY_OPTIONS: { value: DocumentCategory | ''; label: string }[] = [
-  { value: '',                  label: '– Keine Kategorie –' },
-  { value: 'police',            label: 'Police' },
-  { value: 'rechnung',          label: 'Rechnung' },
-  { value: 'beitragsrechnung',  label: 'Beitragsrechnung / Gutschrift' },
-  { value: 'gruene_karte',      label: 'Grüne Karte' },
-  { value: 'vertragsaenderung', label: 'Vertragsänderung' },
-  { value: 'antrag',            label: 'Antrag' },
-  { value: 'schaden',           label: 'Schaden' },
-  { value: 'maklervollmacht',   label: 'Maklervollmacht' },
-  { value: 'kuendigung',        label: 'Kündigung' },
-  { value: 'fahrzeugschein',    label: 'Fahrzeugschein' },
-  { value: 'fuehrerschein',     label: 'Führerschein' },
-  { value: 'ace',               label: 'ACE' },
-];
+/** Shape returned by GET /api/document-categories/ */
+export interface DocumentCategoryItem {
+  id: number;
+  slug: string;
+  label: string;
+  parent: number | null;
+  created_at: string;
+}
 
 export type ActivityLogAction = 'customer_created' | 'document_assigned' | 'document_unresolved';
 
