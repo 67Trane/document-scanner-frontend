@@ -6,15 +6,16 @@ import { AppConfig } from '../runtime-config';
 import { TaxonomyItem } from '../models/taxonomy.model';
 
 /**
- * Loads and caches the broker's document categories.
+ * Loads and caches the broker's contract types.
  *
- * Same shape as `ContractTypeService` — both implement the implicit
- * `TaxonomyAdapter` interface so the same management UI can drive either.
+ * Same shape as `CategoryService` — both implement the implicit
+ * "TaxonomyService" interface used by TaxonomyManagementModal so the same
+ * management UI can drive either taxonomy.
  */
 @Injectable({ providedIn: 'root' })
-export class CategoryService {
+export class ContractTypeService {
   private readonly http = inject(HttpClient);
-  private readonly url = `${AppConfig.apiBaseUrl}/api/document-categories/`;
+  private readonly url = `${AppConfig.apiBaseUrl}/api/contract-types/`;
 
   private readonly _items = signal<TaxonomyItem[]>([]);
   private readonly _loaded = signal(false);

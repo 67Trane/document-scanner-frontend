@@ -11,11 +11,10 @@
     <div class="bg-linear-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-6 py-5 shrink-0">
       <div class="flex justify-between items-start gap-4">
         <div>
-          <h2 class="text-xl font-bold text-white">Kategorien verwalten</h2>
-          <p class="text-blue-100 text-xs mt-1">
-            Erstellen, umbenennen oder löschen Sie Dokumentkategorien.
-            Beim Löschen fallen betroffene Dokumente auf „Sonstige“ zurück.
-          </p>
+          <h2 class="text-xl font-bold text-white">{{ title() }}</h2>
+          @if (subtitle()) {
+            <p class="text-blue-100 text-xs mt-1">{{ subtitle() }}</p>
+          }
         </div>
 
         <button
@@ -31,19 +30,19 @@
     </div>
 
     <!-- ========================= -->
-    <!-- New top-level category -->
+    <!-- New top-level entry -->
     <!-- ========================= -->
     <div class="px-6 pt-5 pb-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
       <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
-        Neue Kategorie
+        Neue {{ itemLabel() }}
       </label>
       <div class="flex gap-2">
         <input
           type="text"
-          [value]="newCategoryName()"
-          (input)="onNewCategoryInput($event)"
-          (keydown)="onNewCategoryKeydown($event)"
-          placeholder="z. B. Bestätigung"
+          [value]="newItemName()"
+          (input)="onNewItemInput($event)"
+          (keydown)="onNewItemKeydown($event)"
+          [placeholder]="'Name der ' + itemLabel() + '…'"
           class="flex-1 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5
                  bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm
                  placeholder:text-slate-400
@@ -52,8 +51,8 @@
         />
         <button
           type="button"
-          (click)="addCategory()"
-          [disabled]="!newCategoryName().trim() || isSaving()"
+          (click)="addItem()"
+          [disabled]="!newItemName().trim() || isSaving()"
           class="px-4 py-2.5 text-sm font-semibold text-white rounded-xl transition-all
                  bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
         >
@@ -63,22 +62,22 @@
     </div>
 
     <!-- ========================= -->
-    <!-- Category list -->
+    <!-- List -->
     <!-- ========================= -->
     <div class="flex-1 overflow-auto px-6 py-4 space-y-2">
 
       @if (topLevel().length === 0) {
         <p class="text-center text-sm text-slate-400 dark:text-slate-500 py-12">
-          Noch keine Kategorien angelegt.
+          Noch keine {{ itemLabelPlural() }} angelegt.
         </p>
       }
 
-      @for (cat of topLevel(); track cat.id) {
+      @for (item of topLevel(); track item.id) {
         <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 overflow-hidden">
 
           <!-- Top-level row -->
           <div class="flex items-center gap-2 px-3 py-2.5">
-            @if (editingId() === cat.id) {
+            @if (editingId() === item.id) {
               <input
                 type="text"
                 [value]="editLabel()"
@@ -109,12 +108,12 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
               </button>
-            } @else if (deletingId() === cat.id) {
+            } @else if (deletingId() === item.id) {
               <span class="flex-1 text-sm text-slate-700 dark:text-slate-200">
-                <strong>{{ cat.label }}</strong> löschen?
-                @if (childrenOf(cat.id).length > 0) {
+                <strong>{{ item.label }}</strong> löschen?
+                @if (childrenOf(item.id).length > 0) {
                   <span class="text-amber-600 dark:text-amber-400">
-                    ({{ childrenOf(cat.id).length }} Unterkategorie(n) werden mitgelöscht)
+                    ({{ childrenOf(item.id).length }} {{ childLabel() }}(n) werden mitgelöscht)
                   </span>
                 }
               </span>
@@ -135,13 +134,13 @@
               </button>
             } @else {
               <span class="flex-1 text-sm font-semibold text-slate-900 dark:text-white">
-                {{ cat.label }}
+                {{ item.label }}
               </span>
               <button
                 type="button"
-                (click)="startAddSubcategory(cat.id)"
+                (click)="startAddChild(item.id)"
                 class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
-                title="Unterkategorie hinzufügen"
+                [title]="childLabel() + ' hinzufügen'"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -149,7 +148,7 @@
               </button>
               <button
                 type="button"
-                (click)="startEdit(cat)"
+                (click)="startEdit(item)"
                 class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
                 title="Umbenennen"
               >
@@ -159,7 +158,7 @@
               </button>
               <button
                 type="button"
-                (click)="confirmDelete(cat.id)"
+                (click)="confirmDelete(item.id)"
                 class="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                 title="Löschen"
               >
@@ -170,10 +169,10 @@
             }
           </div>
 
-          <!-- Subcategories -->
-          @if (childrenOf(cat.id).length > 0 || addingSubcategoryFor() === cat.id) {
+          <!-- Children -->
+          @if (childrenOf(item.id).length > 0 || addingChildFor() === item.id) {
             <div class="border-t border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/40 px-3 py-2 space-y-1">
-              @for (sub of childrenOf(cat.id); track sub.id) {
+              @for (sub of childrenOf(item.id); track sub.id) {
                 <div class="flex items-center gap-2 pl-6 pr-1 py-1.5">
                   <span class="text-slate-400 dark:text-slate-500 text-xs">└─</span>
 
@@ -251,16 +250,16 @@
                 </div>
               }
 
-              <!-- Add subcategory inline input -->
-              @if (addingSubcategoryFor() === cat.id) {
+              <!-- Add child inline input -->
+              @if (addingChildFor() === item.id) {
                 <div class="flex items-center gap-2 pl-6 pr-1 py-1.5">
                   <span class="text-slate-400 dark:text-slate-500 text-xs">└─</span>
                   <input
                     type="text"
-                    [value]="newSubcategoryName()"
-                    (input)="onNewSubcategoryInput($event)"
-                    (keydown)="onNewSubcategoryKeydown($event, cat.id)"
-                    placeholder="Unterkategorie…"
+                    [value]="newChildName()"
+                    (input)="onNewChildInput($event)"
+                    (keydown)="onNewChildKeydown($event, item.id)"
+                    [placeholder]="childLabel() + '…'"
                     autofocus
                     class="flex-1 border border-blue-500 rounded-lg px-2.5 py-1 text-sm
                            bg-white dark:bg-slate-900 text-slate-900 dark:text-white
@@ -269,15 +268,15 @@
                   />
                   <button
                     type="button"
-                    (click)="addSubcategory(cat.id)"
-                    [disabled]="!newSubcategoryName().trim() || isSaving()"
+                    (click)="addChild(item.id)"
+                    [disabled]="!newChildName().trim() || isSaving()"
                     class="px-2.5 py-1 text-xs font-semibold text-white rounded-md bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40"
                   >
                     Hinzufügen
                   </button>
                   <button
                     type="button"
-                    (click)="cancelAddSubcategory()"
+                    (click)="cancelAddChild()"
                     class="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-md border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
                   >
                     Abbrechen

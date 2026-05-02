@@ -2,50 +2,13 @@ import { Customer } from './customer.model';
 
 export type DocumentStatus = 'aktiv' | 'ruhend';
 
-export type ContractType =
-  | 'kfz'
-  | 'haftpflicht'
-  | 'hausrat'
-  | 'rechtschutz'
-  | 'wohngebaeude'
-  | 'unfall'
-  | 'lebensversicherung'
-  | 'rentenversicherung'
-  | 'berufsunfaehigkeit'
-  | 'krankenversicherung'
-  | 'tierversicherung'
-  | 'reise'
-  | 'gruene_karte';
-
-export const CONTRACT_TYPE_OPTIONS: { value: ContractType | ''; label: string }[] = [
-  { value: '',              label: 'Sonstige' },
-  { value: 'kfz',               label: 'Kfz-Versicherung' },
-  { value: 'haftpflicht',       label: 'Privat-Haftpflicht' },
-  { value: 'hausrat',           label: 'Hausrat' },
-  { value: 'rechtschutz',       label: 'Rechtsschutz' },
-  { value: 'wohngebaeude',      label: 'Wohngebäudeversicherung' },
-  { value: 'unfall',            label: 'Unfallversicherung' },
-  { value: 'lebensversicherung', label: 'Lebensversicherung' },
-  { value: 'rentenversicherung', label: 'Rentenversicherung' },
-  { value: 'berufsunfaehigkeit', label: 'Berufsunfähigkeitsversicherung' },
-  { value: 'krankenversicherung', label: 'Private Krankenversicherung' },
-  { value: 'tierversicherung',  label: 'Tierhalterhaftpflicht / Tierkranken' },
-  { value: 'reise',             label: 'Reiseversicherung' },
-  { value: 'gruene_karte',      label: 'Grüne Karte' },
-];
+// Contract type slugs are broker-defined and dynamic. Loosened to string —
+// the live list comes from ContractTypeService (/api/contract-types/).
+export type ContractType = string;
 
 // Slugs are now broker-defined and dynamic. The narrow union type is gone —
 // keep an alias so existing call sites don't break, but treat it as a string.
 export type DocumentCategory = string;
-
-/** Shape returned by GET /api/document-categories/ */
-export interface DocumentCategoryItem {
-  id: number;
-  slug: string;
-  label: string;
-  parent: number | null;
-  created_at: string;
-}
 
 export type ActivityLogAction = 'customer_created' | 'document_assigned' | 'document_unresolved';
 

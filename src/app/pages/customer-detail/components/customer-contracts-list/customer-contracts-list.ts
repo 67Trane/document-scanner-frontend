@@ -1,20 +1,24 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, inject, input, output, signal } from "@angular/core";
-import { CONTRACT_TYPE_OPTIONS, CustomerDocument } from "../../../../models/document.model";
+import { CustomerDocument } from "../../../../models/document.model";
 import { DocumentService } from "../../../../services/document.service";
 import { CategoryService } from "../../../../services/category.service";
-import { CategoryManagementModal } from "../category-management-modal/category-management-modal";
+import { ContractTypeService } from "../../../../services/contract-type.service";
+import { TaxonomyManagementModal } from "../taxonomy-management-modal/taxonomy-management-modal";
+
+type TaxonomyKind = "category" | "contractType";
 
 @Component({
   selector: "app-customer-contracts-list",
   standalone: true,
-  imports: [CommonModule, CategoryManagementModal],
+  imports: [CommonModule, TaxonomyManagementModal],
   templateUrl: "./customer-contracts-list.html",
   styleUrl: "./customer-contracts-list.css",
 })
 export class CustomerContractsList {
   private documentService = inject(DocumentService);
-  private categoryService = inject(CategoryService);
+  readonly categoryService = inject(CategoryService);
+  readonly contractTypeService = inject(ContractTypeService);
 
   documents = input<CustomerDocument[]>([]);
 
@@ -25,30 +29,50 @@ export class CustomerContractsList {
   editingId = signal<number | null>(null);
   editingCategoryId = signal<number | null>(null);
   deletingId = signal<number | null>(null);
-  isCategoryManagerOpen = signal(false);
-  readonly contractTypeOptions = CONTRACT_TYPE_OPTIONS;
 
   /**
-   * Built from the live category list. The empty-value entry remains at the top
-   * so users can still pick "Sonstige" to clear an existing category.
+   * Which taxonomy management modal (if any) is currently open.
+   * One modal slot, two possible adapters — the active value picks the labels.
    */
+  managerOpen = signal<TaxonomyKind | null>(null);
+
+  /** Live "Sonstige" + dynamic options from the API. */
   readonly categoryOptions = computed(() => [
     { value: "", label: "Sonstige" },
-    ...this.categoryService.categories().map(c => ({ value: c.slug, label: c.label })),
+    ...this.categoryService.items().map(c => ({ value: c.slug, label: c.label })),
+  ]);
+
+  readonly contractTypeOptions = computed(() => [
+    { value: "", label: "Sonstige" },
+    ...this.contractTypeService.items().map(c => ({ value: c.slug, label: c.label })),
   ]);
 
   constructor() {
     this.categoryService.load();
+    this.contractTypeService.load();
   }
+
+  // -------------------------
+  // Taxonomy management modals
+  // -------------------------
 
   openCategoryManager(event: MouseEvent): void {
     event.stopPropagation();
-    this.isCategoryManagerOpen.set(true);
+    this.managerOpen.set("category");
   }
 
-  closeCategoryManager(): void {
-    this.isCategoryManagerOpen.set(false);
+  openContractTypeManager(event: MouseEvent): void {
+    event.stopPropagation();
+    this.managerOpen.set("contractType");
   }
+
+  closeManager(): void {
+    this.managerOpen.set(null);
+  }
+
+  // -------------------------
+  // Row actions
+  // -------------------------
 
   onSelect(contract: CustomerDocument) {
     if (this.editingId() === contract.id) return;
