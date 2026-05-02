@@ -3,11 +3,12 @@ import { Component, computed, inject, input, output, signal } from "@angular/cor
 import { CONTRACT_TYPE_OPTIONS, CustomerDocument } from "../../../../models/document.model";
 import { DocumentService } from "../../../../services/document.service";
 import { CategoryService } from "../../../../services/category.service";
+import { CategoryManagementModal } from "../category-management-modal/category-management-modal";
 
 @Component({
   selector: "app-customer-contracts-list",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CategoryManagementModal],
   templateUrl: "./customer-contracts-list.html",
   styleUrl: "./customer-contracts-list.css",
 })
@@ -24,6 +25,7 @@ export class CustomerContractsList {
   editingId = signal<number | null>(null);
   editingCategoryId = signal<number | null>(null);
   deletingId = signal<number | null>(null);
+  isCategoryManagerOpen = signal(false);
   readonly contractTypeOptions = CONTRACT_TYPE_OPTIONS;
 
   /**
@@ -37,6 +39,15 @@ export class CustomerContractsList {
 
   constructor() {
     this.categoryService.load();
+  }
+
+  openCategoryManager(event: MouseEvent): void {
+    event.stopPropagation();
+    this.isCategoryManagerOpen.set(true);
+  }
+
+  closeCategoryManager(): void {
+    this.isCategoryManagerOpen.set(false);
   }
 
   onSelect(contract: CustomerDocument) {

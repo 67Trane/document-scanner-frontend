@@ -1,0 +1,321 @@
+<div
+  class="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+>
+  <div
+    class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200"
+  >
+
+    <!-- ========================= -->
+    <!-- Header -->
+    <!-- ========================= -->
+    <div class="bg-linear-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-6 py-5 shrink-0">
+      <div class="flex justify-between items-start gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white">Kategorien verwalten</h2>
+          <p class="text-blue-100 text-xs mt-1">
+            Erstellen, umbenennen oder löschen Sie Dokumentkategorien.
+            Beim Löschen fallen betroffene Dokumente auf „Sonstige“ zurück.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="shrink-0 w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all flex items-center justify-center"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- New top-level category -->
+    <!-- ========================= -->
+    <div class="px-6 pt-5 pb-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
+      <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+        Neue Kategorie
+      </label>
+      <div class="flex gap-2">
+        <input
+          type="text"
+          [value]="newCategoryName()"
+          (input)="onNewCategoryInput($event)"
+          (keydown)="onNewCategoryKeydown($event)"
+          placeholder="z. B. Bestätigung"
+          class="flex-1 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5
+                 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm
+                 placeholder:text-slate-400
+                 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900
+                 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+        />
+        <button
+          type="button"
+          (click)="addCategory()"
+          [disabled]="!newCategoryName().trim() || isSaving()"
+          class="px-4 py-2.5 text-sm font-semibold text-white rounded-xl transition-all
+                 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Hinzufügen
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- Category list -->
+    <!-- ========================= -->
+    <div class="flex-1 overflow-auto px-6 py-4 space-y-2">
+
+      @if (topLevel().length === 0) {
+        <p class="text-center text-sm text-slate-400 dark:text-slate-500 py-12">
+          Noch keine Kategorien angelegt.
+        </p>
+      }
+
+      @for (cat of topLevel(); track cat.id) {
+        <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 overflow-hidden">
+
+          <!-- Top-level row -->
+          <div class="flex items-center gap-2 px-3 py-2.5">
+            @if (editingId() === cat.id) {
+              <input
+                type="text"
+                [value]="editLabel()"
+                (input)="onEditLabelInput($event)"
+                (keydown)="onEditKeydown($event)"
+                class="flex-1 border border-blue-500 rounded-lg px-3 py-1.5 text-sm
+                       bg-white dark:bg-slate-900 text-slate-900 dark:text-white
+                       focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+              <button
+                type="button"
+                (click)="commitEdit()"
+                [disabled]="!editLabel().trim() || isSaving()"
+                class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition disabled:opacity-40"
+                title="Speichern"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                (click)="cancelEdit()"
+                class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                title="Abbrechen"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            } @else if (deletingId() === cat.id) {
+              <span class="flex-1 text-sm text-slate-700 dark:text-slate-200">
+                <strong>{{ cat.label }}</strong> löschen?
+                @if (childrenOf(cat.id).length > 0) {
+                  <span class="text-amber-600 dark:text-amber-400">
+                    ({{ childrenOf(cat.id).length }} Unterkategorie(n) werden mitgelöscht)
+                  </span>
+                }
+              </span>
+              <button
+                type="button"
+                (click)="commitDelete()"
+                [disabled]="isSaving()"
+                class="px-3 py-1.5 text-xs font-semibold text-white rounded-lg bg-red-600 hover:bg-red-700 transition disabled:opacity-40"
+              >
+                Löschen
+              </button>
+              <button
+                type="button"
+                (click)="cancelDelete()"
+                class="px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+              >
+                Abbrechen
+              </button>
+            } @else {
+              <span class="flex-1 text-sm font-semibold text-slate-900 dark:text-white">
+                {{ cat.label }}
+              </span>
+              <button
+                type="button"
+                (click)="startAddSubcategory(cat.id)"
+                class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+                title="Unterkategorie hinzufügen"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                (click)="startEdit(cat)"
+                class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                title="Umbenennen"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                (click)="confirmDelete(cat.id)"
+                class="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                title="Löschen"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/>
+                </svg>
+              </button>
+            }
+          </div>
+
+          <!-- Subcategories -->
+          @if (childrenOf(cat.id).length > 0 || addingSubcategoryFor() === cat.id) {
+            <div class="border-t border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/40 px-3 py-2 space-y-1">
+              @for (sub of childrenOf(cat.id); track sub.id) {
+                <div class="flex items-center gap-2 pl-6 pr-1 py-1.5">
+                  <span class="text-slate-400 dark:text-slate-500 text-xs">└─</span>
+
+                  @if (editingId() === sub.id) {
+                    <input
+                      type="text"
+                      [value]="editLabel()"
+                      (input)="onEditLabelInput($event)"
+                      (keydown)="onEditKeydown($event)"
+                      class="flex-1 border border-blue-500 rounded-lg px-2.5 py-1 text-sm
+                             bg-white dark:bg-slate-900 text-slate-900 dark:text-white
+                             focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    />
+                    <button
+                      type="button"
+                      (click)="commitEdit()"
+                      [disabled]="!editLabel().trim() || isSaving()"
+                      class="p-1 rounded-md text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition disabled:opacity-40"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      (click)="cancelEdit()"
+                      class="p-1 rounded-md text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  } @else if (deletingId() === sub.id) {
+                    <span class="flex-1 text-xs text-slate-700 dark:text-slate-300">
+                      <strong>{{ sub.label }}</strong> löschen?
+                    </span>
+                    <button
+                      type="button"
+                      (click)="commitDelete()"
+                      [disabled]="isSaving()"
+                      class="px-2.5 py-1 text-xs font-semibold text-white rounded-md bg-red-600 hover:bg-red-700 transition disabled:opacity-40"
+                    >
+                      Löschen
+                    </button>
+                    <button
+                      type="button"
+                      (click)="cancelDelete()"
+                      class="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-md border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                    >
+                      Abbrechen
+                    </button>
+                  } @else {
+                    <span class="flex-1 text-sm text-slate-800 dark:text-slate-200">{{ sub.label }}</span>
+                    <button
+                      type="button"
+                      (click)="startEdit(sub)"
+                      class="p-1 rounded-md text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                      title="Umbenennen"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      (click)="confirmDelete(sub.id)"
+                      class="p-1 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                      title="Löschen"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/>
+                      </svg>
+                    </button>
+                  }
+                </div>
+              }
+
+              <!-- Add subcategory inline input -->
+              @if (addingSubcategoryFor() === cat.id) {
+                <div class="flex items-center gap-2 pl-6 pr-1 py-1.5">
+                  <span class="text-slate-400 dark:text-slate-500 text-xs">└─</span>
+                  <input
+                    type="text"
+                    [value]="newSubcategoryName()"
+                    (input)="onNewSubcategoryInput($event)"
+                    (keydown)="onNewSubcategoryKeydown($event, cat.id)"
+                    placeholder="Unterkategorie…"
+                    autofocus
+                    class="flex-1 border border-blue-500 rounded-lg px-2.5 py-1 text-sm
+                           bg-white dark:bg-slate-900 text-slate-900 dark:text-white
+                           placeholder:text-slate-400
+                           focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                  <button
+                    type="button"
+                    (click)="addSubcategory(cat.id)"
+                    [disabled]="!newSubcategoryName().trim() || isSaving()"
+                    class="px-2.5 py-1 text-xs font-semibold text-white rounded-md bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40"
+                  >
+                    Hinzufügen
+                  </button>
+                  <button
+                    type="button"
+                    (click)="cancelAddSubcategory()"
+                    class="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-md border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ========================= -->
+    <!-- Error message -->
+    <!-- ========================= -->
+    @if (errorMsg()) {
+      <div class="mx-6 mb-3 flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+        <svg class="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+        </svg>
+        <p class="text-sm text-red-700 dark:text-red-300">{{ errorMsg() }}</p>
+      </div>
+    }
+
+    <!-- ========================= -->
+    <!-- Footer -->
+    <!-- ========================= -->
+    <div class="flex justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 shrink-0">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300
+               border-2 border-slate-200 dark:border-slate-700 rounded-xl
+               hover:bg-white dark:hover:bg-slate-700 transition-all"
+      >
+        Schließen
+      </button>
+    </div>
+
+  </div>
+</div>

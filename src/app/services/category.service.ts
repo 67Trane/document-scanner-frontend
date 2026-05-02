@@ -44,6 +44,35 @@ export class CategoryService {
     return this.fetch();
   }
 
+  /** Create a new category (top-level if parent is null, subcategory otherwise). */
+  create(label: string, parent: number | null = null): Observable<DocumentCategoryItem> {
+    return this.http.post<DocumentCategoryItem>(this.url, { label, parent }).pipe(
+      tap(item => this._categories.update(items => [...items, item])),
+    );
+  }
+
+  /** Rename or reparent an existing category. */
+  update(id: number, patch: { label?: string; parent?: number | null }): Observable<DocumentCategoryItem> {
+    return this.http.patch<DocumentCategoryItem>(`${this.url}${id}/`, patch).pipe(
+      tap(updated => this._categories.update(items =>
+        items.map(c => (c.id === id ? updated : c)),
+      )),
+    );
+  }
+
+  /**
+   * Delete a category. Documents using it fall back to "Sonstige" via the
+   * backend's `on_delete=SET_NULL`. The backend cascades to subcategories,
+   * so we strip them from local state too.
+   */
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}${id}/`).pipe(
+      tap(() => this._categories.update(items =>
+        items.filter(c => c.id !== id && c.parent !== id),
+      )),
+    );
+  }
+
   private fetch(): Observable<DocumentCategoryItem[]> {
     return this.http.get<DocumentCategoryItem[]>(this.url).pipe(
       tap(items => {
