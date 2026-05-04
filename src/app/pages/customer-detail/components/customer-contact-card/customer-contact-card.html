@@ -202,6 +202,10 @@
           </button>
         </div>
 
+        @if (plateHint()) {
+        <p class="text-xs text-amber-600 dark:text-amber-400">{{ plateHint() }}</p>
+        }
+
         @if (editLicensePlates().length === 0) {
         <p class="text-xs text-slate-500 dark:text-slate-600 italic">Noch keine Kennzeichen hinzugefügt</p>
         }
@@ -267,6 +271,10 @@
             </svg>
           </button>
         </div>
+
+        @if (policyHint()) {
+        <p class="text-xs text-amber-600 dark:text-amber-400">{{ policyHint() }}</p>
+        }
 
         @if (editPolicyNumbers().length === 0) {
         <p class="text-xs text-slate-500 dark:text-slate-600 italic">Noch keine Versicherungsschein-Nummern hinzugefügt

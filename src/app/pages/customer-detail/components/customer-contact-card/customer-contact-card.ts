@@ -83,6 +83,11 @@ export class CustomerContactCard {
   newLicensePlate = signal<string>("");
   newPolicyNumber = signal<string>("");
 
+  // Inline hints shown when the user tries to add a duplicate. Cleared as
+  // soon as the user types something different in the input.
+  plateHint = signal<string>("");
+  policyHint = signal<string>("");
+
   // Output event to notify parent of changes
   contactUpdated = output<void>();
   openSourceDocument = output<string>();
@@ -192,10 +197,14 @@ export class CustomerContactCard {
 
   addLicensePlate(): void {
     const plate = this.newLicensePlate().trim().toUpperCase();
-    if (plate && !this.editLicensePlates().includes(plate)) {
-      this.editLicensePlates.update(plates => [...plates, plate]);
-      this.newLicensePlate.set("");
+    if (!plate) return;
+    if (this.editLicensePlates().includes(plate)) {
+      this.plateHint.set("Dieses Kennzeichen ist bereits in der Liste.");
+      return;
     }
+    this.editLicensePlates.update(plates => [...plates, plate]);
+    this.newLicensePlate.set("");
+    this.plateHint.set("");
   }
 
   removeLicensePlate(plate: string): void {
@@ -204,10 +213,14 @@ export class CustomerContactCard {
 
   addPolicyNumber(): void {
     const number = this.newPolicyNumber().trim();
-    if (number && !this.editPolicyNumbers().includes(number)) {
-      this.editPolicyNumbers.update(numbers => [...numbers, number]);
-      this.newPolicyNumber.set("");
+    if (!number) return;
+    if (this.editPolicyNumbers().includes(number)) {
+      this.policyHint.set("Diese Versicherungsschein-Nummer ist bereits in der Liste.");
+      return;
     }
+    this.editPolicyNumbers.update(numbers => [...numbers, number]);
+    this.newPolicyNumber.set("");
+    this.policyHint.set("");
   }
 
   removePolicyNumber(number: string): void {
@@ -258,9 +271,11 @@ export class CustomerContactCard {
 
   onNewLicensePlateInput(event: Event): void {
     this.newLicensePlate.set((event.target as HTMLInputElement).value);
+    if (this.plateHint()) this.plateHint.set("");
   }
 
   onNewPolicyNumberInput(event: Event): void {
     this.newPolicyNumber.set((event.target as HTMLInputElement).value);
+    if (this.policyHint()) this.policyHint.set("");
   }
 }
