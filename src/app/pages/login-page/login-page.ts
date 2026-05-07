@@ -5,6 +5,7 @@ import { AuthService } from "../../services/auth.service";
 import { DemoLogin } from "../../components/demo-login/demo-login";
 import { AppConfig } from "../../runtime-config";
 import { StatusWindow } from "../../components/status-window/status-window";
+import { APP_VERSION, APP_BUILD_DATE } from "../../version";
 
 type StatusType = "success" | "error" | "info";
 
@@ -20,6 +21,8 @@ export class LoginPage {
 
   production = AppConfig.production;
   currentYear = new Date().getFullYear();
+  readonly appVersion = APP_VERSION;
+  readonly appBuildDate = APP_BUILD_DATE;
 
   toast = {
     visible: false,

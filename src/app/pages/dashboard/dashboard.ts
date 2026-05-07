@@ -12,6 +12,7 @@ import { ActivityLog, CustomerDocument } from '../../models/document.model';
 import { DocumentEditModal } from '../../components/document-edit-modal/document-edit-modal';
 import { ThemeService } from '../../services/theme.service';
 import { interval } from 'rxjs';
+import { APP_VERSION, APP_BUILD_DATE } from '../../version';
 
 type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 
@@ -32,6 +33,9 @@ export class Dashboard implements OnInit {
   private readonly customerService = inject(CustomerService);
   private readonly documentService = inject(DocumentService);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly appVersion = APP_VERSION;
+  readonly appBuildDate = APP_BUILD_DATE;
 
   searchTerm = signal<string>('');
   username = computed(() => this.auth.user()?.username ?? '');
