@@ -22,10 +22,18 @@ export class CustomerService {
 
   /**
    * Get paginated list of customers.
-   * Optional search query and page number.
+   * Optional search query, page number, and ordering ("first_name" | "last_name").
    */
-  getCustomers(term = "", mode: CustomerSearchMode = "name", page = 1) {
-    const params: Record<string, string> = { page: String(page) };
+  getCustomers(
+    term = "",
+    mode: CustomerSearchMode = "name",
+    page = 1,
+    ordering: "first_name" | "last_name" = "first_name",
+  ) {
+    const params: Record<string, string> = {
+      page: String(page),
+      ordering,
+    };
 
     if (term.trim()) {
       params["q"] = term.trim();

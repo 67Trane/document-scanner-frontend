@@ -38,7 +38,34 @@
   <thead class="text-slate-500 border-b border-slate-200 dark:border-slate-700">
     <tr>
       <th class="py-2 font-medium">ID</th>
-      <th class="py-2 font-medium">Name</th>
+      <th class="py-2 font-medium">
+        <span class="inline-flex items-center gap-1 select-none">
+          Sortieren:
+          <button
+            type="button"
+            (click)="setSortBy('first_name')"
+            [class.text-blue-600]="sortBy() === 'first_name'"
+            [class.dark:text-blue-400]="sortBy() === 'first_name'"
+            [class.font-semibold]="sortBy() === 'first_name'"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            title="Nach Vorname sortieren"
+          >
+            Vorname
+          </button>
+          <span class="text-slate-300 dark:text-slate-600">·</span>
+          <button
+            type="button"
+            (click)="setSortBy('last_name')"
+            [class.text-blue-600]="sortBy() === 'last_name'"
+            [class.dark:text-blue-400]="sortBy() === 'last_name'"
+            [class.font-semibold]="sortBy() === 'last_name'"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            title="Nach Nachname sortieren"
+          >
+            Nachname
+          </button>
+        </span>
+      </th>
       <th class="py-2 font-medium">Geburtstag</th>
       <th class="py-2 font-medium">Kundennummer</th>
       <th class="py-2 font-medium">Status</th>
