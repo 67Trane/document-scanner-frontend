@@ -30,7 +30,7 @@
     </div>
 
     <!-- ========================= -->
-    <!-- New top-level entry -->
+    <!-- New entry -->
     <!-- ========================= -->
     <div class="px-6 pt-5 pb-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
       <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
@@ -66,16 +66,14 @@
     <!-- ========================= -->
     <div class="flex-1 overflow-auto px-6 py-4 space-y-2">
 
-      @if (topLevel().length === 0) {
+      @if (items().length === 0) {
         <p class="text-center text-sm text-slate-400 dark:text-slate-500 py-12">
           Noch keine {{ itemLabelPlural() }} angelegt.
         </p>
       }
 
-      @for (item of topLevel(); track item.id) {
+      @for (item of items(); track item.id) {
         <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 overflow-hidden">
-
-          <!-- Top-level row -->
           <div class="flex items-center gap-2 px-3 py-2.5">
             @if (editingId() === item.id) {
               <input
@@ -111,11 +109,6 @@
             } @else if (deletingId() === item.id) {
               <span class="flex-1 text-sm text-slate-700 dark:text-slate-200">
                 <strong>{{ item.label }}</strong> löschen?
-                @if (childrenOf(item.id).length > 0) {
-                  <span class="text-amber-600 dark:text-amber-400">
-                    ({{ childrenOf(item.id).length }} {{ childLabel() }}(n) werden mitgelöscht)
-                  </span>
-                }
               </span>
               <button
                 type="button"
@@ -138,16 +131,6 @@
               </span>
               <button
                 type="button"
-                (click)="startAddChild(item.id)"
-                class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
-                [title]="childLabel() + ' hinzufügen'"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-              </button>
-              <button
-                type="button"
                 (click)="startEdit(item)"
                 class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
                 title="Umbenennen"
@@ -168,123 +151,6 @@
               </button>
             }
           </div>
-
-          <!-- Children -->
-          @if (childrenOf(item.id).length > 0 || addingChildFor() === item.id) {
-            <div class="border-t border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/40 px-3 py-2 space-y-1">
-              @for (sub of childrenOf(item.id); track sub.id) {
-                <div class="flex items-center gap-2 pl-6 pr-1 py-1.5">
-                  <span class="text-slate-400 dark:text-slate-500 text-xs">└─</span>
-
-                  @if (editingId() === sub.id) {
-                    <input
-                      type="text"
-                      [value]="editLabel()"
-                      (input)="onEditLabelInput($event)"
-                      (keydown)="onEditKeydown($event)"
-                      class="flex-1 border border-blue-500 rounded-lg px-2.5 py-1 text-sm
-                             bg-white dark:bg-slate-900 text-slate-900 dark:text-white
-                             focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                    />
-                    <button
-                      type="button"
-                      (click)="commitEdit()"
-                      [disabled]="!editLabel().trim() || isSaving()"
-                      class="p-1 rounded-md text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition disabled:opacity-40"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      (click)="cancelEdit()"
-                      class="p-1 rounded-md text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                      </svg>
-                    </button>
-                  } @else if (deletingId() === sub.id) {
-                    <span class="flex-1 text-xs text-slate-700 dark:text-slate-300">
-                      <strong>{{ sub.label }}</strong> löschen?
-                    </span>
-                    <button
-                      type="button"
-                      (click)="commitDelete()"
-                      [disabled]="isSaving()"
-                      class="px-2.5 py-1 text-xs font-semibold text-white rounded-md bg-red-600 hover:bg-red-700 transition disabled:opacity-40"
-                    >
-                      Löschen
-                    </button>
-                    <button
-                      type="button"
-                      (click)="cancelDelete()"
-                      class="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-md border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                    >
-                      Abbrechen
-                    </button>
-                  } @else {
-                    <span class="flex-1 text-sm text-slate-800 dark:text-slate-200">{{ sub.label }}</span>
-                    <button
-                      type="button"
-                      (click)="startEdit(sub)"
-                      class="p-1 rounded-md text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                      title="Umbenennen"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      (click)="confirmDelete(sub.id)"
-                      class="p-1 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
-                      title="Löschen"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/>
-                      </svg>
-                    </button>
-                  }
-                </div>
-              }
-
-              <!-- Add child inline input -->
-              @if (addingChildFor() === item.id) {
-                <div class="flex items-center gap-2 pl-6 pr-1 py-1.5">
-                  <span class="text-slate-400 dark:text-slate-500 text-xs">└─</span>
-                  <input
-                    type="text"
-                    [value]="newChildName()"
-                    (input)="onNewChildInput($event)"
-                    (keydown)="onNewChildKeydown($event, item.id)"
-                    [placeholder]="childLabel() + '…'"
-                    autofocus
-                    class="flex-1 border border-blue-500 rounded-lg px-2.5 py-1 text-sm
-                           bg-white dark:bg-slate-900 text-slate-900 dark:text-white
-                           placeholder:text-slate-400
-                           focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  />
-                  <button
-                    type="button"
-                    (click)="addChild(item.id)"
-                    [disabled]="!newChildName().trim() || isSaving()"
-                    class="px-2.5 py-1 text-xs font-semibold text-white rounded-md bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40"
-                  >
-                    Hinzufügen
-                  </button>
-                  <button
-                    type="button"
-                    (click)="cancelAddChild()"
-                    class="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-md border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                  >
-                    Abbrechen
-                  </button>
-                </div>
-              }
-            </div>
-          }
         </div>
       }
     </div>

@@ -9,10 +9,9 @@ import { TaxonomyAdapter, TaxonomyItem } from "../../../../models/taxonomy.model
  * CategoryService and ContractTypeService expose the required shape via
  * duck typing — plus the German labels to use throughout the dialog.
  *
- * Items are displayed grouped by parent → child. The user can create new
- * top-level entries and subcategories, rename, and delete existing ones.
- * Deleting cascades to subcategories on the backend; documents using the
- * deleted entry fall back to "Sonstige" via on_delete=SET_NULL.
+ * Items are displayed as a flat list. The user can create, rename, and
+ * delete entries. Documents using a deleted entry fall back to "Sonstige"
+ * via the backend's on_delete=SET_NULL.
  */
 @Component({
   selector: "app-taxonomy-management-modal",
@@ -34,17 +33,12 @@ export class TaxonomyManagementModal {
   /** Singular label used in body copy — e.g. "Kategorie" or "Vertragsart". */
   itemLabel = input<string>("Eintrag");
 
-  /** Singular label for a child entry — e.g. "Unterkategorie" or "Untervertragsart". */
-  childLabel = input<string>("Untereintrag");
-
   /** Plural form used in headers and placeholders. */
   itemLabelPlural = input<string>("Einträge");
 
   close = output<void>();
 
-  // Live view of all items via the adapter.
   readonly items = computed(() => this.adapter().items());
-  readonly topLevel = computed(() => this.items().filter(i => i.parent === null));
 
   // --- Inline edit state ---
   editingId = signal<number | null>(null);
@@ -53,23 +47,15 @@ export class TaxonomyManagementModal {
   // --- Delete confirmation state ---
   deletingId = signal<number | null>(null);
 
-  // --- New top-level entry state ---
+  // --- New entry state ---
   newItemName = signal<string>("");
-
-  // --- New subcategory entry state ---
-  addingChildFor = signal<number | null>(null);
-  newChildName = signal<string>("");
 
   // --- Generic feedback ---
   errorMsg = signal<string>("");
   isSaving = signal(false);
 
-  childrenOf(parentId: number): TaxonomyItem[] {
-    return this.items().filter(i => i.parent === parentId);
-  }
-
   // -------------------------
-  // Add new top-level
+  // Add new entry
   // -------------------------
 
   onNewItemInput(e: Event): void {
@@ -79,7 +65,7 @@ export class TaxonomyManagementModal {
   addItem(): void {
     const label = this.newItemName().trim();
     if (!label) return;
-    this.runAction(this.adapter().create(label, null), () => {
+    this.runAction(this.adapter().create(label), () => {
       this.newItemName.set("");
     });
   }
@@ -88,41 +74,6 @@ export class TaxonomyManagementModal {
     if (e.key === "Enter") {
       e.preventDefault();
       this.addItem();
-    }
-  }
-
-  // -------------------------
-  // Add child
-  // -------------------------
-
-  startAddChild(parentId: number): void {
-    this.addingChildFor.set(parentId);
-    this.newChildName.set("");
-  }
-
-  cancelAddChild(): void {
-    this.addingChildFor.set(null);
-    this.newChildName.set("");
-  }
-
-  onNewChildInput(e: Event): void {
-    this.newChildName.set((e.target as HTMLInputElement).value);
-  }
-
-  addChild(parentId: number): void {
-    const label = this.newChildName().trim();
-    if (!label) return;
-    this.runAction(this.adapter().create(label, parentId), () => {
-      this.cancelAddChild();
-    });
-  }
-
-  onNewChildKeydown(e: KeyboardEvent, parentId: number): void {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      this.addChild(parentId);
-    } else if (e.key === "Escape") {
-      this.cancelAddChild();
     }
   }
 

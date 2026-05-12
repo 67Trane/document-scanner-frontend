@@ -3,13 +3,12 @@ import { Observable } from 'rxjs';
 
 /**
  * Common shape returned by both /api/document-categories/ and /api/contract-types/.
- * Both are simple per-broker taxonomies with optional one-level parent/child nesting.
+ * Both are simple per-broker flat lists, ordered by label.
  */
 export interface TaxonomyItem {
   id: number;
   slug: string;
   label: string;
-  parent: number | null;
   created_at: string;
 }
 
@@ -22,7 +21,7 @@ export interface TaxonomyItem {
 export interface TaxonomyAdapter {
   readonly items: Signal<TaxonomyItem[]>;
   load(): void;
-  create(label: string, parent: number | null): Observable<TaxonomyItem>;
-  update(id: number, patch: { label?: string; parent?: number | null }): Observable<TaxonomyItem>;
+  create(label: string): Observable<TaxonomyItem>;
+  update(id: number, patch: { label?: string }): Observable<TaxonomyItem>;
   delete(id: number): Observable<void>;
 }
