@@ -9,6 +9,8 @@ import { CustomerDocument } from "../../../../models/document.model";
 import { ActivatedRoute } from "@angular/router";
 
 const FIELD_LABELS: Record<string, string> = {
+  first_name:     "Vorname",
+  last_name:      "Nachname",
   email:          "E-Mail",
   phone:          "Telefon",
   date_of_birth:  "Geburtsdatum",
