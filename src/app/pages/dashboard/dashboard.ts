@@ -3,9 +3,11 @@ import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CustomerSearch } from '../../components/customer-search/customer-search';
 import { CustomerList } from '../../components/customer-list/customer-list';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CustomerService } from '../../services/customer.service';
+import { CustomerListStateService } from '../../services/customer-list-state.service';
+import { RecentCustomersService } from '../../services/recent-customers.service';
 import { CustomerSearchMode } from '../../models/customer-search-mode.model';
 import { DocumentService } from '../../services/document.service';
 import { ActivityLog, CustomerDocument } from '../../models/document.model';
@@ -19,7 +21,7 @@ type SidebarSection = 'overview' | 'customers' | 'documents' | 'settings';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CustomerSearch, CustomerList, DocumentEditModal, DatePipe],
+  imports: [CustomerSearch, CustomerList, DocumentEditModal, DatePipe, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -29,15 +31,20 @@ export class Dashboard implements OnInit {
    */
   readonly auth = inject(AuthService);
   readonly theme = inject(ThemeService);
+  readonly recentCustomers = inject(RecentCustomersService);
   private readonly router = inject(Router);
   private readonly customerService = inject(CustomerService);
   private readonly documentService = inject(DocumentService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly listState = inject(CustomerListStateService);
 
   readonly appVersion = APP_VERSION;
   readonly appBuildDate = APP_BUILD_DATE;
 
-  searchTerm = signal<string>('');
+  // Sourced from the shared state service so the search term survives
+  // navigation away from the dashboard and back.
+  readonly searchTerm = this.listState.searchTerm;
+  readonly currentSearch = this.listState.searchOption;
   username = computed(() => this.auth.user()?.username ?? '');
   usernameId = computed(() => this.auth.user()?.id ?? '');
   unassignedDocuments = signal<CustomerDocument[]>([]);
@@ -47,7 +54,6 @@ export class Dashboard implements OnInit {
   hasNewDocuments = signal(false);
   activityLog = signal<ActivityLog[]>([]);
 
-  currentSearch = signal<CustomerSearchMode>('name');
   currentSearchDescription = computed(() => this.searchOptions[this.currentSearch()] ?? '');
 
   readonly searchOptions: Record<CustomerSearchMode, string> = {

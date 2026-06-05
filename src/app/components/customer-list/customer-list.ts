@@ -3,6 +3,7 @@ import { Component, DestroyRef, effect, inject, input, signal } from "@angular/c
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
 import { CustomerService } from "../../services/customer.service";
+import { CustomerListStateService } from "../../services/customer-list-state.service";
 import { Customer } from "../../models/customer.model";
 import { CustomerSearchMode } from "../../models/customer-search-mode.model";
 
@@ -20,6 +21,7 @@ export class CustomerList {
   private readonly customerService = inject(CustomerService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly listState = inject(CustomerListStateService);
 
   searchTerm = input<string>("");
   searchOption = input<CustomerSearchMode>("name");
@@ -28,7 +30,9 @@ export class CustomerList {
   loading = signal(false);
   error = signal<string | null>(null);
 
-  page = signal(1);
+  // Sourced from the shared state service so the current page survives
+  // navigating to a customer detail page and back.
+  readonly page = this.listState.page;
   count = signal(0);
   next = signal<string | null>(null);
   previous = signal<string | null>(null);
@@ -42,13 +46,24 @@ export class CustomerList {
   deleteLoading = signal(false);
   deleteError = signal<string | null>(null);
 
+  // First effect tick runs on mount with the restored search/sort values —
+  // we want to honour the restored page in that case. Subsequent ticks
+  // (the user actually changing search or sort) should always start at page 1.
+  private isFirstEffectRun = true;
+
   constructor() {
     effect(() => {
       const term = (this.searchTerm() || "").trim();
       const mode = this.searchOption();
       const sort = this.sortBy();
-      this.page.set(1);
-      this.loadCustomers(term, mode, 1, sort);
+
+      const page = this.isFirstEffectRun ? this.page() : 1;
+      if (!this.isFirstEffectRun) {
+        this.page.set(1);
+      }
+      this.isFirstEffectRun = false;
+
+      this.loadCustomers(term, mode, page, sort);
     });
   }
 
