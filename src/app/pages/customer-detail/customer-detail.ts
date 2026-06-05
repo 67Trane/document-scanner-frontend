@@ -5,6 +5,7 @@ import { ActivatedRoute } from "@angular/router";
 
 import { CustomerService } from "../../services/customer.service";
 import { DocumentService } from "../../services/document.service";
+import { RecentCustomersService } from "../../services/recent-customers.service";
 import { Customer } from "../../models/customer.model";
 import { CustomerDocument } from "../../models/document.model";
 import { AppConfig } from "../../runtime-config";
@@ -37,6 +38,7 @@ export class CustomerDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly customerService = inject(CustomerService);
   private readonly documentService = inject(DocumentService);
+  private readonly recentCustomers = inject(RecentCustomersService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly customerId = Number(this.route.snapshot.paramMap.get("id"));
 
@@ -168,6 +170,7 @@ export class CustomerDetail {
         this.customer.set(data);
         this.notesDraft.set(data.notes ?? "");
         this.lastSavedNotes = (data.notes ?? "").trim();
+        this.recentCustomers.add(data);
       },
       error: () => {
         this.customer.set(null);
