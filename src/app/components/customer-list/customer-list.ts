@@ -46,24 +46,36 @@ export class CustomerList {
   deleteLoading = signal(false);
   deleteError = signal<string | null>(null);
 
-  // First effect tick runs on mount with the restored search/sort values —
-  // we want to honour the restored page in that case. Subsequent ticks
-  // (the user actually changing search or sort) should always start at page 1.
+  // First effect tick is the implicit mount run — the initial load already
+  // happened in the constructor with the restored page, so this tick has
+  // nothing to do. Subsequent ticks fire only when the user changes search
+  // or sort, in which case we reset to page 1.
   private isFirstEffectRun = true;
 
   constructor() {
+    // Initial load — read signals here (outside the effect) so `page` does
+    // not become a tracked dependency. If we read it inside the effect,
+    // every call to `page.set(...)` from goNext/goPrev would re-trigger
+    // the effect, which would then helpfully reset the page back to 1.
+    this.loadCustomers(
+      (this.searchTerm() || "").trim(),
+      this.searchOption(),
+      this.page(),
+      this.sortBy(),
+    );
+
     effect(() => {
       const term = (this.searchTerm() || "").trim();
       const mode = this.searchOption();
       const sort = this.sortBy();
 
-      const page = this.isFirstEffectRun ? this.page() : 1;
-      if (!this.isFirstEffectRun) {
-        this.page.set(1);
+      if (this.isFirstEffectRun) {
+        this.isFirstEffectRun = false;
+        return;
       }
-      this.isFirstEffectRun = false;
 
-      this.loadCustomers(term, mode, page, sort);
+      this.page.set(1);
+      this.loadCustomers(term, mode, 1, sort);
     });
   }
 
