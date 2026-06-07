@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Router } from "@angular/router";
 import { CustomerService } from "../../services/customer.service";
 import { CustomerListStateService } from "../../services/customer-list-state.service";
+import { RecentCustomersService } from "../../services/recent-customers.service";
 import { Customer } from "../../models/customer.model";
 import { CustomerSearchMode } from "../../models/customer-search-mode.model";
 
@@ -22,6 +23,7 @@ export class CustomerList {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly listState = inject(CustomerListStateService);
+  private readonly recentCustomers = inject(RecentCustomersService);
 
   searchTerm = input<string>("");
   searchOption = input<CustomerSearchMode>("name");
@@ -168,6 +170,9 @@ export class CustomerList {
       next: () => {
         this.deleteLoading.set(false);
         this.customerToDelete.set(null);
+        // Drop the customer from the recents tab so it doesn't linger as
+        // a dead link that would 404 if the user clicks it.
+        this.recentCustomers.remove(customer.id);
         // Reload current page; if last item on page > 1, go back one page
         const currentPage = this.page();
         const isLastOnPage = this.customers().length === 1 && currentPage > 1;

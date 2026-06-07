@@ -3,6 +3,7 @@ import { Component, inject, input, output, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Customer } from "../../../../models/customer.model";
 import { CustomerService } from "../../../../services/customer.service";
+import { RecentCustomersService } from "../../../../services/recent-customers.service";
 
 @Component({
   selector: "app-customer-profile-card",
@@ -22,6 +23,7 @@ export class CustomerProfileCard {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly customerService = inject(CustomerService);
+  private readonly recentCustomers = inject(RecentCustomersService);
   private readonly customerId = Number(this.route.snapshot.paramMap.get("id"));
 
   customerUpdated = output<void>();
@@ -52,6 +54,9 @@ export class CustomerProfileCard {
   deleteCustomer(): void {
     this.customerService.deleteCustomer(this.customerId).subscribe({
       next: () => {
+        // Drop the customer from the recents tab so it doesn't linger as
+        // a dead link that would 404 if the user clicks it.
+        this.recentCustomers.remove(this.customerId);
         this.router.navigateByUrl('/dashboard');
       },
       error: () => {
