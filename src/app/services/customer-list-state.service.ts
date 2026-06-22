@@ -22,9 +22,13 @@ const DEFAULTS: PersistedState = {
  *
  * Per-broker scoped: the persisted slot in localStorage is keyed by the
  * current user id, so search terms and page numbers from one account
- * never leak into another account viewed in the same browser. The
- * in-memory signals are reloaded automatically when the auth user
- * changes.
+ * never leak into another account viewed in the same browser.
+ *
+ * The signals are initialised **synchronously** from localStorage so that
+ * a consumer reading them in its own constructor (e.g. `CustomerList`'s
+ * initial fetch) sees the restored values — not the defaults. An effect
+ * still listens for later auth-user changes (logout/login) and refreshes
+ * the values from the new user's slot.
  *
  * Search-mode changes (`searchTerm` or `searchOption`) should reset
  * `page` back to 1 — handled by the consumer (`CustomerList`), not
@@ -34,19 +38,30 @@ const DEFAULTS: PersistedState = {
 export class CustomerListStateService {
   private readonly auth = inject(AuthService);
 
-  readonly page = signal<number>(DEFAULTS.page);
-  readonly searchTerm = signal<string>(DEFAULTS.searchTerm);
-  readonly searchOption = signal<CustomerSearchMode>(DEFAULTS.searchOption);
+  /** Snapshot computed synchronously at construction — used to seed the signals. */
+  private readonly initial: PersistedState = this.computeInitial();
 
-  /** Skip persisting on the immediate reload after switching users. */
+  readonly page = signal<number>(this.initial.page);
+  readonly searchTerm = signal<string>(this.initial.searchTerm);
+  readonly searchOption = signal<CustomerSearchMode>(this.initial.searchOption);
+
+  /** Skip persisting while we restore — we only want user-driven changes saved. */
   private suppressPersist = false;
+
+  /** Skip the implicit first invocation of the auth-change effect — that's the initial mount. */
+  private skipFirstAuthCheck = true;
 
   constructor() {
     this.removeLegacyKey();
 
-    // Reload the signals from the correct per-user slot whenever the user changes.
+    // Reload from the per-user slot when the auth user changes (logout / login).
+    // The initial mount is already handled synchronously via `initial` above.
     effect(() => {
       const userId = this.auth.user()?.id ?? null;
+      if (this.skipFirstAuthCheck) {
+        this.skipFirstAuthCheck = false;
+        return;
+      }
       const restored = userId === null ? { ...DEFAULTS } : this.load(userId);
       this.suppressPersist = true;
       this.page.set(restored.page);
@@ -71,6 +86,11 @@ export class CustomerListStateService {
         // localStorage may be unavailable — in-memory state still works.
       }
     });
+  }
+
+  private computeInitial(): PersistedState {
+    const userId = this.auth.user()?.id ?? null;
+    return userId === null ? { ...DEFAULTS } : this.load(userId);
   }
 
   private keyFor(userId: number | string): string {

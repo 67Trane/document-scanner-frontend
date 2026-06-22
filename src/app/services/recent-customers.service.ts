@@ -19,23 +19,29 @@ const MAX_ENTRIES = 6;
  *
  * Each broker has their own slot in localStorage keyed by user id —
  * customers belonging to one broker are never visible to another after
- * an account switch on the same browser. The in-memory signal is
- * automatically reloaded whenever the AuthService's user changes.
+ * an account switch on the same browser. The signal is seeded
+ * synchronously at construction so any consumer reading it in its own
+ * constructor sees the restored list (not an empty array). An effect
+ * refreshes the list whenever the auth user changes.
  */
 @Injectable({ providedIn: 'root' })
 export class RecentCustomersService {
   private readonly auth = inject(AuthService);
 
-  readonly recents = signal<RecentCustomer[]>([]);
+  readonly recents = signal<RecentCustomer[]>(this.computeInitial());
+
+  /** Skip the implicit first invocation of the auth-change effect. */
+  private skipFirstAuthCheck = true;
 
   constructor() {
-    // Remove the legacy global key — pre-fix data could otherwise leak
-    // into the first logged-in broker's view on this browser.
     this.removeLegacyKey();
 
-    // Reload from the correct per-user storage slot whenever the user changes.
     effect(() => {
       const userId = this.auth.user()?.id ?? null;
+      if (this.skipFirstAuthCheck) {
+        this.skipFirstAuthCheck = false;
+        return;
+      }
       this.recents.set(userId === null ? [] : this.load(userId));
     });
   }
@@ -70,6 +76,11 @@ export class RecentCustomersService {
     const userId = this.auth.user()?.id;
     this.recents.set([]);
     if (userId !== undefined) this.persist(userId, []);
+  }
+
+  private computeInitial(): RecentCustomer[] {
+    const userId = this.auth.user()?.id ?? null;
+    return userId === null ? [] : this.load(userId);
   }
 
   private keyFor(userId: number | string): string {
