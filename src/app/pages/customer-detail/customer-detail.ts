@@ -1,7 +1,8 @@
 import { CommonModule } from "@angular/common";
+import { HttpErrorResponse } from "@angular/common/http";
 import { Component, computed, DestroyRef, effect, inject, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 import { CustomerService } from "../../services/customer.service";
 import { DocumentService } from "../../services/document.service";
@@ -39,6 +40,7 @@ export class CustomerDetail {
   private readonly customerService = inject(CustomerService);
   private readonly documentService = inject(DocumentService);
   private readonly recentCustomers = inject(RecentCustomersService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly customerId = Number(this.route.snapshot.paramMap.get("id"));
 
@@ -172,7 +174,17 @@ export class CustomerDetail {
         this.lastSavedNotes = (data.notes ?? "").trim();
         this.recentCustomers.add(data);
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          // Customer was deleted (possibly from another device). Clean up
+          // the stale recents entry on this device and bounce back to the
+          // dashboard so the dead link can never be clicked again from here.
+          this.recentCustomers.remove(customerId);
+          this.router.navigateByUrl('/dashboard');
+          return;
+        }
+        // Other errors (network, 500, auth) — keep current behaviour:
+        // leave the page rendered with an empty customer.
         this.customer.set(null);
       },
     });
